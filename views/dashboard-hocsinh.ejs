@@ -1,0 +1,75 @@
+<%- include('partials/header', { title: 'Dashboard Học Sinh' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar">
+      <div class="text-center fw-semibold mb-3"><%= hocSinh.HoVaTen %></div>
+      <a href="#" class="active">Trang Dashboard</a>
+      <a href="#">Kết Quả Học Tập</a>
+      <a href="#">Thời Khóa Biểu</a>
+      <a href="#">Bài Tập</a>
+      <a href="#">Thông Báo</a>
+      <a href="#">Tài Khoản Cá Nhân</a>
+      <button class="logout-btn">Đăng Xuất</button>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">THÔNG TIN HỌC SINH</h4>
+
+      <div class="info-card shadow-sm">
+        <div class="row align-items-center">
+          <div class="col-md-3 text-center">
+            <div class="photo-box">Ảnh</div>
+          </div>
+          <div class="col-md-9">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Mã HS:</strong> <%= hocSinh.MaHS %></p>
+                <p><strong>Họ tên:</strong> <%= hocSinh.HoVaTen %></p>
+                <p><strong>Giới tính:</strong> <%= hocSinh.GioiTinh %></p>
+                <p><strong>Ngày sinh:</strong> <%= hocSinh.NgaySinh %></p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Trường:</strong> <%= hocSinh.Truong %></p>
+                <p><strong>Nơi sinh:</strong> <%= hocSinh.NoiSinh || 'N/A' %></p>
+                <p><strong>Trạng thái:</strong> <%= hocSinh.TrangThai || 'Đang học' %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature cards -->
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="feature-card">Kết Quả Học Tập</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Thời Khóa Biểu</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Bài Tập</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Thông Báo</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Điểm Các Môn</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Lịch Học Trong Tuần</div>
+        </div>
+        <div class="col-md-4 offset-md-4">
+          <div class="feature-card">Lịch Thi Trong Tuần</div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+</body>
+</html>

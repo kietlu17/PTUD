@@ -1,0 +1,27 @@
+{
+  "name": "pern-simple-auth-crud",
+  "version": "1.0.0",
+  "description": "Simple Node.js CRUD app with login/register using Postgres and EJS (MVC)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "method-override": "^3.0.0",
+    "pg": "^8.11.1",
+    "sequelize": "^6.32.1",
+    "pg-hstore": "^2.3.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

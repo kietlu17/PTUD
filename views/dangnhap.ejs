@@ -1,0 +1,77 @@
+<%- include('partials/header', { title: 'dangnhap' }) %>
+
+<div class="login-container">
+  <form class="login-form" method="post" action="/login">
+    <h2>ĐĂNG NHẬP</h2>
+    <div>
+      <input type="text" name="username" placeholder="Nhập mã người dùng" required />
+    </div>
+    <div>
+      <input type="password" name="password" placeholder="Nhập mật khẩu" required />
+    </div>
+    <button type="submit" class="login-button">Đăng Nhập</button>
+  </form>
+</div>
+
+
+
+<style>
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url('/images/background.jpg') no-repeat center center;
+    background-size: cover;
+  }
+
+  .login-form {
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+  }
+
+  .login-form h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .login-form .forgot-password {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .login-form .forgot-password:hover {
+    text-decoration: underline;
+  }
+
+  .login-form .login-button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .login-form .login-button:hover {
+    background: #0056b3;
+  }
+</style>
