@@ -69,24 +69,30 @@ async function login(req, res) {
         }
 
         // Truyền toàn bộ thông tin ra view
-        return res.status(200).render('dashboard-hocsinh', { hocSinh });
+            res.status(200).render('dashboard-hocsinh', {
+                hocSinh: {
+                  ...hocSinh.toJSON(),
+                  Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
+                  Truong: hocSinh.truong?.name || 'Chưa cập nhật'
+                }
+            });
       }
 
       // Redirect cho các vai trò khác
-      switch (user.role.TenVaiTro) {
-        case 'phụ huynh':
-          return res.status(200).render('dashboard-phuhuynh');
-        case 'giáo viên':
-          return res.status(200).render('dashboard-giaovien');
-        case 'ban giám hiệu':
-          return res.status(200).render('dashboard-bangiamhieu');
-        case 'sở giáo dục':
-          return res.status(200).render('dashboard-sogiaoduc');
-        case 'admin':
-          return res.status(200).render('dashboard-admin');
-        default:
-          return res.status(200).render('404');
-      }
+      // switch (user.role.TenVaiTro) {
+      //   case 'phụ huynh':
+      //     return res.status(200).render('dashboard-phuhuynh');
+      //   case 'giáo viên':
+      //     return res.status(200).render('dashboard-giaovien');
+      //   case 'ban giám hiệu':
+      //     return res.status(200).render('dashboard-bangiamhieu');
+      //   case 'sở giáo dục':
+      //     return res.status(200).render('dashboard-sogiaoduc');
+      //   case 'admin':
+      //     return res.status(200).render('dashboard-admin');
+      //   default:
+      //     return res.status(200).render('404');
+      // }
     });
   } catch (err) {
     console.error(err);
@@ -95,7 +101,7 @@ async function login(req, res) {
 }
 
 function logout(req, res) {
-  req.session.destroy(() => res.redirect('/'));
+  req.session.destroy(() => res.redirect('/login'));
 }
 
 module.exports = { showRegister, register, showLogin, login, logout };

@@ -12,7 +12,9 @@
       <a href="#">Bài Tập</a>
       <a href="#">Thông Báo</a>
       <a href="#">Tài Khoản Cá Nhân</a>
-      <button class="logout-btn">Đăng Xuất</button>
+      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+<button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+
     </nav>
 
     <!-- Main content -->
@@ -34,6 +36,7 @@
               </div>
               <div class="col-md-6">
                 <p><strong>Trường:</strong> <%= hocSinh.Truong %></p>
+                <p><strong>Lớp:</strong> <%= hocSinh.Lop %></p>
                 <p><strong>Nơi sinh:</strong> <%= hocSinh.NoiSinh || 'N/A' %></p>
                 <p><strong>Trạng thái:</strong> <%= hocSinh.TrangThai || 'Đang học' %></p>
               </div>
