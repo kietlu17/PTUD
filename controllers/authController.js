@@ -98,6 +98,7 @@ async function login(req, res) {
         default:
           return res.status(200).render('404');
       }
+
     });
   } catch (err) {
     console.error(err);
