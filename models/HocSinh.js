@@ -13,5 +13,14 @@ const HocSinh = sequelize.define('HocSinh', {
   tableName: 'HocSinh',
   timestamps: false,
 });
+HocSinh.associate = function(models) {
+    // HocSinh có thể có một hoặc nhiều PhuHuynh (One-to-Many)
+    // Nếu mỗi học sinh chỉ có 1 phụ huynh, dùng hasOne
+    // Nếu mỗi học sinh có nhiều phụ huynh (bố, mẹ, người giám hộ), dùng hasMany
+    models.HocSinh.hasMany(models.PhuHuynh, {
+        foreignKey: 'id_HocSinh',
+        as: 'PhuHuynh'
+    });
+  };
 
 module.exports = HocSinh;

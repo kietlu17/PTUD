@@ -1,25 +1,95 @@
+# services:
+#   db:
+#     image: postgres:15
+#     container_name: postgres_db
+#     # restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: "404"
+#       POSTGRES_DB: qlth
+#     ports:
+#       - "5432:5432"
+#     # volumes:
+#     #   - postgres_data:/var/lib/postgresql/data
+
+#   adminer:
+#     image: adminer
+#     container_name: adminer_ui
+#     # restart: always
+#     ports:
+#       - "8080:8080"
+#     depends_on:
+#       - db
+# # Thêm service cho ứng dụng Node.js của bạn
+#   app:
+#     build: .
+#     container_name: ptud_app
+#     # Đặt biến môi trường
+#     environment:
+#       DB_HOST: db # ĐẶT HOST LÀ TÊN SERVICE DB!
+#       DB_PORT: 5432
+#       POSTGRES_DB: qlth
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: "404"
+#     ports:
+#       - "3000:3000" # Ví dụ: Cổng ứng dụng
+#     depends_on:
+#       - db
+
+
+version: '3.8' # Nên dùng version 3.8 trở lên để hỗ trợ healthcheck
+
 services:
+  # === POSTGRES DB SERVICE ===
   db:
     image: postgres:15
     container_name: postgres_db
-    # restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "404"
       POSTGRES_DB: qlth
     ports:
       - "5432:5432"
+    # Thêm Healthcheck để service APP biết khi nào DB sẵn sàng
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d qlth"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     # volumes:
-    #   - postgres_data:/var/lib/postgresql/data
+      # - postgres_data:/var/lib/postgresql/data # Nên bật khi chính thức muốn lưu trữ dữ liệu lâu dài
 
+  # === ADMINER UI ===
   adminer:
     image: adminer
     container_name: adminer_ui
-    # restart: always
     ports:
       - "8080:8080"
     depends_on:
       - db
 
-# volumes:
-#   postgres_data:
+  # === NODE.JS APPLICATION SERVICE ===
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ptud_app
+    # Lệnh khởi động (Sử dụng nodemon để tự động reload khi phát triển)
+    command: npm run dev 
+    ports:
+      - "3000:3000" # Cổng truy cập ứng dụng
+    environment:
+      NODE_ENV: development
+      DB_HOST: db # QUAN TRỌNG: Host là tên service DB
+      DB_PORT: 5432
+      POSTGRES_DB: qlth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "404"
+    # Volume Mapping: Đồng bộ code từ máy host vào container
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules # Ngoại trừ node_modules
+    # Chờ DB sẵn sàng và khỏe mạnh
+    depends_on:
+      db:
+        condition: service_healthy
