@@ -36,6 +36,7 @@ app.use('/', authRoutes);
 app.use('/diemthi', diemThiRoutes);
 app.use('/dashboard-sogiaoduc', dashboardSogiaoducRouter);
 
+
 const PORT = process.env.PORT || 3000;
 
 sequelizeInit().then(() => {

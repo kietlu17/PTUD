@@ -111,13 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${ts.hoten}</td>
                     <td>${ts.ngaysinh ? new Date(ts.ngaysinh).toLocaleDateString() : ''}</td>
 
-                    <td><input type="number" class="form-control form-control-sm" id="toan-${ts.id}"
+                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="toan-${ts.id}"
                         value="${diem.toan ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
 
-                    <td><input type="number" class="form-control form-control-sm" id="nguvan-${ts.id}"
+                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="nguvan-${ts.id}"
                         value="${diem.nguvan ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
 
-                    <td><input type="number" class="form-control form-control-sm" id="tienganh-${ts.id}"
+                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="tienganh-${ts.id}"
                         value="${diem.tienganh ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
 
                     <td id="tong-${ts.id}">${diem.tong ?? '-'}</td>

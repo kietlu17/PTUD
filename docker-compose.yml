@@ -2,7 +2,11 @@ services:
   db:
     image: postgres:15
     container_name: postgres_db
+<<<<<<< HEAD
     restart: always
+=======
+    # restart: always
+>>>>>>> 345faf48517e46ca3b436fff0f0affd4b8c29870
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "404"
@@ -11,8 +15,11 @@ services:
       - "5432:5432"
     # volumes:
     #   - postgres_data:/var/lib/postgresql/data
+<<<<<<< HEAD
     volumes:
       - ./app.sql:/app.sql   # ✅ THÊM DÒNG NÀY
+=======
+>>>>>>> 345faf48517e46ca3b436fff0f0affd4b8c29870
 
   adminer:
     image: adminer
