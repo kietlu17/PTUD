@@ -5,6 +5,7 @@ const { render } = require('ejs');
 
 exports.getAllLop = async (req, res) => {
   try {
+    const idTruong = req.session.id_truong;
     const dsLop = await Lop.findAll({
       attributes: [
         'id',
@@ -12,6 +13,7 @@ exports.getAllLop = async (req, res) => {
         // Thêm số lượng học sinh
         [Sequelize.fn('COUNT', Sequelize.col('hocsinhs.id')), 'SoLuongHocSinh'],
       ],
+      where: { id_truong: idTruong },
       include: [
         {
           model: GiaoVien,

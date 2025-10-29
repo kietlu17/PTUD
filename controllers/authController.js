@@ -107,6 +107,8 @@ async function login(req, res) {
           return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
         }
 
+          req.session.id_truong = admin.id_school;
+
         // Truyền toàn bộ thông tin ra view
             res.status(200).render('dashboard-admin', {
               admin: {
