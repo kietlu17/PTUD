@@ -1,0 +1,58 @@
+<%- include('partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar">
+      <div class="text-center fw-semibold mb-3">ảnh</div>
+      <a href="/dashboard-admin">Trang Dashboard</a>
+      <a href="/admin/quanlylop" class="active">Quản Lý Lớp Học</a>
+      <a href="#">Tạo Lớp</a>
+      <a href="#">Quản Lý Tài Khoản</a>
+      <a href="#">Thông Báo</a>
+      <a href="#">Tài Khoản Cá Nhân</a>
+      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+      <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">DANH SÁCH CÁC LỚP</h4>
+
+      <div class="table-responsive shadow-sm">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-secondary">
+            <tr>
+              <th>Mã Lớp</th>
+              <th>Tên Lớp</th>
+              <th>Giáo Viên Chủ Nhiệm</th>
+              <th>Số Lượng Học Sinh</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (dsLop && dsLop.length > 0) { %>
+              <% dsLop.forEach(lop => { %>
+                <tr>
+                  <td><%= lop.id %></td>
+                  <td><%= lop.TenLop %></td>
+                  <td><%= lop.gvcn ? lop.gvcn.HoVaTen : 'Chưa phân công' %></td>
+                  <td><%= lop.SoLuongHocSinh || 0 %></td>
+                  <td>
+                    <a href="quanlylop/<%= lop.id %>/hocsinh" class="btn btn-sm btn-primary">Xem Danh Sách</a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="text-center text-muted">Chưa có lớp nào trong hệ thống.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+  </div>
+</div>

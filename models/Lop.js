@@ -11,6 +11,10 @@ const Lop = sequelize.define('Lop', {
     type: DataTypes.STRING(10),
     allowNull: true,
   },
+  id_truong: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   id_ToHopMon: {
     type: DataTypes.INTEGER,
     allowNull: true,

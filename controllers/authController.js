@@ -1,24 +1,24 @@
 const { render } = require('ejs');
-const { TaiKhoan, VaiTro, HocSinh, Lop, Truong } = require('../models');
+const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong } = require('../models');
 
-function showRegister(req, res) {
-  res.render('register', { error: null });
-}
+// function showRegister(req, res) {
+//   res.render('register', { error: null });
+// }
 
-async function register(req, res) {
-  const { name, email, password } = req.body;
-  if (!email || !password) return res.render('register', { error: 'Email and password required' });
-  try {
-    const existing = await User.findOne({ where: { email } });
-    if (existing) return res.render('register', { error: 'Email already used' });
-    const user = await User.create({ name, email, password });
-    req.session.user = { id: user.id, name: user.name, email: user.email };
-    res.redirect('/posts');
-  } catch (err) {
-    console.error(err);
-    res.render('register', { error: 'Registration failed' });
-  }
-}
+// async function register(req, res) {
+//   const { name, email, password } = req.body;
+//   if (!email || !password) return res.render('register', { error: 'Email and password required' });
+//   try {
+//     const existing = await User.findOne({ where: { email } });
+//     if (existing) return res.render('register', { error: 'Email already used' });
+//     const user = await User.create({ name, email, password });
+//     req.session.user = { id: user.id, name: user.name, email: user.email };
+//     res.redirect('/posts');
+//   } catch (err) {
+//     console.error(err);
+//     res.render('register', { error: 'Registration failed' });
+//   }
+// }
 
 function showLogin(req, res) {
   res.render('dangnhap', { error: null });
@@ -78,6 +78,44 @@ async function login(req, res) {
             });
       }
 
+       // Nếu là Nhân viên sở giáo dục
+        if (user.role.TenVaiTro === 'sở giáo dục') {
+            const nhanVien = await NhanVienSo.findOne({
+              where: { MaSGD: username }
+            });
+
+        if (!nhanVien) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
+        }
+
+        // Truyền toàn bộ thông tin ra view
+            res.status(200).render('dashboard-sogiaoduc', {
+              nhanVien
+            });
+      }
+
+             // Nếu là quản trị trường
+        if (user.role.TenVaiTro === 'admin') {
+            const admin = await QuanTriTruong.findOne({
+              where: { MaQTV: username },
+              include: [
+                { model: Truong, as: 'truong' },
+              ],
+            });
+
+        if (!admin) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
+        }
+
+        // Truyền toàn bộ thông tin ra view
+            res.status(200).render('dashboard-admin', {
+              admin: {
+                      ...admin.toJSON(),
+                  Truong: admin.truong?.name || 'Chưa cập nhật'
+                }
+              });
+      }
+
       // Redirect cho các vai trò khác
       // switch (user.role.TenVaiTro) {
       //   case 'phụ huynh':
@@ -104,4 +142,4 @@ function logout(req, res) {
   req.session.destroy(() => res.redirect('/login'));
 }
 
-module.exports = { showRegister, register, showLogin, login, logout };
+module.exports = { showLogin, login, logout };

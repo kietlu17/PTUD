@@ -1,0 +1,71 @@
+<%- include('partials/header', { title: 'Dashboard Admin' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar">
+      <div class="text-center fw-semibold mb-3"><%= admin.HoVaTen %></div>
+      <a href="#" class="active">Trang Dashboard</a>
+      <a href="admin/quanlylop">Quản Lý Lớp Học</a>
+      <a href="#">Tạo Lớp</a>
+      <a href="#">Quản Lý Tài Khoản</a>
+      <a href="#">Thông Báo</a>
+      <a href="#">Tài Khoản Cá Nhân</a>
+      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+<button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">THÔNG TIN QUẢN TRỊ </h4>
+
+      <div class="info-card shadow-sm">
+        <div class="row align-items-center">
+          <div class="col-md-3 text-center">
+            <div class="photo-box">Ảnh</div>
+          </div>
+          <div class="col-md-9">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Mã ADMIN:</strong> <%= admin.MaQTV %></p>
+                <p><strong>Họ tên:</strong> <%= admin.HoVaTen %></p>
+                <p><strong>Giới tính:</strong> <%= admin.GioiTinh %></p>
+                <p><strong>Ngày sinh:</strong> <%= admin.NgaySinh %></p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Trường:</strong> <%= admin.Truong %></p>
+                <p><strong>Nơi sinh:</strong> <%= admin.NoiSinh || 'N/A' %></p>
+                <p><strong>Trạng thái:</strong> <%= admin.TrangThai || 'Đang Công Tác' %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature cards -->
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="feature-card">Quản Lý Lớp Học</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Tạo Lớp</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Quản Lý Tài Khoản</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Thông Báo</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Thông Báo</div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+</body>
+</html>

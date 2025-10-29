@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const authRoutes = require('./routes/auth');
 // const postRoutes = require('./routes/posts');
+const diemThiRoutes = require('./routes/diemthi');
+const quanlylop = require('./routes/quanlylop');
 const { init: sequelizeInit } = require('./config/sequelize');
 
 const app = express();
@@ -29,7 +31,8 @@ app.use('/', authRoutes);
 // app.get('/', (req, res) => {
 //   res.render('dangnhap');
 // });
-
+app.use('/diemthi', diemThiRoutes);
+app.use('/admin', quanlylop);
 const PORT = process.env.PORT || 3000;
 
 sequelizeInit().then(() => {
