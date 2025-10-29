@@ -1,0 +1,125 @@
+<%- include('partials/header', { title: 'Dashboard Giáo Viên' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar -->
+            <nav class="col-md-2 sidebar">
+                <div class="text-center fw-semibold mb-3">👩‍🏫
+                    <%= giaoVien.HoVaTen %>
+                </div>
+                <a href="#" class="active">Trang Dashboard</a>
+                <a href="#">Điểm Danh Học Sinh</a>
+                <a href="#">Nhập Điểm</a>
+                <a href="#">Chấm Bài Tập</a>
+                <a href="#">Giao Bài Tập</a>
+                <a href="#">Xem Báo Cáo</a>
+                <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+                <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-10 content">
+                <h4 class="text-center fw-bold mb-4">THÔNG TIN GIÁO VIÊN</h4>
+
+                <!-- Info -->
+                <div class="info-card shadow-sm">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="photo-box">Ảnh</div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Mã Giáo Viên:</strong> GV
+                                        <%= giaoVien.id %>
+                                    </p>
+                                    <p><strong>Họ và tên:</strong>
+                                        <%= giaoVien.HoVaTen %>
+                                    </p>
+                                    <p><strong>Giới tính:</strong>
+                                        <%= giaoVien.GioiTinh || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Ngày sinh:</strong>
+                                        <%= giaoVien.NgaySinh || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Số điện thoại:</strong>
+                                        <%= giaoVien.SDT || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Email:</strong>
+                                        <%= giaoVien.email || 'Chưa cập nhật' %>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Địa chỉ:</strong>
+                                        <%= giaoVien.DiaChi || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Vị trí:</strong>
+                                        <%= giaoVien.ViTri || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Ngày tham gia:</strong>
+                                        <%= giaoVien.NgayThamGia || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Trường:</strong>
+                                        <%= giaoVien.Truong || 'Chưa cập nhật' %>
+                                    </p>
+                                    <p><strong>Lớp chủ nhiệm:</strong>
+                                        <%= giaoVien.LopChuNhiem || 'Không chủ nhiệm lớp nào' %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature cards -->
+                <h5 class="fw-bold mt-4 mb-3 text-center">CHỨC NĂNG GIÁO VIÊN</h5>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-3">
+                        <a href="/diem-danh" class="text-decoration-none">
+                            <div class="feature-card text-center py-4">
+                                <i class="bi bi-person-check fs-1 text-primary"></i>
+                                <h6 class="mt-2 fw-bold">Điểm Danh</h6>
+                                <p class="small text-muted">Quản lý điểm danh học sinh theo khuôn mặt</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-3">
+                        <a href="/nhap-diem" class="text-decoration-none">
+                            <div class="feature-card text-center py-4">
+                                <i class="bi bi-journal-text fs-1 text-success"></i>
+                                <h6 class="mt-2 fw-bold">Nhập Điểm</h6>
+                                <p class="small text-muted">Nhập điểm kiểm tra, thi, đánh giá định kỳ</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-3">
+                        <a href="/cham-bai-tap" class="text-decoration-none">
+                            <div class="feature-card text-center py-4">
+                                <i class="bi bi-pencil-square fs-1 text-warning"></i>
+                                <h6 class="mt-2 fw-bold">Chấm Bài Tập</h6>
+                                <p class="small text-muted">Xem, chấm điểm và phản hồi bài tập học sinh</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-3">
+                        <a href="/giao-bai-tap" class="text-decoration-none">
+                            <div class="feature-card text-center py-4">
+                                <i class="bi bi-upload fs-1 text-danger"></i>
+                                <h6 class="mt-2 fw-bold">Giao Bài Tập</h6>
+                                <p class="small text-muted">Tạo và giao bài tập cho lớp chủ nhiệm</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    </body>
+
+    </html>

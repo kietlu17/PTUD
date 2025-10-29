@@ -1,0 +1,152 @@
+<%- include('partials/header', { title: 'Điểm Danh Học Sinh' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 sidebar">
+                <div class="text-center fw-semibold mb-3">
+                    👩‍🏫
+                    <%= giaoVien.HoVaTen %>
+                </div>
+                <a href="/dashboard-giaovien">Trang Dashboard</a>
+                <a href="#" class="active">Điểm danh</a>
+                <a href="#">Nhập điểm</a>
+                <a href="#">Chấm bài tập</a>
+                <a href="#">Giao bài tập</a>
+                <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+                <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-10 content">
+                <h2 class="text-center my-4">Điểm Danh Học Sinh</h2>
+
+                <!-- Chọn lớp cần điểm danh -->
+                <div id="chon-lop">
+                    <h5 class="fw-bold mb-3">Chọn lớp cần điểm danh</h5>
+                    <% if (khoiLop && khoiLop.length > 0) { %>
+                        <% khoiLop.forEach(khoi => { %>
+                            <div class="mb-3">
+                                <button class="btn btn-outline-secondary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= khoi.tenKhoi %>">
+                <%= khoi.tenKhoi %>
+              </button>
+                                <div id="collapse-<%= khoi.tenKhoi %>" class="collapse mt-2">
+                                    <% khoi.lopList.forEach(lop => { %>
+                                        <button class="btn btn-light w-100 mb-1 text-start btn-chon-lop" data-lop="<%= lop.TenLop %>">
+                    <%= lop.TenLop %>
+                  </button>
+                                        <% }); %>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } else { %>
+                                    <div class="alert alert-info">Chưa có danh sách lớp để điểm danh.</div>
+                                    <% } %>
+                </div>
+
+                <!-- Bảng điểm danh -->
+                <div id="bang-diemdanh" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 id="ten-lop" class="fw-bold"></h5>
+                        <div>
+                            <%= new Date().toLocaleDateString('vi-VN') %>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>STT</th>
+                                <th>Học sinh</th>
+                                <th>Chuyên cần</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ds-hocsinh">
+                            <!-- render bằng JS -->
+                        </tbody>
+                    </table>
+
+                    <div class="text-center mt-3">
+                        <button id="btn-xacnhan" class="btn btn-primary">Xác nhận</button>
+                    </div>
+                    <div id="message-area" class="mt-3 text-center"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách mẫu học sinh (bạn có thể thay bằng fetch API sau)
+        const mockData = {
+            "10A": ["Nguyễn Văn A", "Nguyễn Văn B", "Nguyễn Văn C"],
+            "10B": ["Nguyễn Văn D", "Nguyễn Văn E"],
+            "10C": ["Nguyễn Văn F", "Nguyễn Văn G", "Nguyễn Văn H"]
+        };
+
+        const btnChonLopList = document.querySelectorAll('.btn-chon-lop');
+        const bangDiemDanh = document.getElementById('bang-diemdanh');
+        const tenLop = document.getElementById('ten-lop');
+        const tbody = document.getElementById('ds-hocsinh');
+        const messageArea = document.getElementById('message-area');
+
+        btnChonLopList.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lop = btn.dataset.lop;
+                tenLop.textContent = `Lớp ${lop}`;
+                tbody.innerHTML = '';
+
+                (mockData[lop] || []).forEach((hs, i) => {
+                    tbody.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${hs}</td>
+            <td>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status${i}" value="Có mặt">
+                <label class="form-check-label">Có mặt</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status${i}" value="Vắng (KP)">
+                <label class="form-check-label">Vắng (KP)</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status${i}" value="Đi muộn">
+                <label class="form-check-label">Đi muộn</label>
+              </div>
+            </td>
+          </tr>`;
+                });
+
+                document.getElementById('chon-lop').classList.add('d-none');
+                bangDiemDanh.classList.remove('d-none');
+                messageArea.innerHTML = '';
+            });
+        });
+
+        document.getElementById('btn-xacnhan').addEventListener('click', () => {
+            const radios = document.querySelectorAll('input[type="radio"]:checked');
+            const total = document.querySelectorAll('tbody tr').length;
+
+            if (radios.length < total) {
+                messageArea.innerHTML = `
+        <div class="alert alert-danger">
+          Lưu thất bại, có học sinh chưa được điểm danh!
+          <br><button class="btn btn-secondary mt-2" onclick="resetPage()">Quay lại</button>
+        </div>`;
+            } else {
+                messageArea.innerHTML = `
+        <div class="alert alert-success">
+          Điểm danh thành công!
+          <br><button class="btn btn-secondary mt-2" onclick="resetPage()">Quay lại</button>
+        </div>`;
+            }
+        });
+
+        function resetPage() {
+            document.getElementById('chon-lop').classList.remove('d-none');
+            document.getElementById('bang-diemdanh').classList.add('d-none');
+            messageArea.innerHTML = '';
+        }
+    </script>
+
+    <%- include('partials/footer') %>
