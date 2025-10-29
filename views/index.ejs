@@ -1,0 +1,10 @@
+<%- include('partials/header', { title: 'Home' }) %>
+
+  <h1>Welcome to the PERN demo</h1>
+  <% if (currentUser) { %>
+    <p><a href="/posts">Go to your posts</a></p>
+  <% } else { %>
+    <p><a href="/login">Login</a> or <a href="/register">register</a> to get started</p>
+  <% } %>
+
+<%- include('partials/footer') %>
