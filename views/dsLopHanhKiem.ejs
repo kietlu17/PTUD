@@ -1,0 +1,37 @@
+<form action="/giaovien/hanhkiem/<%= giaovienId %>/lop/<%= lop.id %>" method="POST">
+  <table class="table table-bordered text-center">
+    <thead class="table-secondary">
+      <tr>
+        <th>ID</th>
+        <th>Họ và tên</th>
+        <th>Ngày sinh</th>
+        <th>Giới tính</th>
+        <th>Hạnh kiểm</th>
+        <th>Nhận xét</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% dsHocSinh.forEach(hs => { %>
+      <tr>
+        <td><%= hs.id %></td>
+        <td><%= hs.HoVaTen %></td>
+        <td><%= hs.NgaySinh %></td>
+        <td><%= hs.GioiTinh %></td>
+        <td>
+          <select name="hanhKiem[<%= hs.id %>]">
+            <option value="">--Chọn--</option>
+            <option value="Tốt" <%= hs.hanhKiem?.LoaiHanhKiem === 'Tốt' ? 'selected' : '' %>>Tốt</option>
+            <option value="Khá" <%= hs.hanhKiem?.LoaiHanhKiem === 'Khá' ? 'selected' : '' %>>Khá</option>
+            <option value="Trung bình" <%= hs.hanhKiem?.LoaiHanhKiem === 'Trung bình' ? 'selected' : '' %>>Trung bình</option>
+            <option value="Yếu" <%= hs.hanhKiem?.LoaiHanhKiem === 'Yếu' ? 'selected' : '' %>>Yếu</option>
+          </select>
+        </td>
+        <td>
+          <input type="text" name="nhanXet[<%= hs.id %>]" value="<%= hs.hanhKiem?.NhanXet || '' %>" class="form-control">
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-primary">Lưu hạnh kiểm</button>
+</form>

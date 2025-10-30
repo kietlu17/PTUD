@@ -15,6 +15,10 @@ const MonHoc = require('./MonHoc');
 const ToHopMon = require('./ToHopMon');
 const ChiTiet_ToHopMon = require('./ChiTiet_ToHopMon');
 const DiemDanh = require('./DiemDanh');
+const ThanhToanHocPhi = require('./ThanhToanHocPhi');
+const PhuHuynh = require('./PhuHuynh')
+const HanhKiem = require('./HanhKiem');
+const DiemSo = require('./DiemSo');
 // 👉 Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò
@@ -73,5 +77,23 @@ DiemDanh.belongsTo(MonHoc, { foreignKey: 'monhoc_id', as: 'monHoc' });
 DiemDanh.belongsTo(GiaoVien, { foreignKey: 'giaovien_id', as: 'giaoVien' });
 
 HocSinh.hasMany(DiemDanh, { foreignKey: 'student_id', as: 'diemDanhs' });
+
+HocSinh.hasMany(PhuHuynh, { foreignKey: 'id_HocSinh', as: 'phuhuynh' });
+PhuHuynh.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocsinh' });
+
+
+HocSinh.hasMany(HanhKiem, { foreignKey: 'id_HocSinh', as: 'hanhKiem' });
+HanhKiem.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
+
+// Quan hệ HanhKiem - GiaoVien
+GiaoVien.hasMany(HanhKiem, { foreignKey: 'NguoiDanhGia', as: 'danhGia' });
+HanhKiem.belongsTo(GiaoVien, { foreignKey: 'NguoiDanhGia', as: 'giaovienDanhGia' });
+
+HocSinh.hasMany(DiemSo, { foreignKey: 'id_HocSinh', as: 'diem' });
+DiemSo.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
+
+// Quan hệ Diem - MonHoc
+MonHoc.hasMany(DiemSo, { foreignKey: 'id_MonHoc', as: 'diem' });
+DiemSo.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
 // Export tất cả model
-module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh };
+module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo };

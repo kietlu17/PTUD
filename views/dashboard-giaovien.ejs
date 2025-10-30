@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: 'Dashboard Admin' }) %>
+<%- include('partials/header', { title: 'Dashboard giaovien' }) %>
 
 <div class="container-fluid">
   <div class="row">
@@ -8,7 +8,7 @@
       <div class="text-center fw-semibold mb-3"><%= giaovien.HoVaTen %></div>
       <a href="#" class="active">Trang Dashboard</a>
       <a href="/giaovien/diemdanh/<%= giaovien.id %>/lop">Điểm Danh</a>
-      <a href="#">Tạo Lớp</a>
+      <a href="/giaovien/hanhkiem/<%= giaovien.id %>/lop">Đánh Giá Hạnh Kiểm</a>
       <a href="#">Quản Lý Tài Khoản</a>
       <a href="#">Thông Báo</a>
       <a href="#">Tài Khoản Cá Nhân</a>

@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: 'Quản Lý Lớp Học' }) %>
+<%- include('partials/header', { title: 'Điểm Danh Học Sinh' }) %>
 
 <div class="container-fluid">
   <div class="row">
@@ -18,43 +18,33 @@
 
     <!-- Main Content -->
     <main class="col-md-10 content">
-            <h4 class="text-center fw-bold mb-4">Danh sách học sinh lớp <%= lop.TenLop %></h4>
+      <h4 class="text-center fw-bold mb-4">Danh sách học sinh lớp <%= lop.TenLop %></h4>
 
-            <div class="table-responsive shadow-sm">
-            <form action="/giaovien/diemdanh/<%= giaoVienId %>/lop/<%= lop.id %>" method="POST">
-                <table class=" table table-bordered text-center align-middle">
-        <thead class="table-secondary">
-            <tr>
-            <th>ID</th>
-            <th>Họ và tên</th>
-            <th>Ngày sinh</th>
-            <th>Giới tính</th>
-            <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% dsHocSinh.forEach(hs => { %>
-            <tr>
-                <td><%= hs.id %></td>
-                <td><%= hs.HoVaTen %></td>
-                <td><%= hs.NgaySinh %></td>
-                <td><%= hs.GioiTinh %></td>
-                <td>
-            <select name="attendance[<%= hs.id %>]">
-              <option value="Có mặt">Có mặt</option>
-              <option value="Vắng">Vắng</option>
-            </select>
-          </td>
-            </tr>
-            <% }) %>
-        </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary">Lưu điểm danh</button>
-        </form>
-        
-        <a href="/admin/quanlylop" class="btn btn-secondary mt-3">← Quay lại</a>
-      </div>
-    </main>
-
-  </div>
-</div>
+      <div class="table-responsive shadow-sm">
+        <form action="/giaovien/diemdanh/<%= giaoVienId %>/lop/<%= lop.id %>" method="POST">
+          <table class="table table-bordered text-center align-middle">
+            <thead class="table-secondary">
+              <tr>
+                <th>ID</th>
+                <th>Họ và tên</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Điểm danh</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% dsHocSinh.forEach(hs => { %>
+                <tr>
+                  <td><%= hs.id %></td>
+                  <td><%= hs.HoVaTen %></td>
+                  <td><%= hs.NgaySinh %></td>
+                  <td><%= hs.GioiTinh %></td>
+                  <td>
+                    <select name="attendance[<%= hs.id %>]">
+                      <option value="Có mặt">Có mặt</option>
+                      <option value="Vắng">Vắng</option>
+                    </select>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>

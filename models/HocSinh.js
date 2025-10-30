@@ -14,4 +14,7 @@ const HocSinh = sequelize.define('HocSinh', {
   timestamps: false,
 });
 
+
+
+
 module.exports = HocSinh;

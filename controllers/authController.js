@@ -1,5 +1,5 @@
 const { render } = require('ejs');
-const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien } = require('../models');
+const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh } = require('../models');
 
 // function showRegister(req, res) {
 //   res.render('register', { error: null });
@@ -140,6 +140,44 @@ async function login(req, res) {
                 }
             });
       }
+
+      
+      if (user.role.TenVaiTro === 'phụ huynh') {
+        // Tìm thông tin Phụ Huynh dựa trên username (giả định username là MaPH)
+        const phuHuynh = await PhuHuynh.findOne({
+          where: { MaPH: username },
+          include: [
+            { 
+              model: HocSinh, 
+              as: 'hocsinh', // Dùng tên alias 'hocsinh' đã định nghĩa trong index.js
+              include: [
+                { model: Lop, as: 'lop' },
+                { model: Truong, as: 'truong' },
+              ]
+            },
+          ],
+        });
+
+        if (!phuHuynh) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin phụ huynh hoặc học sinh liên quan' });
+        }
+          
+          // Trả về dashboard phụ huynh với thông tin của họ và thông tin của con (hocsinh)
+            res.status(200).render('dashboard-phuhuynh', {
+              phuHuynh: {
+                ...phuHuynh.toJSON(),
+                hocSinhLienQuan: {
+                  ...phuHuynh.hocsinh?.toJSON(),
+                  Lop: phuHuynh.hocsinh?.lop?.TenLop || 'Chưa cập nhật',
+                  Truong: phuHuynh.hocsinh?.truong?.name || 'Chưa cập nhật',
+                }
+              }
+            });
+          // THÊM: Lưu id_HocSinh vào session
+        req.session.user.hocSinhId = phuHuynh.hocsinh.id; 
+
+
+          }
 
       // Redirect cho các vai trò khác
       // switch (user.role.TenVaiTro) {

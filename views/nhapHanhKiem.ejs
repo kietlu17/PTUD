@@ -1,0 +1,64 @@
+<%- include('partials/header', { title: 'Nhập Hạnh Kiểm' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar">
+      <div class="text-center fw-semibold mb-3">ảnh</div>
+      <a href="#">Trang Dashboard</a>
+      <a href="/giaovien/hanhkiem/<%= giaovienId %>/lop" class="active">Quản Lý Hạnh Kiểm</a>
+      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+      <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">Danh sách học sinh lớp <%= lop.TenLop %></h4>
+
+      <div class="table-responsive shadow-sm">
+        <form action="/giaovien/hanhkiem/<%= giaovienId %>/lop/<%= lop.id %>" method="POST">
+          <table class="table table-bordered text-center align-middle">
+            <thead class="table-secondary">
+              <tr>
+                <th>ID</th>
+                <th>Họ và tên</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Hạnh kiểm</th>
+                <th>Nhận xét</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% dsHocSinh.forEach(hs => { %>
+                <tr>
+                  <td><%= hs.id %></td>
+                  <td><%= hs.HoVaTen %></td>
+                  <td><%= hs.NgaySinh %></td>
+                  <td><%= hs.GioiTinh %></td>
+                  <td>
+                    <select name="hanhKiem[<%= hs.id %>]">
+                      <option value="Tốt" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Tốt' ? 'selected' : '' %>>Tốt</option>
+                      <option value="Khá" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Khá' ? 'selected' : '' %>>Khá</option>
+                      <option value="Trung bình" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Trung bình' ? 'selected' : '' %>>Trung bình</option>
+                      <option value="Yếu" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Yếu' ? 'selected' : '' %>>Yếu</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" name="nhanXet[<%= hs.id %>]" class="form-control" 
+                      value="<%= hs.hanhKiem ? hs.hanhKiem.NhanXet : '' %>" placeholder="Nhận xét...">
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+
+          <button type="submit" class="btn btn-primary">Lưu hạnh kiểm</button>
+        </form>
+
+        <a href="/giaovien/hanhkiem/<%= giaovienId %>/lop" class="btn btn-secondary mt-3">← Quay lại danh sách lớp</a>
+      </div>
+    </main>
+
+  </div>
+</div>
