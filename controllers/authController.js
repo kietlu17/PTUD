@@ -1,5 +1,5 @@
 const { render } = require('ejs');
-const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong } = require('../models');
+const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien } = require('../models');
 
 // function showRegister(req, res) {
 //   res.render('register', { error: null });
@@ -116,6 +116,29 @@ async function login(req, res) {
                   Truong: admin.truong?.name || 'Chưa cập nhật'
                 }
               });
+      }
+
+      // Nếu là giáo viên
+        if (user.role.TenVaiTro === 'giáo viên') {
+            const giaovien = await GiaoVien.findOne({
+              where: { MaGV: username },
+              include: [
+                { model: Truong, as: 'truong' }
+              ],
+            });
+            
+        if (!giaovien) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin ' });
+        }
+
+         req.session.id_giaovien = giaovien.id;
+        // Truyền toàn bộ thông tin ra view
+            res.status(200).render('dashboard-giaovien', {
+                giaovien: {
+                  ...giaovien.toJSON(),
+                  Truong: giaovien.truong?.name || 'Chưa cập nhật'
+                }
+            });
       }
 
       // Redirect cho các vai trò khác

@@ -21,6 +21,7 @@
             <h4 class="text-center fw-bold mb-4">Danh sách học sinh lớp <%= lop.TenLop %></h4>
 
             <div class="table-responsive shadow-sm">
+            <form action="/giaovien/diemdanh/<%= giaoVienId %>/lop/<%= lop.id %>" method="POST">
                 <table class=" table table-bordered text-center align-middle">
         <thead class="table-secondary">
             <tr>
@@ -38,12 +39,19 @@
                 <td><%= hs.HoVaTen %></td>
                 <td><%= hs.NgaySinh %></td>
                 <td><%= hs.GioiTinh %></td>
-                <td><a href="/admin/quanlylop/hocsinh/<%= hs.id %>/chuyenlop" class="btn btn-sm btn-warning">Chuyển lớp</a></td>
+                <td>
+            <select name="attendance[<%= hs.id %>]">
+              <option value="Có mặt">Có mặt</option>
+              <option value="Vắng">Vắng</option>
+            </select>
+          </td>
             </tr>
             <% }) %>
         </tbody>
         </table>
-
+        <button type="submit" class="btn btn-primary">Lưu điểm danh</button>
+        </form>
+        
         <a href="/admin/quanlylop" class="btn btn-secondary mt-3">← Quay lại</a>
       </div>
     </main>

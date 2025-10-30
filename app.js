@@ -6,6 +6,7 @@ const methodOverride = require('method-override');
 const authRoutes = require('./routes/auth');
 // const postRoutes = require('./routes/posts');
 const diemThiRoutes = require('./routes/diemthi');
+const giaovien = require('./routes/giaovien');
 const quanlylop = require('./routes/quanlylop');
 const { init: sequelizeInit } = require('./config/sequelize');
 
@@ -18,6 +19,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride('_method'));
 app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave: false, saveUninitialized: false }));
 app.use(bodyParser.json());
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // expose currentUser to views
 app.use((req, res, next) => {
@@ -32,6 +36,7 @@ app.use('/', authRoutes);
 //   res.render('dangnhap');
 // });
 app.use('/diemthi', diemThiRoutes);
+app.use('/giaovien', giaovien);
 app.use('/admin', quanlylop);
 const PORT = process.env.PORT || 3000;
 
