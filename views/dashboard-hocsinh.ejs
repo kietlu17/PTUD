@@ -4,18 +4,7 @@
   <div class="row">
 
     <!-- Sidebar -->
-    <nav class="col-md-2 sidebar">
-      <div class="text-center fw-semibold mb-3"><%= hocSinh.HoVaTen %></div>
-      <a href="#" class="active">Trang Dashboard</a>
-      <a href="#">Kết Quả Học Tập</a>
-      <a href="#">Thời Khóa Biểu</a>
-      <a href="#">Bài Tập</a>
-      <a href="#">Thông Báo</a>
-      <a href="#">Tài Khoản Cá Nhân</a>
-      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
-<button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
-
-    </nav>
+<%- include('partials/nav-hocsinh') %>
 
     <!-- Main content -->
     <main class="col-md-10 content">
