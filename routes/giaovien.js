@@ -16,7 +16,7 @@ router.post('/diemdanh/:id/lop/:lopId', diemdanhController.submitAttendance);
 router.get('/hanhkiem/:giaovienId/lop', hanhkiem.showClasses);
 
 // Hiển thị danh sách học sinh trong lớp để nhập hạnh kiểm
-router.get('/hanhkiem/:giaovienId/lop/:lopId', hanhkiem.getHocSinhByLop);
+// router.get('/hanhkiem/:giaovienId/lop/:lopId', hanhkiem.getHocSinhByLop);
 
 // Xử lý lưu hạnh kiểm
 router.post('/hanhkiem/:giaovienId/lop/:lopId', hanhkiem.submitHanhKiem);
