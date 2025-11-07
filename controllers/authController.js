@@ -1,6 +1,7 @@
 const { render } = require('ejs');
 const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh } = require('../models');
-
+const bcrypt = require('bcrypt');
+const { json } = require('body-parser');
 // function showRegister(req, res) {
 //   res.render('register', { error: null });
 // }
@@ -27,9 +28,7 @@ function showLogin(req, res) {
 async function login(req, res) {
   const { username, password } = req.body;
   console.log({ username, password })
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin đăng nhập' });
-  }
+
 
   try {
     const user = await TaiKhoan.findOne({ where: { username }, include: { model: VaiTro, as: 'role' } });
@@ -38,15 +37,18 @@ async function login(req, res) {
     }
 
     // Bỏ qua bcrypt và so sánh trực tiếp mật khẩu
-    if (password !== user.password) {
-      return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
-    }
+  // const isMatch = await bcrypt.compare(password, user.password);
+  // if (!isMatch) {
+  //   return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
 
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      role: user.role.TenVaiTro,
-    };
+  // }
+
+    // req.session.user = {
+    //   id: user.id,
+    //   username: user.username,
+    //   role: user.role.TenVaiTro,
+    // };
+
 
     req.session.save(async (err) => {
       if (err) {
@@ -67,15 +69,16 @@ async function login(req, res) {
         if (!hocSinh) {
           return res.status(404).json({ error: 'Không tìm thấy thông tin học sinh' });
         }
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: hocSinh.toJSON()
+            };
 
-        // Truyền toàn bộ thông tin ra view
-            res.status(200).render('dashboard-hocsinh', {
-                hocSinh: {
-                  ...hocSinh.toJSON(),
-                  Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
-                  Truong: hocSinh.truong?.name || 'Chưa cập nhật'
-                }
-            });
+            res.redirect('/dashboard-hocsinh');
+            
       }
 
        // Nếu là Nhân viên sở giáo dục
@@ -106,16 +109,16 @@ async function login(req, res) {
         if (!admin) {
           return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
         }
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: admin.toJSON()
+            };
 
-          req.session.id_truong = admin.id_school;
+            res.redirect('/dashboard-admin');
 
-        // Truyền toàn bộ thông tin ra view
-            res.status(200).render('dashboard-admin', {
-              admin: {
-                      ...admin.toJSON(),
-                  Truong: admin.truong?.name || 'Chưa cập nhật'
-                }
-              });
       }
 
       // Nếu là giáo viên
@@ -126,19 +129,22 @@ async function login(req, res) {
                 { model: Truong, as: 'truong' }
               ],
             });
+            console.log(giaovien.toJSON());
             
         if (!giaovien) {
           return res.status(404).json({ error: 'Không tìm thấy thông tin ' });
         }
 
-         req.session.id_giaovien = giaovien.id;
-        // Truyền toàn bộ thông tin ra view
-            res.status(200).render('dashboard-giaovien', {
-                giaovien: {
-                  ...giaovien.toJSON(),
-                  Truong: giaovien.truong?.name || 'Chưa cập nhật'
-                }
-            });
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: giaovien.toJSON()
+            };
+
+            res.redirect('/dashboard-giaovien');
+
       }
 
       
@@ -162,38 +168,20 @@ async function login(req, res) {
           return res.status(404).json({ error: 'Không tìm thấy thông tin phụ huynh hoặc học sinh liên quan' });
         }
           
-          // Trả về dashboard phụ huynh với thông tin của họ và thông tin của con (hocsinh)
-            res.status(200).render('dashboard-phuhuynh', {
-              phuHuynh: {
-                ...phuHuynh.toJSON(),
-                hocSinhLienQuan: {
-                  ...phuHuynh.hocsinh?.toJSON(),
-                  Lop: phuHuynh.hocsinh?.lop?.TenLop || 'Chưa cập nhật',
-                  Truong: phuHuynh.hocsinh?.truong?.name || 'Chưa cập nhật',
-                }
-              }
-            });
-          // THÊM: Lưu id_HocSinh vào session
-        req.session.user.hocSinhId = phuHuynh.hocsinh.id; 
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: phuHuynh.toJSON()
+            };
+
+            res.redirect('/dashboard-phuhuynh');
 
 
           }
 
-      // Redirect cho các vai trò khác
-      // switch (user.role.TenVaiTro) {
-      //   case 'phụ huynh':
-      //     return res.status(200).render('dashboard-phuhuynh');
-      //   case 'giáo viên':
-      //     return res.status(200).render('dashboard-giaovien');
-      //   case 'ban giám hiệu':
-      //     return res.status(200).render('dashboard-bangiamhieu');
-      //   case 'sở giáo dục':
-      //     return res.status(200).render('dashboard-sogiaoduc');
-      //   case 'admin':
-      //     return res.status(200).render('dashboard-admin');
-      //   default:
-      //     return res.status(200).render('404');
-      // }
+
     });
   } catch (err) {
     console.error(err);

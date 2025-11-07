@@ -5,7 +5,7 @@ const { render } = require('ejs');
 
 exports.getAllLop = async (req, res) => {
   try {
-    const idTruong = req.session.id_truong;
+    const idTruong = req.session.user.profile.id_school;
     const dsLop = await Lop.findAll({
       attributes: [
         'id',

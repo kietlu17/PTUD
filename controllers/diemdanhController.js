@@ -39,7 +39,7 @@ exports.showClasses = async (req, res) => {
       nest: true,
     });
 
-    console.log(dsLop); // 👈 in thử ra console để xem cấu trúc dữ liệu
+    console.log(dsLop); //  in thử ra console để xem cấu trúc dữ liệu
 
     res.status(200).render('diemdanh', { dsLop });
   } catch (error) {

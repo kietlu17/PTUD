@@ -4,17 +4,7 @@
   <div class="row">
 
     <!-- Sidebar -->
-    <nav class="col-md-2 sidebar">
-      <div class="text-center fw-semibold mb-3">ảnh</div>
-      <a href="#">Trang Dashboard</a>
-      <a href="/admin/quanlylop" class="active">Quản Lý Lớp Học</a>
-      <a href="#">Tạo Lớp</a>
-      <a href="#">Quản Lý Tài Khoản</a>
-      <a href="#">Thông Báo</a>
-      <a href="#">Tài Khoản Cá Nhân</a>
-      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
-      <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
-    </nav>
+<%- include('partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
 
     <!-- Main Content -->
     <main class="col-md-10 content">

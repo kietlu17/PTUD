@@ -2,19 +2,7 @@
 <div class="container-fluid">
     <div class="row">
             <!-- Sidebar -->
-        <nav class="col-md-2 sidebar">
-        <a href="#" class="active">Trang Dashboard</a>
-        <div class="text-center fw-semibold mb-3">  <%= phuHuynh.HoVaTen %> </div>
-        <a href="#">Xem Thời Khóa Biểu</a>
-        <a href="#">Xin Nghỉ Học</a>
-        <a href="#">Xem Điểm</a>
-        <a href="#">Đăng Ký Nhập Học</a>
-        <a href="#">Đăng Ký Tuyển Sinh</a>
-        <a href="/thanh-toan-hoc-phi">Thanh Toán Học Phí</a>
-        <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
-            <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
-        </nav>
-
+<%- include('partials/nav-phuhuynh') %>
             <!-- Main content -->
         <main class="col-md-10 content">
             <!-- <div id="payment-message-area" class="mt-3"></div> -->

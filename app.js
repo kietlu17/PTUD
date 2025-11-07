@@ -12,6 +12,14 @@ const { init: sequelizeInit } = require('./config/sequelize');
 const paymentRoutes = require('./routes/payment');
 const app = express();
 
+
+app.use(session({
+  secret: 'secret',  // đổi thành secret thực tế
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 } // 1 giờ
+}));
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,6 +39,8 @@ app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave: fal
 // expose currentUser to views
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  res.locals.role = req.session.user?.role || null;
+  res.locals.profile = req.session.user?.profile || null;
   next();
 });
 
@@ -46,6 +56,9 @@ app.use('/admin', quanlylop);
 
 app.use('/', paymentRoutes);
 const PORT = process.env.PORT || 3000;
+
+
+
 
 sequelizeInit().then(() => {
   app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
