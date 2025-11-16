@@ -10,7 +10,7 @@ exports.showClasses = async (req, res) => {
       return res.status(400).send('Giáo viên ID không xác định');
     }
 
-    // 1️⃣ Lấy dsLop với số lượng học sinh
+    // 1️ Lấy dsLop với số lượng học sinh
     const dsLop = await Lop.findAll({
       where: { id_GiaoVienChuNhiem: giaovienId },
       include: [
@@ -31,7 +31,7 @@ exports.showClasses = async (req, res) => {
       nest: true,
     });
 
-    // 2️⃣ Lấy học sinh từng lớp
+    // 2️ Lấy học sinh từng lớp
     const lopIds = dsLop.map(l => l.id);
     const hocsinhByLop = await HocSinh.findAll({
       where: { id_Lop: lopIds },
@@ -41,12 +41,12 @@ exports.showClasses = async (req, res) => {
       attributes: ['id', 'HoVaTen', 'NgaySinh', 'GioiTinh', 'id_Lop'],
     });
 
-    // 3️⃣ Gán học sinh về từng lớp
+    // 3️ Gán học sinh về từng lớp
     dsLop.forEach(lop => {
       lop.hocsinhs = hocsinhByLop.filter(hs => hs.id_Lop === lop.id);
     });
 
-    res.render('dsLopHanhKiem', { dsLop, giaovienId });
+    res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop, giaovienId });
 
   } catch (error) {
     console.error('Lỗi khi lấy danh sách lớp của giáo viên:', error);

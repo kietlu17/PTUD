@@ -4,12 +4,12 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const authRoutes = require('./routes/auth');
-// const postRoutes = require('./routes/posts');
-const diemThiRoutes = require('./routes/diemthi');
-const giaovien = require('./routes/giaovien');
-const quanlylop = require('./routes/admin/quanlylop');
+
+const soGiaoDucRoute = require('./routes/soGiaoDucRoute');
+const giaoVienRoute = require('./routes/giaoVienRoute');
+const adminRoute = require('./routes/adminRoute');
 const { init: sequelizeInit } = require('./config/sequelize');
-const paymentRoutes = require('./routes/phuhuynh/payment');
+const phuHuynhRoute = require('./routes/phuHuynhRoute');
 const app = express();
 
 
@@ -44,17 +44,26 @@ app.use((req, res, next) => {
   next();
 });
 
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect('/login');
+  next();
+}
+app.use((req, res, next) => {
+  res.locals.currentUrl = req.path; // tự động lấy đường dẫn hiện tại
+  next();
+});
+
 app.use('/', authRoutes);
 // app.use('/posts', postRoutes);
 
 // app.get('/', (req, res) => {
 //   res.render('dangnhap');
 // });
-app.use('/diemthi', diemThiRoutes);
-app.use('/giaovien', giaovien);
-app.use('/admin', quanlylop);
+app.use('/sogiaoduc', requireLogin,soGiaoDucRoute);
+app.use('/giaovien', requireLogin, giaoVienRoute);
+app.use('/admin', requireLogin,adminRoute);
+app.use('/phuhuynh', requireLogin,phuHuynhRoute);
 
-app.use('/', paymentRoutes);
 const PORT = process.env.PORT || 3000;
 
 

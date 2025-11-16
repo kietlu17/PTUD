@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const lopController = require('../../controllers/admin/chuyenLopCTRL');
+const lopController = require('../controllers/admin/chuyenLopCTRL');
 
 
-function requireLogin(req, res, next) {
-  if (!req.session.user) return res.redirect('/login');
-  next();
-}
+
 // Lấy danh sách lớp + giáo viên chủ nhiệm
-router.get('/quanlylop', requireLogin, lopController.getAllLop);
+router.get('/quanlylop', lopController.getAllLop);
 
 // Lấy danh sách học sinh trong 1 lớp
 router.get('/quanlylop/:id/hocsinh', lopController.getHocSinhByLop);

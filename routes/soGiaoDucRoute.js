@@ -12,10 +12,10 @@ function requireLogin(req, res, next) {
 }
 
 // Trang nhập điểm
-router.get('/', requireLogin, async (req, res) => {
+router.get('/nhapdiem', requireLogin, async (req, res) => {
   try {
     const truongs = await Truong.findAll();
-    res.render('nhapdiemthi', {
+    res.render('./sogiaoduc/nhapdiemthi/nhapdiemthi', {
       truongs,
       nhanVien: req.session.user
     });
@@ -26,7 +26,7 @@ router.get('/', requireLogin, async (req, res) => {
 });
 
 // Lấy phòng thi theo trường
-router.get('/phongthi/:truongId', async (req, res) => {
+router.get('/diemthi/phongthi/:truongId', async (req, res) => {
   try {
     const phongthi = await PhongThi.findAll({ where: { truongid: req.params.truongId } });
     res.json(phongthi);
@@ -36,8 +36,8 @@ router.get('/phongthi/:truongId', async (req, res) => {
   }
 });
 
-// ✅ Lấy danh sách thí sinh + điểm nếu có
-router.get('/thisinh/:phongId', async (req, res) => {
+// Lấy danh sách thí sinh + điểm nếu có
+router.get('/diemthi/thisinh/:phongId', async (req, res) => {
   try {
     const thisinh = await ThiSinh.findAll({
       where: { phongthiid: req.params.phongId },
@@ -55,8 +55,8 @@ router.get('/thisinh/:phongId', async (req, res) => {
   }
 });
 
-// ✅ Lưu hoặc cập nhật điểm
-router.post('/luu', async (req, res) => {
+//  Lưu hoặc cập nhật điểm
+router.post('/diemthi/luu', async (req, res) => {
   try {
     const { thisinhid, toan, nguvan, tienganh } = req.body;
     const tong = (+toan) + (+nguvan) + (+tienganh);

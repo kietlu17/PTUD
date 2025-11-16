@@ -91,10 +91,15 @@ async function login(req, res) {
           return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
         }
 
-        // Truyền toàn bộ thông tin ra view
-            res.status(200).render('dashboard-sogiaoduc', {
-              nhanVien
-            });
+          req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: nhanVien.toJSON()
+            };
+
+          res.redirect('/dashboard-sogiaoduc');
       }
 
              // Nếu là quản trị trường

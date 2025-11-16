@@ -71,4 +71,14 @@ router.get('/dashboard-admin', (req, res) => {
                 }
   });
 });
+
+router.get('/dashboard-sogiaoduc', (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'sở giáo dục') {
+    return res.redirect('/login');
+  }
+
+  const nhanVien = req.session.user.profile;
+  console.log(nhanVien)
+  res.render('./sogiaoduc/dashboard-sogiaoduc', {nhanVien});
+});
 module.exports = router;

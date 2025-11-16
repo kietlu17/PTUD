@@ -3,6 +3,7 @@ const router = express.Router();
 const diemdanhController = require('../controllers/giaovien/diemdanhController');
 const hanhkiem = require('../controllers/giaovien/hanhkiem');
 
+// Điểm Danh
 // Hiển thị danh sách lớp giáo viên dạy
 router.get('/diemdanh/:id/lop', diemdanhController.showClasses);
 
@@ -12,6 +13,7 @@ router.get('/diemdanh/:id/lop/:lopId', diemdanhController.getHocSinhByLop);
 // Gửi form điểm danh
 router.post('/diemdanh/:id/lop/:lopId', diemdanhController.submitAttendance);
 
+// Hạnh Kiểm
 // Hiển thị danh sách lớp giáo viên chủ nhiệm
 router.get('/hanhkiem/:giaovienId/lop', hanhkiem.showClasses);
 
