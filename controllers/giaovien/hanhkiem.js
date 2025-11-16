@@ -1,4 +1,4 @@
-const { Lop, HocSinh, HanhKiem, DiemSo } = require('../models');
+const { Lop, HocSinh, HanhKiem, DiemSo } = require('../../models');
 const { Sequelize } = require('sequelize');
 const qs =require('qs')
 

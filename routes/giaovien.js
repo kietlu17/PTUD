@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const diemdanhController = require('../controllers/diemdanhController');
-const hanhkiem = require('../controllers/hanhkiem');
+const diemdanhController = require('../controllers/giaovien/diemdanhController');
+const hanhkiem = require('../controllers/giaovien/hanhkiem');
 
 // Hiển thị danh sách lớp giáo viên dạy
 router.get('/diemdanh/:id/lop', diemdanhController.showClasses);

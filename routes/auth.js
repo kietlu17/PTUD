@@ -14,7 +14,7 @@ router.get('/dashboard-giaovien', (req, res) => {
 
   const giaovien = req.session.user.profile;
 
-  res.render('dashboard-giaovien', {
+  res.render('./giaovien/dashboard-giaovien', {
     giaovien: {
       ...giaovien,
       Truong: giaovien.truong?.name || 'Chưa cập nhật'
@@ -45,7 +45,7 @@ router.get('/dashboard-phuhuynh', (req, res) => {
 
   const phuHuynh = req.session.user.profile;
 
-  res.render('dashboard-phuhuynh', {
+  res.render('./phuhuynh/dashboard-phuhuynh', {
               phuHuynh: {
                 ...phuHuynh,
                 hocSinhLienQuan: {
@@ -64,7 +64,7 @@ router.get('/dashboard-admin', (req, res) => {
 
   const admin = req.session.user.profile;
   console.log(admin)
-  res.render('dashboard-admin', {
+  res.render('./admin/dashboard-admin', {
               admin: {
                       ...admin,
                   Truong: admin.truong?.name || 'Chưa cập nhật'

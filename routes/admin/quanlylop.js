@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const lopController = require('../controllers/lopController');
+const lopController = require('../../controllers/admin/chuyenLopCTRL');
 
 
 function requireLogin(req, res, next) {

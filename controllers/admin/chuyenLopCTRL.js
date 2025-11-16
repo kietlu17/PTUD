@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-const { Lop, GiaoVien, HocSinh } = require('../models');
+const { Lop, GiaoVien, HocSinh } = require('../../models');
 
 const { render } = require('ejs');
 
@@ -24,16 +24,16 @@ exports.getAllLop = async (req, res) => {
           model: HocSinh,
           as: 'hocsinhs',
           attributes: [],
-          required: false, // 👈 để lấy lớp không có học sinh
+          required: false, // để lấy lớp không có học sinh
         },
       ],
-      group: ['Lop.id', 'gvcn.id'], // 👈 group theo lớp & giáo viên
-      subQuery: false, // 👈 tránh Sequelize sinh subquery làm mất count
-      raw: true,       // 👈 ép trả dữ liệu "phẳng" dễ truy cập
-      nest: true,      // 👈 nếu muốn giữ cấu trúc lồng (lop.gvcn)
+      group: ['Lop.id', 'gvcn.id'], //group theo lớp & giáo viên
+      subQuery: false, // tránh Sequelize sinh subquery làm mất count
+      raw: true,       // ép trả dữ liệu "phẳng" dễ truy cập
+      nest: true,      // nếu muốn giữ cấu trúc lồng (lop.gvcn)
     });
 
-    res.status(200).render('quanlylop', { dsLop });
+    res.status(200).render('admin/quanlylop/quanlylop', { dsLop });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách lớp:', error);
     res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
@@ -62,7 +62,7 @@ exports.getHocSinhByLop = async (req, res) => {
       order: [['HoVaTen', 'ASC']],
     });
 
-    res.status(200).render('danhsachlop', {
+    res.status(200).render('admin/quanlylop/danhsachlop', {
       lop,
       dsHocSinh,
     });
@@ -88,7 +88,7 @@ exports.showChuyenLopForm = async (req, res) => {
 
     const dsLop = await Lop.findAll({ attributes: ['id', 'TenLop'] });
 
-    res.render('chuyenlop', { hocSinh, dsLop });
+    res.render('admin/quanlylop/chuyenlop', { hocSinh, dsLop });
   } catch (error) {
     console.error('Lỗi khi hiển thị form chuyển lớp:', error);
     res.status(500).send('Lỗi máy chủ');

@@ -7,9 +7,9 @@ const authRoutes = require('./routes/auth');
 // const postRoutes = require('./routes/posts');
 const diemThiRoutes = require('./routes/diemthi');
 const giaovien = require('./routes/giaovien');
-const quanlylop = require('./routes/quanlylop');
+const quanlylop = require('./routes/admin/quanlylop');
 const { init: sequelizeInit } = require('./config/sequelize');
-const paymentRoutes = require('./routes/payment');
+const paymentRoutes = require('./routes/phuhuynh/payment');
 const app = express();
 
 

@@ -1,4 +1,4 @@
-const { ThanhToanHocPhi , PhuHuynh, HocSinh } = require('../models');
+const { ThanhToanHocPhi , PhuHuynh, HocSinh } = require('../../models');
 
 // Hàm hiển thị danh sách công nợ theo kỳ/năm học
 async function showPaymentDashboard(req, res) {
@@ -37,7 +37,7 @@ async function showPaymentDashboard(req, res) {
         
         if (!hocSinhId) {
             // Lỗi này giờ có thể là do thiếu dữ liệu MaPH trong CSDL
-            return res.render('payment-dashboard', { 
+            return res.render('phuhuynh/congno/payment-dashboard', { 
                 error: 'Không tìm thấy thông tin học sinh liên quan.', 
                 payments: [] 
             });
@@ -50,7 +50,7 @@ async function showPaymentDashboard(req, res) {
         });
 
         // 3. Hiển thị giao diện
-        res.render('payment-dashboard', { 
+        res.render('phuhuynh/congno/payment-dashboard', { 
             error: null, 
             payments: payments,
             phuHuynh: phuHuynh,
@@ -61,7 +61,7 @@ async function showPaymentDashboard(req, res) {
     } catch (err) {
         console.error('Lỗi CSDL khi truy vấn công nợ:', err);
         // 4. Alternative flow: Lỗi CSDL
-        res.render('payment-dashboard', { 
+        res.render('phuhuynh/congno/payment-dashboard', { 
             error: 'Lỗi hệ thống, vui lòng thử lại sau.', 
             payments: [] 
         });

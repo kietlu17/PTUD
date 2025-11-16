@@ -1,0 +1,158 @@
+<%- include('../../partials/header', { title: 'Điểm Danh Lớp Học' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar -->
+            <%- include('../../partials/nav-giaovien', { title: 'Điểm Danh Lớp Học' }) %>
+
+                <!-- Main Content -->
+                <main class="col-md-10 p-4 bg-light">
+                    <h4 class="text-center fw-bold mb-3 text-primary">
+                        Điểm danh lớp
+                        <%= lop.TenLop %>
+                    </h4>
+
+                    <div class="text-end mb-3">
+                        <strong>Ngày điểm danh:</strong>
+                        <%= new Date().toLocaleDateString('vi-VN') %>
+                    </div>
+
+                    <!-- FORM -->
+                    <form id="formDiemDanh" action="/giaovien/diemdanh/<%= id %>/lop/<%= lop.id %>" method="POST">
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle text-center shadow-sm bg-white">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th rowspan="2">ID</th>
+                                        <th rowspan="2">Họ và tên</th>
+                                        <th rowspan="2">Ngày sinh</th>
+                                        <th rowspan="2">Giới tính</th>
+                                        <th colspan="3">Trạng thái điểm danh</th>
+                                    </tr>
+                                    <tr class="sub-header">
+                                        <th>Có mặt</th>
+                                        <th>Vắng</th>
+                                        <th>Đi muộn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% dsHocSinh.forEach(hs => { %>
+                                        <tr>
+                                            <td>
+                                                <%= hs.id %>
+                                            </td>
+                                            <td class="text-start ps-3">
+                                                <%= hs.HoVaTen %>
+                                            </td>
+                                            <td>
+                                                <%= hs.NgaySinh %>
+                                            </td>
+                                            <td>
+                                                <%= hs.GioiTinh %>
+                                            </td>
+                                            <td><input type="radio" name="status_<%= hs.id %>" value="Có mặt" required></td>
+                                            <td><input type="radio" name="status_<%= hs.id %>" value="Vắng"></td>
+                                            <td><input type="radio" name="status_<%= hs.id %>" value="Trễ"></td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="submit" class="btn btn-primary px-4">
+    Lưu điểm danh
+  </button>
+                        </div>
+
+        </div>
+        </form>
+        </main>
+    </div>
+    </div>
+
+    <!-- Thư viện SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const form = document.getElementById('formDiemDanh');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // không gửi form lên server
+
+            // Kiểm tra đã chọn trạng thái cho từng học sinh
+            const allSelected = Array.from(form.querySelectorAll('tbody tr')).every(row => {
+                return row.querySelector('input[type="radio"]:checked');
+            });
+
+            if (!allSelected) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Chưa chọn đầy đủ!',
+                    text: 'Vui lòng chọn trạng thái điểm danh cho tất cả học sinh.',
+                });
+                return;
+            }
+
+            // Hiển thị popup thành công
+            Swal.fire({
+                icon: 'success',
+                title: 'Điểm danh thành công!',
+                text: 'Tất cả học sinh đã được điểm danh.',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#6c757d',
+            }).then(() => {
+        form.submit(); // GỬI FORM LÊN SERVER
+    });;
+        });
+    </script>
+
+    <!-- CSS nhẹ, tông xám chuyên nghiệp -->
+    <style>
+        main {
+            min-height: 100vh;
+        }
+        
+        table {
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        thead th {
+            background-color: #dee2e6 !important;
+            color: #212529;
+            font-weight: 600;
+        }
+        
+        .sub-header th {
+            background-color: #f1f3f5 !important;
+            font-weight: 500;
+        }
+        
+        td,
+        th {
+            vertical-align: middle !important;
+            font-size: 15px;
+        }
+        
+        input[type="radio"] {
+            accent-color: #6c757d;
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: #6c757d;
+            border: none;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-secondary {
+            font-weight: 500;
+        }
+    </style>

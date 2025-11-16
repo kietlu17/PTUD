@@ -1,4 +1,4 @@
-const { GiaoVien, BangPhanCongGiaoVien, Lop, HocSinh, DiemDanh } = require('../models');
+const { GiaoVien, BangPhanCongGiaoVien, Lop, HocSinh, DiemDanh } = require('../../models');
 const { Sequelize } = require('sequelize');
 const qs = require('qs');
 
@@ -41,7 +41,7 @@ exports.showClasses = async (req, res) => {
 
     console.log(dsLop); //  in thử ra console để xem cấu trúc dữ liệu
 
-    res.status(200).render('diemdanh', { dsLop });
+    res.status(200).render('./giaovien/diemdanh/diemdanh', { dsLop });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách lớp của giáo viên:', error);
     res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
@@ -57,7 +57,7 @@ exports.getHocSinhByLop = async (req, res) => {
     where: { id_GiaoVien: id, id_Lop: lopId },
   })
     // Kiểm tra lớp có tồn tại không
-    const lop = await Lop.findByPk(id, {
+    const lop = await Lop.findByPk(lopId, {
       include: [
         { model: GiaoVien, as: 'gvcn', attributes: ['id', 'HoVaTen'] },
       ],
@@ -69,17 +69,23 @@ exports.getHocSinhByLop = async (req, res) => {
 
     // Lấy danh sách học sinh thuộc lớp đó
     const dsHocSinh = await HocSinh.findAll({
-      where: { id_Lop: id },
+      where: { id_Lop: lopId },
       attributes: ['id', 'HoVaTen', 'NgaySinh', 'GioiTinh'],
       order: [['HoVaTen', 'ASC']],
     });
 
-    res.status(200).render('danhsachlop', {
-      giaoVienId: id,
+    res.status(200).render('./giaovien/diemdanh/danhsachlop', {
+      id,
       monhocId: phanCong.id_MonHoc,
       lop,
       dsHocSinh,
     });
+    // console.log({
+    //   giaovien: id,
+    //   monhocId: phanCong.id_MonHoc,
+    //   lop,
+    //   dsHocSinh,
+    // })
   } catch (error) {
     console.error('Lỗi khi lấy danh sách học sinh:', error);
     res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
@@ -90,20 +96,21 @@ exports.submitAttendance = async (req, res) => {
   const { lopId, id } = req.params;
 
   // In ra body gốc để kiểm tra
-  console.log('📥 Attendance raw body:', req.body);
+  console.log('Attendance raw body:', req.body);
 
   // Parse đúng ID học sinh
   const attendanceEntries = Object.entries(req.body)
-    .filter(([key]) => key.startsWith('attendance['))
+    .filter(([key]) => key.startsWith('status_'))       // chỉ lấy các field status
     .map(([key, value]) => {
-      const match = key.match(/\[(\d+)\]/);
-      const studentId = match ? parseInt(match[1]) : null;
-      return { studentId, status: value };
-    })
-    .filter(item => item.studentId !== null);
+      const studentId = parseInt(key.replace('status_', '')); // tách id
+      return {
+        studentId,
+        status: value
+      };
+    });
 
-  console.log('📘 Attendance parsed:', attendanceEntries);
-  console.log('📚 Lớp:', lopId, 'Giáo viên:', id);
+  console.log('Attendance parsed:', attendanceEntries);
+  console.log('Lớp:', lopId, 'Giáo viên:', id);
 
   try {
     const phanCong = await BangPhanCongGiaoVien.findOne({
@@ -119,7 +126,7 @@ exports.submitAttendance = async (req, res) => {
 
     // Lưu từng học sinh
     for (const { studentId, status } of attendanceEntries) {
-      console.log(`🧾 Lưu: HS=${studentId}, TT=${status}`);
+      console.log(`Lưu: HS=${studentId}, TT=${status}`);
       await DiemDanh.create({
         student_id: studentId,
         lop_id: lopId,
@@ -131,10 +138,10 @@ exports.submitAttendance = async (req, res) => {
       });
     }
 
-    console.log('✅ Điểm danh thành công!');
-    res.send('✅ Điểm danh thành công!');
+    console.log('Điểm danh thành công!');
+    res.send('Điểm danh thành công!');
   } catch (error) {
-    console.error('❌ Lỗi khi lưu điểm danh:', error);
+    console.error('Lỗi khi lưu điểm danh:', error);
     res.status(500).send('Lỗi máy chủ khi lưu điểm danh');
   }
 };
