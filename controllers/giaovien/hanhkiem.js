@@ -121,7 +121,7 @@ exports.submitHanhKiem = async (req, res) => {
     }
 
     // Render lại view với thông báo thành công
-    res.send('Luu thanh cong')
+    res.send('Luu thanh cong')// sửa phần này để server xử lý thành công r mới hiện thông báo thành công bên view
 
   } catch (error) {
     console.error('Lỗi khi lưu hạnh kiểm:', error);

@@ -1,0 +1,147 @@
+-- Adminer 5.4.1 PostgreSQL 15.14 dump
+
+INSERT INTO "BaiNop" ("id", "id_BaiTap", "id_HocSinh", "NgayNop", "file_path", "DiemSo", "NhanXet", "NgayCham", "TrangThai") VALUES
+(1,	1,	1,	'2025-09-05 00:00:00',	'baitap1_hocsinh1.pdf',	9.00,	'Bài làm tốt',	'2025-09-06 00:00:00',	'Đã chấm');
+
+INSERT INTO "BaiTap" ("id", "TieuDe", "NoiDung", "id_MonHoc", "id_Lop", "id_GiaoVien", "NgayGiao", "HanNop", "File", "TrangThai") VALUES
+(1,	'Bài tập Toán tuần 1',	'Giải các bài tập trong sách giáo khoa',	1,	1,	1,	'2025-09-01 00:00:00',	'2025-09-07 00:00:00',	'baitap1.pdf',	'Đang giao');
+
+INSERT INTO "BanGiamHieu" ("id", "id_truong", "MaBGV", "HoVaTen", "NgaySinh", "GioiTinh", "SDT", "DiaChi", "email") VALUES
+(1,	1,	'bangiamhieu1',	'Nguyễn Văn E',	'1970-01-01',	'Nam',	'0123456789',	'TP. HCM',	'bangiamhieu1@example.com'),
+(2,	2,	'bangiamhieu2',	'Trần Thị F',	'1975-02-02',	'Nữ',	'0987654321',	'TP. HCM',	'bangiamhieu2@example.com');
+
+INSERT INTO "BangPhanCongGiaoVien" ("id", "id_GiaoVien", "id_MonHoc", "id_Lop", "KyHoc", "NamHoc", "NgayPhanCong") VALUES
+(1,	1,	1,	1,	'1',	'2025-2026',	'2025-08-15 00:00:00+00'),
+(2,	2,	2,	2,	'1',	'2025-2026',	'2025-08-15 00:00:00+00');
+
+INSERT INTO "BangPhanCongGiaoVienChuNhiem" ("id", "id_GiaoVien", "id_Lop", "NamHoc", "NgayPhanCong") VALUES
+(1,	1,	1,	'2025-2026',	'2025-08-15 00:00:00'),
+(2,	2,	2,	'2025-2026',	'2025-08-15 00:00:00');
+
+
+INSERT INTO "DiemDanh" ("id", "student_id", "lop_id", "monhoc_id", "giaovien_id", "NgayHoc", "TinhTrang", "created_at") VALUES
+(1,	1,	1,	1,	1,	'2025-10-29',	'Có mặt',	'2025-10-29 00:00:00+00'),
+(4,	1,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 02:23:09.25+00'),
+(5,	2,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 02:23:09.262+00'),
+(6,	1,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 05:45:00.402+00'),
+(7,	2,	1,	1,	1,	'2025-10-30',	'Có mặt',	'2025-10-30 05:45:00.43+00'),
+(8,	1,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 05:48:11.417+00'),
+(9,	2,	1,	1,	1,	'2025-10-30',	'Có mặt',	'2025-10-30 05:48:11.481+00'),
+(10,	1,	1,	1,	1,	'2025-11-16',	'Có mặt',	'2025-11-16 09:28:44.187+00'),
+(11,	2,	1,	1,	1,	'2025-11-16',	'Có mặt',	'2025-11-16 09:28:44.203+00'),
+(12,	2,	1,	1,	1,	'2025-11-16',	'Trễ',	'2025-11-16 12:39:11.456+00'),
+(13,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:07:11.549+00'),
+(14,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:07:50.607+00'),
+(15,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:29:33.449+00'),
+(16,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:29:47.594+00');
+
+INSERT INTO "DiemSo" ("id", "id_HocSinh", "id_MonHoc", "HocKy", "NamHoc", "DiemThuongKy", "DiemGiuaKy", "DiemCuoiKy", "DiemTrungBinh") VALUES
+(1,	1,	1,	'1',	'2025-2026',	8.50,	7.00,	9.00,	8.20),
+(2,	2,	2,	'1',	'2025-2026',	7.50,	8.00,	8.50,	8.00);
+
+INSERT INTO "DiemThi" ("id", "thisinhid", "toan", "nguvan", "tienganh", "tong") VALUES
+(11,	11,	5,	6,	7,	18),
+(12,	12,	1,	1,	1,	3),
+(13,	15,	2,	2,	2,	6);
+
+INSERT INTO "GiaoVien" ("id", "HoVaTen", "NgaySinh", "GioiTinh", "ViTri", "SDT", "DiaChi", "email", "NgayThamGia", "id_truong", "MaGV") VALUES
+(2,	'Trần Thị D',	'1985-07-25',	'Nữ',	'Giáo viên Văn',	'0987654321',	'TP. HCM',	'tranthid@example.com',	'2010-09-01',	1,	'giaovien2'),
+(1,	'Nguyễn Văn C',	'1980-03-10',	'Nam',	'Giáo viên Toán',	'0123456789',	'TP. HCM',	'nguyenvanc@example.com',	'2005-09-01',	1,	'THP.GV.2025.0001');
+
+INSERT INTO "HanhKiem" ("id", "id_HocSinh", "HocKy", "NamHoc", "LoaiHanhKiem", "NhanXet", "NguoiDanhGia", "NgayDanhGia") VALUES
+(1,	1,	'1',	'2025-2026',	'Yếu',	'1',	1,	'2025-11-16 12:19:09.492+00'),
+(5,	2,	'1',	'2025-2026',	'Khá',	'ok',	1,	'2025-11-17 13:12:39.557+00');
+
+INSERT INTO "HocBa" ("id", "id_HocSinh", "id_Lop", "id_Truong", "NamHoc", "HocKy", "DiemTrungBinh", "HanhKiem", "NhanXet") VALUES
+(1,	1,	1,	1,	'2025-2026',	'1',	8.20,	'Tốt',	'Học sinh chăm chỉ, tiến bộ');
+
+INSERT INTO "HocSinh" ("id", "MaHS", "HoVaTen", "NgaySinh", "GioiTinh", "id_Lop", "id_school") VALUES
+(1,	'hocsinh1',	'Nguyễn Văn A',	'2010-05-15',	'Nam',	2,	2),
+(2,	'THP.HS.2025.0001',	'Trần Thị B',	'2011-08-20',	'Nữ',	1,	1);
+
+INSERT INTO "LichSuDiem" ("id", "id_DiemSo", "LoaiDiem", "DiemCu", "DiemMoi", "NguoiSua", "ThoiGian", "LyDo") VALUES
+(1,	1,	'DiemThuongKy',	8.00,	8.50,	1,	'2025-09-10 00:00:00',	'Cập nhật điểm do nhập sai');
+
+INSERT INTO "Lop" ("id", "TenLop", "id_ToHopMon", "id_GiaoVienChuNhiem", "id_truong") VALUES
+(2,	'10A2',	2,	2,	1),
+(1,	'10A1',	1,	1,	1);
+
+INSERT INTO "MonHoc" ("id", "TenMon", "SoTiet") VALUES
+(1,	'Toán',	45),
+(2,	'Văn',	45),
+(3,	'Anh',	45);
+
+INSERT INTO "NghiHoc" ("application_id", "student_id", "NgayNghi", "LyDo", "TinhTrang", "NgayNop", "pproved_by") VALUES
+(1,	1,	'2025-09-01',	'Ốm',	'Đã duyệt',	'2025-09-02 00:00:00',	1),
+(2,	2,	'2025-09-03',	'Gia đình có việc',	'Đã duyệt',	'2025-09-04 00:00:00',	2);
+
+INSERT INTO "NhanVienSo" ("HoTen", "GioiTinh", "NgaySinh", "ChucVu", "Email", "SoDT", "TrangThai", "TaiKhoanID", "ID", "MaSGD") VALUES
+('Nguyễn Văn An',	'nam',	'1985-01-01',	'Chuyên viên Sở',	'sgd@gmail.com',	'012345',	'Đang hoạt động',	5,	1,	'sogiaoduc1');
+
+INSERT INTO "NhanXetHocTap" ("id", "id_HocSinh", "id_GiaoVien", "HocKy", "NamHoc", "NoiDung", "NgayTao") VALUES
+(1,	1,	1,	'1',	'2025-2026',	'Học sinh chăm chỉ, tiến bộ',	'2025-09-15 00:00:00');
+
+INSERT INTO "PhongThi" ("id", "name", "truongid") VALUES
+(1,	'Phòng 101',	1),
+(2,	'Phòng 102',	1),
+(3,	'Phòng 201',	2),
+(4,	'Phòng 202',	2);
+
+INSERT INTO "PhuHuynh" ("id", "MaPH", "HoVaTen", "id_HocSinh", "SDT", "email", "NgaySinh", "GioiTinh") VALUES
+(1,	'phuhuynh1',	'Nguyễn Văn C',	1,	'0123456789',	'phuhuynh1@example.com',	'1980-03-10',	'Nam'),
+(2,	'phuhuynh2',	'Trần Thị D',	2,	'0987654321',	'phuhuynh2@example.com',	'1985-07-25',	'Nữ');
+
+INSERT INTO "QuanTriTruong" ("id", "MaQTV", "HoVaTen", "NgaySinh", "GioiTinh", "id_school") VALUES
+(1,	'admin1',	'Quản trị 1',	'1985-01-01',	'nam',	1);
+
+INSERT INTO "TaiKhoan" ("id", "username", "password", "id_role") VALUES
+(1,	'hocsinh1',	'1',	1),
+(3,	'giaovien1',	'1',	3),
+(4,	'bangiamhieu1',	'1',	4),
+(7,	'THP.HS.2025.0001',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	1),
+(2,	'phuhuynh1',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	2),
+(6,	'admin1',	'admin',	6),
+(5,	'sogiaoduc1',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	5),
+(8,	'THP.GV.2025.0001',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	3);
+
+INSERT INTO "ThanhToanHocPhi" ("id", "id_HocSinh", "HocKy", "NamHoc", "CongNo", "TienDaNop", "NgayThanhToan", "PhuongThuc", "TrangThai") VALUES
+(1,	1,	'1',	'2025-2026',	5000000.00,	2500000.00,	'2025-09-01 00:00:00+00',	'Chuyển khoản',	'Đã thanh toán');
+
+INSERT INTO "ThiSinh" ("id", "mahs", "hoten", "ngaysinh", "phongthiid") VALUES
+(11,	'PM10101',	'Nguyễn Văn A',	'2008-05-10 00:00:00+00',	1),
+(12,	'PM10102',	'Trần Thị B',	'2008-07-22 00:00:00+00',	1),
+(13,	'PM10103',	'Lê Văn C',	'2008-08-13 00:00:00+00',	1),
+(14,	'PM10104',	'Phạm Thị D',	'2008-11-05 00:00:00+00',	1),
+(15,	'PM10105',	'Hoàng Văn E',	'2008-02-17 00:00:00+00',	1),
+(16,	'NT20101',	'Ngô Văn F',	'2008-03-02 00:00:00+00',	3),
+(17,	'NT20102',	'Phan Thị G',	'2008-06-18 00:00:00+00',	3),
+(18,	'NT20103',	'Đinh Văn H',	'2008-09-09 00:00:00+00',	3),
+(19,	'NT20104',	'Bùi Thị I',	'2008-12-11 00:00:00+00',	3),
+(20,	'NT20105',	'Vũ Văn K',	'2008-01-25 00:00:00+00',	3);
+
+INSERT INTO "ThoiKhoaBieu" ("id", "id_Lop", "id_MonHoc", "id_GiaoVien", "Thu", "Tiet", "HocKy", "NamHoc") VALUES
+(1,	1,	1,	1,	'Hai',	1,	'1',	'2025-2026');
+
+INSERT INTO "ThongBao" ("id", "TieuDe", "NoiDung", "NguoiDang", "NgayDang", "NgayCapNhat") VALUES
+(1,	'Thông báo nghỉ học',	'Học sinh nghỉ học ngày 01/09/2025',	1,	'2025-08-30 00:00:00',	'2025-08-30 00:00:00');
+
+INSERT INTO "ToHopMon" ("id", "TenToHop", "mota") VALUES
+(1,	'Khoa học tự nhiên',	'Toán, Lý, Hóa'),
+(2,	'Khoa học xã hội',	'Văn, Sử, Địa');
+
+INSERT INTO "Truong" ("id", "name") VALUES
+(1,	'Trường THPT Phú Mỹ'),
+(2,	'Trường THPT Nguyễn Trãi');
+
+INSERT INTO "VaiTro" ("id", "TenVaiTro", "mota") VALUES
+(1,	'học sinh',	'Vai trò học sinh'),
+(2,	'phụ huynh',	'Vai trò phụ huynh'),
+(3,	'giáo viên',	'Vai trò giáo viên'),
+(4,	'ban giám hiệu',	'Vai trò ban giám hiệu'),
+(5,	'sở giáo dục',	'Vai trò sở giáo dục'),
+(6,	'admin',	'Quản trị viên');
+
+INSERT INTO "YeuCauSuaDiem" ("id", "id_DiemSo", "id_GiaoVien", "NgayGui", "LoaiDiem", "DiemCu", "DiemMoi", "LyDo", "TrangThai", "NguoiDuyet", "ThoiGianDuyet") VALUES
+(1,	1,	1,	'2025-09-05 00:00:00',	'DiemThuongKy',	8.00,	8.50,	'Cập nhật điểm do nhập sai',	'Đã duyệt',	2,	'2025-09-06 00:00:00');
+
+-- 2025-11-18 13:25:22 UTC

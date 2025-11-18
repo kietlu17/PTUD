@@ -27,27 +27,18 @@ function showLogin(req, res) {
 
 async function login(req, res) {
   const { username, password } = req.body;
-  console.log({ username, password })
-
-
   try {
     const user = await TaiKhoan.findOne({ where: { username }, include: { model: VaiTro, as: 'role' } });
     if (!user) {
-      return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+        // Render lại trang 'login' và truyền biến 'errorMessage'
+        return res.render('dangnhap', { errorMessage: 'Tên đăng nhập không đúng', oldUsername: username });
     }
 
-    // Bỏ qua bcrypt và so sánh trực tiếp mật khẩu
-  // const isMatch = await bcrypt.compare(password, user.password);
-  // if (!isMatch) {
-  //   return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
-
-  // }
-
-    // req.session.user = {
-    //   id: user.id,
-    //   username: user.username,
-    //   role: user.role.TenVaiTro,
-    // };
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        // Render lại trang 'login' và truyền biến 'errorMessage'
+        return res.render('dangnhap', { errorMessage: 'Mật khẩu không đúng', oldUsername: username });
+    }
 
 
     req.session.save(async (err) => {

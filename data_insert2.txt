@@ -1,0 +1,2867 @@
+-- Adminer 5.4.1 PostgreSQL 15.14 dump
+
+DROP TABLE IF EXISTS "BaiNop";
+CREATE TABLE "public"."BaiNop" (
+    "id" integer NOT NULL,
+    "id_BaiTap" integer,
+    "id_HocSinh" integer,
+    "NgayNop" timestamp,
+    "file_path" character varying(255),
+    "DiemSo" numeric(4,2),
+    "NhanXet" text,
+    "NgayCham" timestamp,
+    "TrangThai" character varying(20),
+    CONSTRAINT "BaiNop_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "BaiNop" ("id", "id_BaiTap", "id_HocSinh", "NgayNop", "file_path", "DiemSo", "NhanXet", "NgayCham", "TrangThai") VALUES
+(1,	1,	1,	'2025-09-05 00:00:00',	'baitap1_hocsinh1.pdf',	9.00,	'Bài làm tốt',	'2025-09-06 00:00:00',	'Đã chấm');
+
+DROP TABLE IF EXISTS "BaiTap";
+CREATE TABLE "public"."BaiTap" (
+    "id" integer NOT NULL,
+    "TieuDe" character varying(255),
+    "NoiDung" text,
+    "id_MonHoc" integer,
+    "id_Lop" integer,
+    "id_GiaoVien" integer,
+    "NgayGiao" timestamp,
+    "HanNop" timestamp,
+    "File" character varying(255),
+    "TrangThai" character varying(20),
+    CONSTRAINT "BaiTap_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "BaiTap" ("id", "TieuDe", "NoiDung", "id_MonHoc", "id_Lop", "id_GiaoVien", "NgayGiao", "HanNop", "File", "TrangThai") VALUES
+(1,	'Bài tập Toán tuần 1',	'Giải các bài tập trong sách giáo khoa',	1,	1,	1,	'2025-09-01 00:00:00',	'2025-09-07 00:00:00',	'baitap1.pdf',	'Đang giao');
+
+DROP TABLE IF EXISTS "BanGiamHieu";
+CREATE TABLE "public"."BanGiamHieu" (
+    "id" integer NOT NULL,
+    "id_truong" integer,
+    "MaBGV" character varying(255),
+    "HoVaTen" character varying(255),
+    "NgaySinh" date,
+    "GioiTinh" character varying(10),
+    "SDT" character varying(15),
+    "DiaChi" character varying(255),
+    "email" character varying(255),
+    CONSTRAINT "BanGiamHieu_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "BanGiamHieu" ("id", "id_truong", "MaBGV", "HoVaTen", "NgaySinh", "GioiTinh", "SDT", "DiaChi", "email") VALUES
+(1,	1,	'bangiamhieu1',	'Nguyễn Văn E',	'1970-01-01',	'Nam',	'0123456789',	'TP. HCM',	'bangiamhieu1@example.com'),
+(2,	2,	'bangiamhieu2',	'Trần Thị F',	'1975-02-02',	'Nữ',	'0987654321',	'TP. HCM',	'bangiamhieu2@example.com');
+
+DROP TABLE IF EXISTS "BangPhanCongGiaoVien";
+CREATE TABLE "public"."BangPhanCongGiaoVien" (
+    "id" integer NOT NULL,
+    "id_GiaoVien" integer NOT NULL,
+    "id_MonHoc" integer NOT NULL,
+    "id_Lop" integer NOT NULL,
+    "KyHoc" character varying(10),
+    "NamHoc" character varying(20),
+    "NgayPhanCong" timestamptz,
+    CONSTRAINT "BangPhanCongGiaoVien_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "BangPhanCongGiaoVien" ("id", "id_GiaoVien", "id_MonHoc", "id_Lop", "KyHoc", "NamHoc", "NgayPhanCong") VALUES
+(1,	1,	1,	1,	'1',	'2025-2026',	'2025-08-15 00:00:00+00'),
+(2,	2,	2,	2,	'1',	'2025-2026',	'2025-08-15 00:00:00+00');
+
+DROP TABLE IF EXISTS "BangPhanCongGiaoVienChuNhiem";
+CREATE TABLE "public"."BangPhanCongGiaoVienChuNhiem" (
+    "id" integer NOT NULL,
+    "id_GiaoVien" integer,
+    "id_Lop" integer,
+    "NamHoc" character varying(20),
+    "NgayPhanCong" timestamp,
+    CONSTRAINT "BangPhanCongGiaoVienChuNhiem_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "BangPhanCongGiaoVienChuNhiem" ("id", "id_GiaoVien", "id_Lop", "NamHoc", "NgayPhanCong") VALUES
+(1,	1,	1,	'2025-2026',	'2025-08-15 00:00:00'),
+(2,	2,	2,	'2025-2026',	'2025-08-15 00:00:00');
+
+DROP TABLE IF EXISTS "ChiTiet_ToHopMon";
+CREATE TABLE "public"."ChiTiet_ToHopMon" (
+    "subject_group_id" integer NOT NULL,
+    "subject_id" integer NOT NULL,
+    "Note" character varying(255),
+    CONSTRAINT "ChiTiet_ToHopMon_pkey" PRIMARY KEY ("subject_group_id", "subject_id")
+)
+WITH (oids = false);
+
+
+DROP TABLE IF EXISTS "DiemDanh";
+DROP SEQUENCE IF EXISTS "DiemDanh_id_seq";
+CREATE SEQUENCE "DiemDanh_id_seq" INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."DiemDanh" (
+    "id" integer DEFAULT nextval('"DiemDanh_id_seq"') NOT NULL,
+    "student_id" integer NOT NULL,
+    "lop_id" integer NOT NULL,
+    "monhoc_id" integer,
+    "giaovien_id" integer NOT NULL,
+    "NgayHoc" date NOT NULL,
+    "TinhTrang" character varying(255) NOT NULL,
+    "created_at" timestamptz,
+    CONSTRAINT "DiemDanh_pkey1" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "DiemDanh" ("id", "student_id", "lop_id", "monhoc_id", "giaovien_id", "NgayHoc", "TinhTrang", "created_at") VALUES
+(1,	1,	1,	1,	1,	'2025-10-29',	'Có mặt',	'2025-10-29 00:00:00+00'),
+(4,	1,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 02:23:09.25+00'),
+(5,	2,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 02:23:09.262+00'),
+(6,	1,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 05:45:00.402+00'),
+(7,	2,	1,	1,	1,	'2025-10-30',	'Có mặt',	'2025-10-30 05:45:00.43+00'),
+(8,	1,	1,	1,	1,	'2025-10-30',	'Vắng',	'2025-10-30 05:48:11.417+00'),
+(9,	2,	1,	1,	1,	'2025-10-30',	'Có mặt',	'2025-10-30 05:48:11.481+00'),
+(10,	1,	1,	1,	1,	'2025-11-16',	'Có mặt',	'2025-11-16 09:28:44.187+00'),
+(11,	2,	1,	1,	1,	'2025-11-16',	'Có mặt',	'2025-11-16 09:28:44.203+00'),
+(12,	2,	1,	1,	1,	'2025-11-16',	'Trễ',	'2025-11-16 12:39:11.456+00'),
+(13,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:07:11.549+00'),
+(14,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:07:50.607+00'),
+(15,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:29:33.449+00'),
+(16,	2,	1,	1,	1,	'2025-11-17',	'Có mặt',	'2025-11-17 13:29:47.594+00');
+
+DROP TABLE IF EXISTS "DiemSo";
+CREATE TABLE "public"."DiemSo" (
+    "id" integer NOT NULL,
+    "id_HocSinh" integer,
+    "id_MonHoc" integer,
+    "HocKy" character varying(10),
+    "NamHoc" character varying(20),
+    "DiemThuongKy" numeric(4,2),
+    "DiemGiuaKy" numeric(4,2),
+    "DiemCuoiKy" numeric(4,2),
+    "DiemTrungBinh" numeric(4,2),
+    CONSTRAINT "DiemSo_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "DiemSo" ("id", "id_HocSinh", "id_MonHoc", "HocKy", "NamHoc", "DiemThuongKy", "DiemGiuaKy", "DiemCuoiKy", "DiemTrungBinh") VALUES
+(1,	1,	1,	'1',	'2025-2026',	8.50,	7.00,	9.00,	8.20),
+(2,	2,	2,	'1',	'2025-2026',	7.50,	8.00,	8.50,	8.00);
+
+DROP TABLE IF EXISTS "DiemThi";
+DROP SEQUENCE IF EXISTS "DiemThi_id_seq";
+CREATE SEQUENCE "DiemThi_id_seq" INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."DiemThi" (
+    "id" integer DEFAULT nextval('"DiemThi_id_seq"') NOT NULL,
+    "thisinhid" integer NOT NULL,
+    "toan" double precision,
+    "nguvan" double precision,
+    "tienganh" double precision,
+    "tong" double precision,
+    CONSTRAINT "DiemThi_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "DiemThi" ("id", "thisinhid", "toan", "nguvan", "tienganh", "tong") VALUES
+(11,	11,	5,	6,	7,	18),
+(12,	12,	1,	1,	1,	3),
+(13,	15,	2,	2,	2,	6);
+
+DROP TABLE IF EXISTS "GiaoVien";
+CREATE TABLE "public"."GiaoVien" (
+    "id" integer NOT NULL,
+    "HoVaTen" character varying(255) NOT NULL,
+    "NgaySinh" date NOT NULL,
+    "GioiTinh" character varying(255) NOT NULL,
+    "ViTri" character varying(255) NOT NULL,
+    "SDT" character varying(255) NOT NULL,
+    "DiaChi" character varying(255) NOT NULL,
+    "email" character varying(255) NOT NULL,
+    "NgayThamGia" date NOT NULL,
+    "id_truong" integer,
+    "MaGV" character varying(255) NOT NULL,
+    CONSTRAINT "GiaoVien_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key240" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key238" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key94" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key96" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key98" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key100" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key102" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key104" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key117" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key119" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key121" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key120" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key118" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key6" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key5" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key3" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key1" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX magv_unique ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key24" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key26" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key28" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key30" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key32" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key34" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key36" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key38" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key66" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key40" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key42" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key236" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key234" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key231" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key229" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key227" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key225" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key222" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key220" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key218" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key216" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key214" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key212" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key210" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key208" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key206" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key204" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key202" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key200" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key198" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key196" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key194" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key192" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key190" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key188" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key186" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key183" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key181" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key178" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key175" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key173" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key171" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key169" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key167" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key165" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key162" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key160" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key158" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key156" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key154" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key152" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key86" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key84" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key82" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key80" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key53" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key64" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key108" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key51" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key49" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key47" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key123" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key125" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key127" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key129" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key131" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key133" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key135" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key137" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key138" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key140" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key142" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key144" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key145" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key147" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key149" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key151" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key150" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key148" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key146" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key143" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key141" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key139" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key136" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key134" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key132" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key130" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key128" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key126" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key124" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key122" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key45" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key43" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key41" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key39" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key37" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key35" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key33" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key31" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key29" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key27" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key25" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key23" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key2" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key4" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key7" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key8" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key10" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key11" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key13" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key14" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key16" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key18" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key21" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key22" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key20" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key19" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key17" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key15" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key12" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key9" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key65" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key63" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key61" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key59" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key57" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key55" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key81" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key83" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key85" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key87" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key89" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key91" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key92" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key68" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key44" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key46" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key48" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key50" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key52" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key70" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key54" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key62" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key56" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key58" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key60" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key73" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key75" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key77" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key79" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key78" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key76" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key74" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key72" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key71" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key69" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key67" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key116" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key114" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key112" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key110" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key109" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key106" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key105" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key115" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key111" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key113" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key107" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key103" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key101" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key99" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key97" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key95" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key232" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key93" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key90" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key88" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key153" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key155" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key157" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key159" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key161" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key163" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key164" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key166" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key168" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key170" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key172" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key174" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key176" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key177" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key179" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key180" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key182" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key184" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key185" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key187" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key189" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key191" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key193" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key195" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key197" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key199" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key201" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key203" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key205" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key207" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key209" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key211" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key213" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key215" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key217" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key219" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key221" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key223" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key224" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key226" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key228" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key230" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key233" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key235" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key237" ON public."GiaoVien" USING btree ("MaGV");
+
+CREATE UNIQUE INDEX "GiaoVien_MaGV_key239" ON public."GiaoVien" USING btree ("MaGV");
+
+INSERT INTO "GiaoVien" ("id", "HoVaTen", "NgaySinh", "GioiTinh", "ViTri", "SDT", "DiaChi", "email", "NgayThamGia", "id_truong", "MaGV") VALUES
+(2,	'Trần Thị D',	'1985-07-25',	'Nữ',	'Giáo viên Văn',	'0987654321',	'TP. HCM',	'tranthid@example.com',	'2010-09-01',	1,	'giaovien2'),
+(1,	'Nguyễn Văn C',	'1980-03-10',	'Nam',	'Giáo viên Toán',	'0123456789',	'TP. HCM',	'nguyenvanc@example.com',	'2005-09-01',	1,	'THP.GV.2025.0001');
+
+DROP TABLE IF EXISTS "HanhKiem";
+CREATE TABLE "public"."HanhKiem" (
+    "id" integer DEFAULT GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "id_HocSinh" integer,
+    "HocKy" character varying(10),
+    "NamHoc" character varying(20),
+    "LoaiHanhKiem" character varying(20),
+    "NhanXet" text,
+    "NguoiDanhGia" integer,
+    "NgayDanhGia" timestamptz,
+    CONSTRAINT "HanhKiem_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+CREATE UNIQUE INDEX hanhkiem_unique ON public."HanhKiem" USING btree ("id_HocSinh", "HocKy", "NamHoc");
+
+INSERT INTO "HanhKiem" ("id", "id_HocSinh", "HocKy", "NamHoc", "LoaiHanhKiem", "NhanXet", "NguoiDanhGia", "NgayDanhGia") VALUES
+(1,	1,	'1',	'2025-2026',	'Yếu',	'1',	1,	'2025-11-16 12:19:09.492+00'),
+(5,	2,	'1',	'2025-2026',	'Khá',	'ok',	1,	'2025-11-17 13:12:39.557+00');
+
+DROP TABLE IF EXISTS "HocBa";
+CREATE TABLE "public"."HocBa" (
+    "id" integer DEFAULT GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+    "id_HocSinh" integer,
+    "id_Lop" integer,
+    "id_Truong" integer,
+    "NamHoc" character varying(20),
+    "HocKy" character varying(10),
+    "DiemTrungBinh" numeric(4,2),
+    "HanhKiem" character varying(20),
+    "NhanXet" text,
+    CONSTRAINT "HocBa_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "HocBa" ("id", "id_HocSinh", "id_Lop", "id_Truong", "NamHoc", "HocKy", "DiemTrungBinh", "HanhKiem", "NhanXet") VALUES
+(1,	1,	1,	1,	'2025-2026',	'1',	8.20,	'Tốt',	'Học sinh chăm chỉ, tiến bộ');
+
+DROP TABLE IF EXISTS "HocSinh";
+CREATE TABLE "public"."HocSinh" (
+    "id" integer NOT NULL,
+    "MaHS" character varying(255) NOT NULL,
+    "HoVaTen" character varying(255) NOT NULL,
+    "NgaySinh" date NOT NULL,
+    "GioiTinh" character varying(255) NOT NULL,
+    "id_Lop" integer NOT NULL,
+    "id_school" integer NOT NULL,
+    CONSTRAINT "HocSinh_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key253" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key54" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key52" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key50" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key48" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key46" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key5" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key108" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key106" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key103" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key101" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key99" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key97" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key95" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key170" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key172" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key118" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key116" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key114" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key112" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key110" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key169" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key167" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key165" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key163" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key161" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key159" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key156" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key142" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key144" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key146" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key148" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key150" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key151" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key153" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key155" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key154" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key93" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key91" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key89" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key87" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key6" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key8" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key9" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key13" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key15" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key17" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key20" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key21" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key140" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key157" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key158" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key160" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key162" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key164" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key166" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key168" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key152" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key149" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key127" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key129" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key251" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key249" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key247" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key244" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key242" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key240" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key238" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key235" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key233" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key231" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key84" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key82" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key80" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key78" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key76" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key74" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key72" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key221" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key219" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key217" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key215" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key213" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key211" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key209" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key207" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key205" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key203" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key201" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key199" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key196" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key194" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key191" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key188" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key186" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key184" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key182" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key180" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key178" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key175" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key173" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key171" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key229" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key227" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key225" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key223" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key130" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key132" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key134" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key136" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key174" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key176" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key147" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key145" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key143" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key141" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key139" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key137" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key135" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key133" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key131" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key128" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key126" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key124" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key122" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key120" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key138" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key64" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key62" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key60" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key49" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key51" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key53" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key55" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key57" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key59" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key61" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key63" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key65" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key67" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key69" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key71" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key73" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key75" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key77" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key79" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key81" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key83" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key85" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key86" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key88" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key90" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key92" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key94" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key96" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key98" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key100" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key102" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key104" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key105" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key107" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key109" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key111" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key113" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key58" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key56" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key117" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key119" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key121" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key123" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key125" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key177" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key179" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key181" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key183" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key185" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key187" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key189" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key190" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key192" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key193" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key195" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key197" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key198" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key200" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key202" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key70" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key68" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key66" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key23" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key24" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key26" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key27" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key29" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key31" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key34" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key37" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key39" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key41" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key43" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key45" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key44" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key42" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key40" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key38" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key36" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key35" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key33" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key32" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key30" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key28" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key25" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key22" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key19" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key18" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key16" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key14" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key12" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key11" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key10" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key7" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key1" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key2" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key3" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key4" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key47" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key115" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key204" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key206" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key208" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key210" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key212" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key214" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key216" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key218" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key220" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key222" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key224" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key226" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key228" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key230" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key232" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key234" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key236" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key237" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key239" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key241" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key243" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key245" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key246" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key248" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key250" ON public."HocSinh" USING btree ("MaHS");
+
+CREATE UNIQUE INDEX "HocSinh_MaHS_key252" ON public."HocSinh" USING btree ("MaHS");
+
+INSERT INTO "HocSinh" ("id", "MaHS", "HoVaTen", "NgaySinh", "GioiTinh", "id_Lop", "id_school") VALUES
+(1,	'hocsinh1',	'Nguyễn Văn A',	'2010-05-15',	'Nam',	2,	2),
+(2,	'THP.HS.2025.0001',	'Trần Thị B',	'2011-08-20',	'Nữ',	1,	1);
+
+DROP TABLE IF EXISTS "LichSuDiem";
+CREATE TABLE "public"."LichSuDiem" (
+    "id" integer NOT NULL,
+    "id_DiemSo" integer,
+    "LoaiDiem" character varying(50),
+    "DiemCu" numeric(4,2),
+    "DiemMoi" numeric(4,2),
+    "NguoiSua" integer,
+    "ThoiGian" timestamp,
+    "LyDo" text,
+    CONSTRAINT "LichSuDiem_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "LichSuDiem" ("id", "id_DiemSo", "LoaiDiem", "DiemCu", "DiemMoi", "NguoiSua", "ThoiGian", "LyDo") VALUES
+(1,	1,	'DiemThuongKy',	8.00,	8.50,	1,	'2025-09-10 00:00:00',	'Cập nhật điểm do nhập sai');
+
+DROP TABLE IF EXISTS "Lop";
+CREATE TABLE "public"."Lop" (
+    "id" integer NOT NULL,
+    "TenLop" character varying(10),
+    "id_ToHopMon" integer,
+    "id_GiaoVienChuNhiem" integer,
+    "id_truong" integer,
+    CONSTRAINT "Lop_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "Lop" ("id", "TenLop", "id_ToHopMon", "id_GiaoVienChuNhiem", "id_truong") VALUES
+(2,	'10A2',	2,	2,	1),
+(1,	'10A1',	1,	1,	1);
+
+DROP TABLE IF EXISTS "MonHoc";
+CREATE TABLE "public"."MonHoc" (
+    "id" integer NOT NULL,
+    "TenMon" character varying(255) NOT NULL,
+    "SoTiet" integer,
+    CONSTRAINT "MonHoc_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "MonHoc" ("id", "TenMon", "SoTiet") VALUES
+(1,	'Toán',	45),
+(2,	'Văn',	45),
+(3,	'Anh',	45);
+
+DROP TABLE IF EXISTS "NghiHoc";
+CREATE TABLE "public"."NghiHoc" (
+    "application_id" integer DEFAULT GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+    "student_id" integer NOT NULL,
+    "NgayNghi" date NOT NULL,
+    "LyDo" character varying(255) NOT NULL,
+    "TinhTrang" character varying(50),
+    "NgayNop" timestamp DEFAULT CURRENT_TIMESTAMP,
+    "pproved_by" integer,
+    CONSTRAINT "DiemDanh_pkey" PRIMARY KEY ("application_id")
+)
+WITH (oids = false);
+
+INSERT INTO "NghiHoc" ("application_id", "student_id", "NgayNghi", "LyDo", "TinhTrang", "NgayNop", "pproved_by") VALUES
+(1,	1,	'2025-09-01',	'Ốm',	'Đã duyệt',	'2025-09-02 00:00:00',	1),
+(2,	2,	'2025-09-03',	'Gia đình có việc',	'Đã duyệt',	'2025-09-04 00:00:00',	2);
+
+DROP TABLE IF EXISTS "NhanVienSo";
+CREATE TABLE "public"."NhanVienSo" (
+    "HoTen" character varying(255),
+    "GioiTinh" character varying(255),
+    "NgaySinh" date,
+    "ChucVu" character varying(255),
+    "Email" character varying(255),
+    "SoDT" character varying(255),
+    "TrangThai" character varying(255),
+    "TaiKhoanID" integer,
+    "ID" integer,
+    "MaSGD" character varying(255) NOT NULL
+)
+WITH (oids = false);
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key252" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key250" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key248" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key246" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key5" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key7" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key8" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key9" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key10" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key12" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key92" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key90" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key88" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key101" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key86" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key82" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key217" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key203" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key80" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key78" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key227" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key229" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key230" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key228" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key77" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key205" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key83" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key22" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key70" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key27" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key76" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key56" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key55" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key13" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key14" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key16" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key169" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key233" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key145" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key19" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key20" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key72" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key226" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key173" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key85" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key87" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key89" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key91" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key93" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key95" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key244" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key97" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key104" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key106" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key210" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key108" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key161" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key110" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key112" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key114" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key243" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key118" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key129" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key131" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key133" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key135" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key137" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key139" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key223" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key141" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key143" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key147" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key150" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key152" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key154" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key157" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key159" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key163" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key165" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key167" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key171" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key175" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key176" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key178" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key180" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key182" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key184" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key186" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key188" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key189" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key191" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key192" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key194" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key196" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key197" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key207" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key199" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key211" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key201" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key216" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key202" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key200" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key198" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key195" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key193" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key214" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key190" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key187" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key204" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key185" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key183" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key181" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key208" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key179" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key177" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key174" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key172" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key170" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key168" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key166" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key164" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key162" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key160" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key158" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key156" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key155" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key153" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key151" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key148" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key224" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key146" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key144" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key234" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key142" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key140" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key138" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key136" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key134" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key132" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key130" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key127" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key125" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key123" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key18" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key240" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key236" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key238" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key239" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key237" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key17" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key15" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key121" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key119" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key117" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key115" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key225" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key113" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key111" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key109" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key107" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key105" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key102" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key206" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key219" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key221" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key222" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key220" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key100" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key98" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key73" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key79" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key75" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key96" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key94" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key231" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key242" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key24" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key25" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key28" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key30" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key31" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key68" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key33" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key241" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key54" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key53" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key40" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key44" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key46" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key26" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key149" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key66" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key23" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key213" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key21" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key212" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key81" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key74" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key71" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key69" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key128" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key67" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key65" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key215" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key126" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key235" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key218" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key11" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key52" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key124" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key51" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key6" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key122" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key45" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key43" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key120" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key42" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key41" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key39" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key34" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key50" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key49" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key36" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key38" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key37" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key35" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key209" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key84" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key32" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key232" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key29" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key48" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key47" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key116" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key1" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key2" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key58" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key60" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key62" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key103" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key64" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key63" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key61" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key59" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key99" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key57" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key3" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key4" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key245" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key247" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key249" ON public."NhanVienSo" USING btree ("MaSGD");
+
+CREATE UNIQUE INDEX "NhanVienSo_MaSGD_key251" ON public."NhanVienSo" USING btree ("MaSGD");
+
+INSERT INTO "NhanVienSo" ("HoTen", "GioiTinh", "NgaySinh", "ChucVu", "Email", "SoDT", "TrangThai", "TaiKhoanID", "ID", "MaSGD") VALUES
+('Nguyễn Văn An',	'nam',	'1985-01-01',	'Chuyên viên Sở',	'sgd@gmail.com',	'012345',	'Đang hoạt động',	5,	1,	'sogiaoduc1');
+
+DROP TABLE IF EXISTS "NhanXetHocTap";
+CREATE TABLE "public"."NhanXetHocTap" (
+    "id" integer NOT NULL,
+    "id_HocSinh" integer,
+    "id_GiaoVien" integer,
+    "HocKy" character varying(10),
+    "NamHoc" character varying(20),
+    "NoiDung" text,
+    "NgayTao" timestamp,
+    CONSTRAINT "NhanXetHocTap_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "NhanXetHocTap" ("id", "id_HocSinh", "id_GiaoVien", "HocKy", "NamHoc", "NoiDung", "NgayTao") VALUES
+(1,	1,	1,	'1',	'2025-2026',	'Học sinh chăm chỉ, tiến bộ',	'2025-09-15 00:00:00');
+
+DROP TABLE IF EXISTS "PhongThi";
+DROP SEQUENCE IF EXISTS "PhongThi_id_seq";
+CREATE SEQUENCE "PhongThi_id_seq" INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."PhongThi" (
+    "id" integer DEFAULT nextval('"PhongThi_id_seq"') NOT NULL,
+    "name" character varying(50) NOT NULL,
+    "truongid" integer,
+    CONSTRAINT "PhongThi_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "PhongThi" ("id", "name", "truongid") VALUES
+(1,	'Phòng 101',	1),
+(2,	'Phòng 102',	1),
+(3,	'Phòng 201',	2),
+(4,	'Phòng 202',	2);
+
+DROP TABLE IF EXISTS "PhuHuynh";
+CREATE TABLE "public"."PhuHuynh" (
+    "id" integer NOT NULL,
+    "MaPH" character varying(255),
+    "HoVaTen" character varying(255),
+    "id_HocSinh" integer,
+    "SDT" character varying(15),
+    "email" character varying(255),
+    "NgaySinh" date,
+    "GioiTinh" character varying(10),
+    CONSTRAINT "PhuHuynh_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "PhuHuynh" ("id", "MaPH", "HoVaTen", "id_HocSinh", "SDT", "email", "NgaySinh", "GioiTinh") VALUES
+(1,	'phuhuynh1',	'Nguyễn Văn C',	1,	'0123456789',	'phuhuynh1@example.com',	'1980-03-10',	'Nam'),
+(2,	'phuhuynh2',	'Trần Thị D',	2,	'0987654321',	'phuhuynh2@example.com',	'1985-07-25',	'Nữ');
+
+DROP TABLE IF EXISTS "QuanTriTruong";
+CREATE TABLE "public"."QuanTriTruong" (
+    "id" integer NOT NULL,
+    "MaQTV" character varying(255),
+    "HoVaTen" character varying(255),
+    "NgaySinh" date,
+    "GioiTinh" character varying(10),
+    "id_school" integer NOT NULL,
+    CONSTRAINT "QuaTriTruong_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "QuanTriTruong" ("id", "MaQTV", "HoVaTen", "NgaySinh", "GioiTinh", "id_school") VALUES
+(1,	'admin1',	'Quản trị 1',	'1985-01-01',	'nam',	1);
+
+DROP TABLE IF EXISTS "TaiKhoan";
+CREATE TABLE "public"."TaiKhoan" (
+    "id" integer DEFAULT GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+    "username" character varying(255) NOT NULL,
+    "password" character varying(255) NOT NULL,
+    "id_role" integer NOT NULL,
+    CONSTRAINT "TaiKhoan_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key114" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key113" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key112" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key110" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key109" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key108" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key106" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key105" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key104" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key103" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key102" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key101" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key100" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key99" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key1" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key51" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key54" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key59" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key81" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key89" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key88" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key87" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key86" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key85" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key84" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key83" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key82" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key80" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key79" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key78" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key77" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key76" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key75" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key74" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key73" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key72" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key71" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key70" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key69" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key68" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key67" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key66" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key65" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key64" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key63" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key62" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key61" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key60" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key58" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key57" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key97" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key96" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key95" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key94" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key93" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key92" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key91" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key90" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key40" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key39" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key37" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key36" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key35" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key34" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key33" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key32" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key31" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key30" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key29" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key28" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key27" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key26" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key24" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key23" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key22" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key21" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key20" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key18" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key17" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key16" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key15" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key14" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key13" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key11" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key10" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key9" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key8" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key7" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key6" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key5" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key4" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key2" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key56" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key55" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key53" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key52" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key50" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key49" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key3" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key12" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key19" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key25" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key38" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key48" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key47" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key46" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key45" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key44" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key43" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key42" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key41" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key98" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key107" ON public."TaiKhoan" USING btree (username);
+
+CREATE UNIQUE INDEX "TaiKhoan_username_key111" ON public."TaiKhoan" USING btree (username);
+
+INSERT INTO "TaiKhoan" ("id", "username", "password", "id_role") VALUES
+(1,	'hocsinh1',	'1',	1),
+(3,	'giaovien1',	'1',	3),
+(4,	'bangiamhieu1',	'1',	4),
+(7,	'THP.HS.2025.0001',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	1),
+(2,	'phuhuynh1',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	2),
+(6,	'admin1',	'admin',	6),
+(5,	'sogiaoduc1',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	5),
+(8,	'THP.GV.2025.0001',	'$2b$10$qF037N0BseutL1OE17LZruX1e8AkENItkfQlS6gkJDghnUbpqyE9K',	3);
+
+DROP TABLE IF EXISTS "ThanhToanHocPhi";
+CREATE TABLE "public"."ThanhToanHocPhi" (
+    "id" integer NOT NULL,
+    "id_HocSinh" integer,
+    "HocKy" character varying(10),
+    "NamHoc" character varying(20),
+    "CongNo" numeric(12,2),
+    "TienDaNop" numeric(12,2),
+    "NgayThanhToan" timestamptz,
+    "PhuongThuc" character varying(50),
+    "TrangThai" character varying(20),
+    CONSTRAINT "ThanhToanHocPhi_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "ThanhToanHocPhi" ("id", "id_HocSinh", "HocKy", "NamHoc", "CongNo", "TienDaNop", "NgayThanhToan", "PhuongThuc", "TrangThai") VALUES
+(1,	1,	'1',	'2025-2026',	5000000.00,	2500000.00,	'2025-09-01 00:00:00+00',	'Chuyển khoản',	'Đã thanh toán');
+
+DROP TABLE IF EXISTS "ThiSinh";
+DROP SEQUENCE IF EXISTS "ThiSinh_id_seq";
+CREATE SEQUENCE "ThiSinh_id_seq" INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."ThiSinh" (
+    "id" integer DEFAULT nextval('"ThiSinh_id_seq"') NOT NULL,
+    "mahs" character varying(10) NOT NULL,
+    "hoten" character varying(50) NOT NULL,
+    "ngaysinh" timestamptz,
+    "phongthiid" integer NOT NULL,
+    CONSTRAINT "ThiSinh_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key254" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key252" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key250" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key248" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key245" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key243" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key241" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key239" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key236" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key234" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key232" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key230" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key228" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key226" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key224" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key222" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key220" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key218" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key216" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key214" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key212" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key210" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key208" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key206" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key204" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key202" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key200" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key197" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key195" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key192" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key189" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key187" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key185" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key183" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key81" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key79" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key77" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key75" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key73" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key71" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key69" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key67" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key27" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key157" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key155" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key153" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key150" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key13" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key68" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key70" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key72" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key86" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key74" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key78" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key80" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key82" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key84" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key87" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key89" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key142" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key45" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key117" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key43" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key41" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key60" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key59" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key39" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key37" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key33" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key31" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key29" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key28" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key90" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key2" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key101" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key103" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key105" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key181" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key179" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key176" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key174" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key172" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key171" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key170" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key168" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key166" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key164" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key162" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key160" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key50" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key88" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key85" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key83" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key106" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key108" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key110" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key112" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key114" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key116" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key115" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key113" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key111" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key109" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key107" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key104" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key102" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key100" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key3" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key4" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key148" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key146" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key15" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key144" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key58" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key57" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key52" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key54" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key140" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key138" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key136" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key134" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key132" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key129" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key127" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key125" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key122" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key123" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key121" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key1" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key91" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key93" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key95" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key97" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key99" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key98" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key96" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key94" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key92" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key53" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key51" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key49" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key20" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key14" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key76" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key16" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key18" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key21" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key22" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key24" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key25" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key26" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key23" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key19" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key17" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key5" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key6" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key7" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key9" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key10" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key12" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key30" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key119" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key36" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key38" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key40" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key42" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key44" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key56" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key55" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key11" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key62" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key64" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key215" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key66" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key65" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key63" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key61" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key8" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key34" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key32" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key35" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key46" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key48" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key47" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key118" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key120" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key124" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key217" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key126" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key219" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key128" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key130" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key131" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key133" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key135" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key137" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key139" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key141" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key143" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key145" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key147" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key149" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key151" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key152" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key154" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key156" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key158" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key159" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key161" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key163" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key165" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key167" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key169" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key173" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key175" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key177" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key178" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key180" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key182" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key184" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key186" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key188" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key190" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key191" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key193" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key194" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key196" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key198" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key199" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key201" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key203" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key205" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key207" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key209" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key211" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key213" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key221" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key223" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key225" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key227" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key229" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key231" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key233" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key235" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key237" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key238" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key240" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key242" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key246" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key244" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key247" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key249" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key251" ON public."ThiSinh" USING btree (mahs);
+
+CREATE UNIQUE INDEX "ThiSinh_mahs_key253" ON public."ThiSinh" USING btree (mahs);
+
+INSERT INTO "ThiSinh" ("id", "mahs", "hoten", "ngaysinh", "phongthiid") VALUES
+(11,	'PM10101',	'Nguyễn Văn A',	'2008-05-10 00:00:00+00',	1),
+(12,	'PM10102',	'Trần Thị B',	'2008-07-22 00:00:00+00',	1),
+(13,	'PM10103',	'Lê Văn C',	'2008-08-13 00:00:00+00',	1),
+(14,	'PM10104',	'Phạm Thị D',	'2008-11-05 00:00:00+00',	1),
+(15,	'PM10105',	'Hoàng Văn E',	'2008-02-17 00:00:00+00',	1),
+(16,	'NT20101',	'Ngô Văn F',	'2008-03-02 00:00:00+00',	3),
+(17,	'NT20102',	'Phan Thị G',	'2008-06-18 00:00:00+00',	3),
+(18,	'NT20103',	'Đinh Văn H',	'2008-09-09 00:00:00+00',	3),
+(19,	'NT20104',	'Bùi Thị I',	'2008-12-11 00:00:00+00',	3),
+(20,	'NT20105',	'Vũ Văn K',	'2008-01-25 00:00:00+00',	3);
+
+DROP TABLE IF EXISTS "ThoiKhoaBieu";
+CREATE TABLE "public"."ThoiKhoaBieu" (
+    "id" integer NOT NULL,
+    "id_Lop" integer,
+    "id_MonHoc" integer,
+    "id_GiaoVien" integer,
+    "Thu" character varying(10),
+    "Tiet" integer,
+    "HocKy" character varying(10),
+    "NamHoc" character varying(20),
+    CONSTRAINT "ThoiKhoaBieu_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "ThoiKhoaBieu" ("id", "id_Lop", "id_MonHoc", "id_GiaoVien", "Thu", "Tiet", "HocKy", "NamHoc") VALUES
+(1,	1,	1,	1,	'Hai',	1,	'1',	'2025-2026');
+
+DROP TABLE IF EXISTS "ThongBao";
+CREATE TABLE "public"."ThongBao" (
+    "id" integer NOT NULL,
+    "TieuDe" character varying(255),
+    "NoiDung" text,
+    "NguoiDang" integer,
+    "NgayDang" timestamp,
+    "NgayCapNhat" timestamp,
+    CONSTRAINT "ThongBao_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "ThongBao" ("id", "TieuDe", "NoiDung", "NguoiDang", "NgayDang", "NgayCapNhat") VALUES
+(1,	'Thông báo nghỉ học',	'Học sinh nghỉ học ngày 01/09/2025',	1,	'2025-08-30 00:00:00',	'2025-08-30 00:00:00');
+
+DROP TABLE IF EXISTS "ToHopMon";
+CREATE TABLE "public"."ToHopMon" (
+    "id" integer NOT NULL,
+    "TenToHop" character varying(255) NOT NULL,
+    "mota" character varying(255),
+    CONSTRAINT "ToHopMon_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "ToHopMon" ("id", "TenToHop", "mota") VALUES
+(1,	'Khoa học tự nhiên',	'Toán, Lý, Hóa'),
+(2,	'Khoa học xã hội',	'Văn, Sử, Địa');
+
+DROP TABLE IF EXISTS "Truong";
+CREATE TABLE "public"."Truong" (
+    "id" integer NOT NULL,
+    "name" character varying(255),
+    CONSTRAINT "Truong_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "Truong" ("id", "name") VALUES
+(1,	'Trường THPT Phú Mỹ'),
+(2,	'Trường THPT Nguyễn Trãi');
+
+DROP TABLE IF EXISTS "VaiTro";
+CREATE TABLE "public"."VaiTro" (
+    "id" integer DEFAULT GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+    "TenVaiTro" character varying(255) NOT NULL,
+    "mota" character varying(255),
+    CONSTRAINT "VaiTro_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "VaiTro" ("id", "TenVaiTro", "mota") VALUES
+(1,	'học sinh',	'Vai trò học sinh'),
+(2,	'phụ huynh',	'Vai trò phụ huynh'),
+(3,	'giáo viên',	'Vai trò giáo viên'),
+(4,	'ban giám hiệu',	'Vai trò ban giám hiệu'),
+(5,	'sở giáo dục',	'Vai trò sở giáo dục'),
+(6,	'admin',	'Quản trị viên');
+
+DROP TABLE IF EXISTS "YeuCauSuaDiem";
+CREATE TABLE "public"."YeuCauSuaDiem" (
+    "id" integer NOT NULL,
+    "id_DiemSo" integer,
+    "id_GiaoVien" integer,
+    "NgayGui" timestamp,
+    "LoaiDiem" character varying(50),
+    "DiemCu" numeric(4,2),
+    "DiemMoi" numeric(4,2),
+    "LyDo" text,
+    "TrangThai" character varying(20),
+    "NguoiDuyet" integer,
+    "ThoiGianDuyet" timestamp,
+    CONSTRAINT "YeuCauSuaDiem_pkey" PRIMARY KEY ("id")
+)
+WITH (oids = false);
+
+INSERT INTO "YeuCauSuaDiem" ("id", "id_DiemSo", "id_GiaoVien", "NgayGui", "LoaiDiem", "DiemCu", "DiemMoi", "LyDo", "TrangThai", "NguoiDuyet", "ThoiGianDuyet") VALUES
+(1,	1,	1,	'2025-09-05 00:00:00',	'DiemThuongKy',	8.00,	8.50,	'Cập nhật điểm do nhập sai',	'Đã duyệt',	2,	'2025-09-06 00:00:00');
+
+ALTER TABLE ONLY "public"."BaiNop" ADD CONSTRAINT "BaiNop_id_BaiTap_fkey" FOREIGN KEY ("id_BaiTap") REFERENCES "BaiTap"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."BaiNop" ADD CONSTRAINT "BaiNop_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."BaiTap" ADD CONSTRAINT "BaiTap_id_GiaoVien_fkey" FOREIGN KEY ("id_GiaoVien") REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."BaiTap" ADD CONSTRAINT "BaiTap_id_Lop_fkey" FOREIGN KEY ("id_Lop") REFERENCES "Lop"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."BaiTap" ADD CONSTRAINT "BaiTap_id_MonHoc_fkey" FOREIGN KEY ("id_MonHoc") REFERENCES "MonHoc"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."BangPhanCongGiaoVien" ADD CONSTRAINT "BangPhanCongGiaoVien_id_GiaoVien_fkey" FOREIGN KEY ("id_GiaoVien") REFERENCES "GiaoVien"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."BangPhanCongGiaoVien" ADD CONSTRAINT "BangPhanCongGiaoVien_id_Lop_fkey" FOREIGN KEY ("id_Lop") REFERENCES "Lop"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."BangPhanCongGiaoVien" ADD CONSTRAINT "BangPhanCongGiaoVien_id_MonHoc_fkey" FOREIGN KEY ("id_MonHoc") REFERENCES "MonHoc"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."BangPhanCongGiaoVienChuNhiem" ADD CONSTRAINT "BangPhanCongGiaoVienChuNhiem_id_GiaoVien_fkey" FOREIGN KEY ("id_GiaoVien") REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."BangPhanCongGiaoVienChuNhiem" ADD CONSTRAINT "BangPhanCongGiaoVienChuNhiem_id_Lop_fkey" FOREIGN KEY ("id_Lop") REFERENCES "Lop"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."ChiTiet_ToHopMon" ADD CONSTRAINT "ChiTiet_ToHopMon_subject_group_id_fkey" FOREIGN KEY (subject_group_id) REFERENCES "ToHopMon"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."ChiTiet_ToHopMon" ADD CONSTRAINT "ChiTiet_ToHopMon_subject_id_fkey" FOREIGN KEY (subject_id) REFERENCES "MonHoc"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."DiemDanh" ADD CONSTRAINT "DiemDanh_giaovien_id_fkey" FOREIGN KEY (giaovien_id) REFERENCES "GiaoVien"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."DiemDanh" ADD CONSTRAINT "DiemDanh_lop_id_fkey" FOREIGN KEY (lop_id) REFERENCES "Lop"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."DiemDanh" ADD CONSTRAINT "DiemDanh_monhoc_id_fkey" FOREIGN KEY (monhoc_id) REFERENCES "MonHoc"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."DiemDanh" ADD CONSTRAINT "DiemDanh_student_id_fkey1" FOREIGN KEY (student_id) REFERENCES "HocSinh"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."DiemSo" ADD CONSTRAINT "DiemSo_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."DiemSo" ADD CONSTRAINT "DiemSo_id_MonHoc_fkey" FOREIGN KEY ("id_MonHoc") REFERENCES "MonHoc"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."DiemThi" ADD CONSTRAINT "DiemThi_thisinhid_fkey" FOREIGN KEY (thisinhid) REFERENCES "ThiSinh"(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."GiaoVien" ADD CONSTRAINT "GiaoVien_id_truong_fkey" FOREIGN KEY (id_truong) REFERENCES "Truong"(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."HanhKiem" ADD CONSTRAINT "HanhKiem_NguoiDanhGia_fkey" FOREIGN KEY ("NguoiDanhGia") REFERENCES "GiaoVien"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."HanhKiem" ADD CONSTRAINT "HanhKiem_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."HocBa" ADD CONSTRAINT "HocBa_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."HocBa" ADD CONSTRAINT "HocBa_id_Lop_fkey" FOREIGN KEY ("id_Lop") REFERENCES "Lop"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."HocBa" ADD CONSTRAINT "HocBa_id_Truong_fkey" FOREIGN KEY ("id_Truong") REFERENCES "Truong"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."HocSinh" ADD CONSTRAINT "HocSinh_id_Lop_fkey" FOREIGN KEY ("id_Lop") REFERENCES "Lop"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."HocSinh" ADD CONSTRAINT "HocSinh_id_school_fkey" FOREIGN KEY (id_school) REFERENCES "Truong"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."LichSuDiem" ADD CONSTRAINT "LichSuDiem_NguoiSua_fkey" FOREIGN KEY ("NguoiSua") REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."LichSuDiem" ADD CONSTRAINT "LichSuDiem_id_DiemSo_fkey" FOREIGN KEY ("id_DiemSo") REFERENCES "DiemSo"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."Lop" ADD CONSTRAINT "Lop_id_GiaoVienChuNhiem_fkey" FOREIGN KEY ("id_GiaoVienChuNhiem") REFERENCES "GiaoVien"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."Lop" ADD CONSTRAINT "Lop_id_ToHopMon_fkey" FOREIGN KEY ("id_ToHopMon") REFERENCES "ToHopMon"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."Lop" ADD CONSTRAINT "Lop_id_truong_fkey" FOREIGN KEY (id_truong) REFERENCES "Truong"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."NghiHoc" ADD CONSTRAINT "DiemDanh_pproved_by_fkey" FOREIGN KEY (pproved_by) REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."NghiHoc" ADD CONSTRAINT "DiemDanh_student_id_fkey" FOREIGN KEY (student_id) REFERENCES "HocSinh"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."NhanXetHocTap" ADD CONSTRAINT "NhanXetHocTap_id_GiaoVien_fkey" FOREIGN KEY ("id_GiaoVien") REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."NhanXetHocTap" ADD CONSTRAINT "NhanXetHocTap_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."PhongThi" ADD CONSTRAINT "PhongThi_truongid_fkey" FOREIGN KEY (truongid) REFERENCES "Truong"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."PhuHuynh" ADD CONSTRAINT "PhuHuynh_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) ON UPDATE CASCADE ON DELETE SET NULL NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."QuanTriTruong" ADD CONSTRAINT "QuanTriTruong_id_school_fkey" FOREIGN KEY (id_school) REFERENCES "Truong"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."TaiKhoan" ADD CONSTRAINT "TaiKhoan_id_role_fkey" FOREIGN KEY (id_role) REFERENCES "VaiTro"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."ThanhToanHocPhi" ADD CONSTRAINT "ThanhToanHocPhi_id_HocSinh_fkey" FOREIGN KEY ("id_HocSinh") REFERENCES "HocSinh"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."ThiSinh" ADD CONSTRAINT "ThiSinh_phongthiid_fkey" FOREIGN KEY (phongthiid) REFERENCES "PhongThi"(id) ON UPDATE CASCADE NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."ThoiKhoaBieu" ADD CONSTRAINT "ThoiKhoaBieu_id_GiaoVien_fkey" FOREIGN KEY ("id_GiaoVien") REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."ThoiKhoaBieu" ADD CONSTRAINT "ThoiKhoaBieu_id_Lop_fkey" FOREIGN KEY ("id_Lop") REFERENCES "Lop"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."ThoiKhoaBieu" ADD CONSTRAINT "ThoiKhoaBieu_id_MonHoc_fkey" FOREIGN KEY ("id_MonHoc") REFERENCES "MonHoc"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."ThongBao" ADD CONSTRAINT "ThongBao_NguoiDang_fkey" FOREIGN KEY ("NguoiDang") REFERENCES "BanGiamHieu"(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."YeuCauSuaDiem" ADD CONSTRAINT "YeuCauSuaDiem_NguoiDuyet_fkey" FOREIGN KEY ("NguoiDuyet") REFERENCES "BanGiamHieu"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."YeuCauSuaDiem" ADD CONSTRAINT "YeuCauSuaDiem_id_DiemSo_fkey" FOREIGN KEY ("id_DiemSo") REFERENCES "DiemSo"(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."YeuCauSuaDiem" ADD CONSTRAINT "YeuCauSuaDiem_id_GiaoVien_fkey" FOREIGN KEY ("id_GiaoVien") REFERENCES "GiaoVien"(id) NOT DEFERRABLE;
+
+-- 2025-11-18 14:05:59 UTC

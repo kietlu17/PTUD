@@ -1,7 +1,10 @@
     <nav class="col-md-2 sidebar">
       <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
-      <a href="/dashboard-giaovien" class="active">Trang Dashboard</a>
-      <a href="/giaovien/diemdanh/<%= profile.id %>/lop">Điểm Danh</a>
+            <% 
+    const activePage = typeof currentPage !== 'undefined' ? currentPage : '/dashboard-admin';
+  %>
+      <a href="/dashboard-giaovien" class="<% if (activePage === '/dashboard-admin') { %>active<% } %>">Trang Dashboard</a>
+      <a href="/giaovien/diemdanh/<%= profile.id %>/lop" class="<% if (activePage === '/diemdanh') { %>active<% } %>">Điểm Danh</a>
       <a href="/giaovien/hanhkiem/<%= profile.id %>/lop">Đánh Giá Hạnh Kiểm</a>
       <a href="#">Quản Lý Tài Khoản</a>
       <a href="#">Thông Báo</a>

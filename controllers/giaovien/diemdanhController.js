@@ -41,7 +41,7 @@ exports.showClasses = async (req, res) => {
 
     console.log(dsLop); //  in thử ra console để xem cấu trúc dữ liệu
 
-    res.status(200).render('./giaovien/diemdanh/diemdanh', { dsLop });
+    res.status(200).render('./giaovien/diemdanh/diemdanh', { dsLop, currentPage: '/diemdanh' });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách lớp của giáo viên:', error);
     res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
@@ -139,7 +139,7 @@ exports.submitAttendance = async (req, res) => {
     }
 
     console.log('Điểm danh thành công!');
-    res.send('Điểm danh thành công!');
+    res.send('Điểm danh thành công!');// // sửa phần này để server xử lý thành công r mới hiện thông báo thành công bên view
   } catch (error) {
     console.error('Lỗi khi lưu điểm danh:', error);
     res.status(500).send('Lỗi máy chủ khi lưu điểm danh');
