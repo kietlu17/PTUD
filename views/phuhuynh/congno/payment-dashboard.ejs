@@ -1,0 +1,118 @@
+<%- include('../../partials/header', { title: 'Thanh Toán Học Phí' }) %>
+<div class="container-fluid">
+    <div class="row">
+            <!-- Sidebar -->
+<%- include('../../partials/nav-phuhuynh') %>
+            <!-- Main content -->
+        <main class="col-md-10 content">
+            <!-- <div id="payment-message-area" class="mt-3"></div> -->
+            <h2 class="text-center my-4">Quản Lý Công Nợ Học Phí</h2>
+            
+            <% if (error) { %>
+                <div class="alert alert-danger"><%= error %></div>
+            <% } else if (payments.length === 0) { %>
+                <div class="alert alert-info">Không tìm thấy công nợ nào cần thanh toán.</div>
+            <% } else { %>
+                
+                <p class="fw-bold">Tổng Công Nợ Cần Thanh Toán: <%= totalCongNo.toLocaleString('vi-VN') %> VNĐ</p>
+                
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Học Kỳ</th>
+                            <th>Năm Học</th>
+                            <th>Tổng Công Nợ</th>
+                            <th>Đã Nộp</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% payments.forEach(payment => { %>
+                            <tr>
+                                <td><%= payment.HocKy %></td>
+                                <td><%= payment.NamHoc %></td>
+                                <td><%= payment.CongNo.toLocaleString('vi-VN') %></td>
+                                <td><%= payment.TienDaNop.toLocaleString('vi-VN') %></td>
+                                <td>
+                                    <% 
+                                        const conNo = payment.CongNo - payment.TienDaNop;
+                                        if (conNo <= 0) { %>
+                                            <span class="badge bg-success">Đã hoàn tất</span>
+                                        <% } else { %>
+                                            <span class="badge bg-danger">Cần thanh toán</span>
+                                        <% } %>
+                                </td>
+                                <td>
+                                    <% if (conNo > 0) { %>
+                                        <button class="btn btn-sm btn-primary btn-pay" data-id="<%= payment.id %>">Thanh Toán</button>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } %>
+            <div id="payment-message-area" class="mt-3"></div>
+        </main>
+    </div>
+</div>
+<script>
+    // Hàm tạo URL QR Code từ dữ liệu
+    function generateQrCodeUrl(dataString) {
+        // qrickit.com là một dịch vụ tạo QR code nhanh, ổn định hơn
+        const size = '150';
+        return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(dataString)}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const messageArea = document.getElementById('payment-message-area');
+        
+        document.querySelectorAll('.btn-pay').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const paymentId = e.target.dataset.id;
+                messageArea.innerHTML = ''; // Xóa thông báo cũ
+
+                try {
+                    // Gửi yêu cầu POST tới Controller
+                    const response = await fetch('/phuhuynh/thanh-toan-hoc-phi/initiate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ paymentId: paymentId }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || data.status === 'NO_DEBT') {
+                        // Lỗi (4xx, 5xx) hoặc không còn công nợ 
+                        const msg = data.message || data.error || 'Đã xảy ra lỗi không xác định.';
+                        messageArea.innerHTML = `<div class="alert alert-warning">${msg}</div>`;
+                    } else if (data.status === 'QR_DISPLAYED') {
+
+                        //TẠO URL HÌNH ẢNH TỪ DỮ LIỆU
+                        const qrImageUrl = generateQrCodeUrl(data.qrData);
+                        // Thành công, hiển thị mã QR 
+                        messageArea.innerHTML = `
+                            <div class="alert alert-success text-center">
+                                <h5>${data.message}</h5>
+                                <p>Số tiền cần thanh toán: <strong>${data.amount.toLocaleString('vi-VN')} VNĐ</strong></p>
+                                
+                                <div class="qr-code-box border p-3 d-inline-block">
+                                    <img src="${qrImageUrl}" alt="Mã QR Thanh Toán" style="width: 150px; height: 150px;">
+                                </div>
+                                <p class="small mt-2">Dữ liệu mã hóa: ${data.qrData}</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Fetch Error:', error);
+                    messageArea.innerHTML = `<div class="alert alert-danger">Lỗi kết nối máy chủ, vui lòng thử lại.</div>`;
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,51 @@
+<%- include('../../partials/header', { title: 'Điểm Danh' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    
+<%- include('../../partials/nav-giaovien') %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">DANH SÁCH CÁC LỚP BẠN DẠY</h4>
+
+      <div class="table-responsive shadow-sm">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-secondary">
+            <tr>
+              <th>Mã Lớp</th>
+              <th>Tên Lớp</th>
+              <th>Giáo Viên Chủ Nhiệm</th>
+              <th>Số Lượng Học Sinh</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (dsLop && dsLop.length > 0) { %>
+              <% dsLop.forEach(item => { %>
+                <tr>
+                  <td><%= item.lop.id %></td>
+                  <td><%= item.lop.TenLop %></td>
+                  <td><%= item.lop.gvcn ? item.lop.gvcn.HoVaTen : 'Chưa phân công' %></td>
+                  <td><%= item.lop.SoLuongHocSinh || 0 %></td>
+                  <td>
+                    <a href="/giaovien/diemdanh/<%= item.id_GiaoVien %>/lop/<%= item.lop.id %>" class="btn btn-sm btn-primary">
+                      Xem Danh Sách
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+                          <% } else { %>
+              <tr>
+                <td colspan="5" class="text-center text-muted">Chưa có lớp nào trong hệ thống.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+  </div>
+</div>

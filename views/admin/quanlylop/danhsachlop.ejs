@@ -1,0 +1,42 @@
+<%- include('../../partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+<%- include('../../partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+            <h4 class="text-center fw-bold mb-4">Danh sách học sinh lớp <%= lop.TenLop %></h4>
+
+            <div class="table-responsive shadow-sm">
+                <table class=" table table-bordered text-center align-middle">
+        <thead class="table-secondary">
+            <tr>
+            <th>ID</th>
+            <th>Họ và tên</th>
+            <th>Ngày sinh</th>
+            <th>Giới tính</th>
+            <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% dsHocSinh.forEach(hs => { %>
+            <tr>
+                <td><%= hs.id %></td>
+                <td><%= hs.HoVaTen %></td>
+                <td><%= hs.NgaySinh %></td>
+                <td><%= hs.GioiTinh %></td>
+                <td><a href="/admin/quanlylop/hocsinh/<%= hs.id %>/chuyenlop" class="btn btn-sm btn-warning">Chuyển lớp</a></td>
+            </tr>
+            <% }) %>
+        </tbody>
+        </table>
+
+        <a href="/admin/quanlylop" class="btn btn-secondary mt-3">← Quay lại</a>
+      </div>
+    </main>
+
+  </div>
+</div>

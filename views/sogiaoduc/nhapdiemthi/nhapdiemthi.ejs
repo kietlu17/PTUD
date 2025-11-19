@@ -1,0 +1,184 @@
+<%- include('../../partials/header', { title: 'Nhập Điểm Thi' }) %>
+<link rel="stylesheet" href="../styles/nhapdiemthi.css">
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <%- include('../../partials/nav-sogiaoduc', { profile: profile, currentUrl: '/diemthi' }) %>
+
+
+                <!-- Main Content -->
+                <main class="col-md-10 content">
+                    <h4 class="text-center mb-4 fw-bold">NHẬP ĐIỂM THI TUYỂN SINH</h4>
+
+                    <!-- Bộ lọc -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Chọn Trường:</label>
+                            <select id="truong" class="form-select">
+                                <option value="">-- Chọn Trường --</option>
+                                <% truongs.forEach(t=> { %>
+                                    <option value="<%= t.id %>">
+                                        <%= t.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Chọn Phòng Thi:</label>
+                            <select id="phongthi" class="form-select">
+                                <option value="">-- Chọn Phòng --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Bảng thí sinh -->
+                    <table class="table table-bordered text-center align-middle" id="thisinhTable">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Mã HS</th>
+                                <th>Họ Tên</th>
+                                <th>Ngày Sinh</th>
+                                <th>Toán</th>
+                                <th>Ngữ Văn</th>
+                                <th>Tiếng Anh</th>
+                                <th>Tổng</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </main>
+        </div>
+    </div>
+
+    <!-- Popup xác nhận -->
+    <div id="confirmPopup" class="popup" style="display:none;">
+        <div class="popup-content">
+            <h3>Xác nhận nhập điểm</h3>
+            <div class="confirm-text" id="confirmText"></div>
+            <div class="popup-buttons">
+                <button class="btn btn-primary" onclick="saveScores()">Xác nhận</button>
+                <button class="btn btn-secondary" onclick="cancelConfirm()">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let pendingSave = null;
+
+            // Khi chọn trường → load phòng
+            document.getElementById('truong').addEventListener('change', async function () {
+                const truongId = this.value;
+                if (!truongId) return;
+                const res = await fetch(`/sogiaoduc/diemthi/phongthi/${truongId}`);
+                const data = await res.json();
+                const phongSelect = document.getElementById('phongthi');
+                phongSelect.innerHTML = '<option value="">-- Chọn Phòng --</option>';
+                data.forEach(p => phongSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+            });
+
+            // Khi chọn phòng → load thí sinh
+            document.getElementById('phongthi').addEventListener('change', async function () {
+                const phongId = this.value;
+                if (!phongId) return;
+                const res = await fetch(`/sogiaoduc/diemthi/thisinh/${phongId}`);
+                const data = await res.json();
+                const tbody = document.querySelector('#thisinhTable tbody');
+                tbody.innerHTML = '';
+
+                data.forEach(ts => {
+                    // ✅ đúng alias Sequelize (as: 'diem')
+                    const diem = ts.diem || {};
+                    const daNhap = diem.toan != null && diem.nguvan != null && diem.tienganh != null;
+
+                    tbody.innerHTML += `
+                <tr>
+                    <td>${ts.mahs}</td>
+                    <td>${ts.hoten}</td>
+                    <td>${ts.ngaysinh ? new Date(ts.ngaysinh).toLocaleDateString() : ''}</td>
+
+                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="toan-${ts.id}"
+                        value="${diem.toan ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
+
+                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="nguvan-${ts.id}"
+                        value="${diem.nguvan ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
+
+                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="tienganh-${ts.id}"
+                        value="${diem.tienganh ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
+
+                    <td id="tong-${ts.id}">${diem.tong ?? '-'}</td>
+
+                    <td>
+                        ${daNhap
+                            ? `<button class="btn btn-success btn-sm btn-danhap" disabled>Đã nhập</button>`
+                            : `<button class="btn btn-primary btn-sm" onclick="showConfirm(${ts.id})">Lưu</button>`
+                        }
+                    </td>
+                </tr>`;
+                });
+            });
+
+            // Hàm tính tổng điểm
+            window.updateTong = function (id) {
+                const toan = parseFloat(document.getElementById(`toan-${id}`).value) || 0;
+                const nguvan = parseFloat(document.getElementById(`nguvan-${id}`).value) || 0;
+                const tienganh = parseFloat(document.getElementById(`tienganh-${id}`).value) || 0;
+                const tong = (toan + nguvan + tienganh).toFixed(2);
+                document.getElementById(`tong-${id}`).innerText = tong;
+            };
+
+            // Hiển thị popup xác nhận
+            window.showConfirm = function (thisinhid) {
+                const toan = document.getElementById(`toan-${thisinhid}`).value || 0;
+                const nguvan = document.getElementById(`nguvan-${thisinhid}`).value || 0;
+                const tienganh = document.getElementById(`tienganh-${thisinhid}`).value || 0;
+                const tong = (parseFloat(toan) + parseFloat(nguvan) + parseFloat(tienganh)).toFixed(2);
+
+                document.getElementById('confirmText').innerHTML = `
+            <p><strong>Toán:</strong> ${toan}</p>
+            <p><strong>Ngữ văn:</strong> ${nguvan}</p>
+            <p><strong>Tiếng Anh:</strong> ${tienganh}</p>
+            <p><strong>Tổng:</strong> ${tong}</p>`;
+
+                pendingSave = { thisinhid, toan, nguvan, tienganh, tong };
+                document.getElementById('confirmPopup').style.display = 'flex';
+            };
+
+            // Lưu điểm
+            window.saveScores = async function () {
+                const { thisinhid, toan, nguvan, tienganh, tong } = pendingSave;
+                const res = await fetch('/sogiaoduc/diemthi/luu', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ thisinhid, toan, nguvan, tienganh })
+                });
+                const result = await res.json();
+                document.getElementById('confirmPopup').style.display = 'none';
+
+                if (result.success) {
+                    document.getElementById(`tong-${thisinhid}`).innerText = tong;
+                    alert('✅ Lưu điểm thành công!');
+
+                    // Khóa lại các ô sau khi lưu
+                    ['toan', 'nguvan', 'tienganh'].forEach(mon => {
+                        document.getElementById(`${mon}-${thisinhid}`).disabled = true;
+                    });
+
+                    const btn = document.querySelector(`#toan-${thisinhid}`).closest('tr').querySelector('button');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    btn.textContent = 'Đã nhập';
+                    btn.disabled = true;
+                } else {
+                    alert('❌ Lỗi lưu điểm!');
+                }
+            };
+
+            window.cancelConfirm = function () {
+                document.getElementById('confirmPopup').style.display = 'none';
+                pendingSave = null;
+            };
+        });
+    </script>
