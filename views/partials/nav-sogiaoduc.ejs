@@ -4,14 +4,45 @@
                         <%= profile.HoTen %>
                     </span>
                 </div>
+      <% 
+    const activePage = typeof currentPage !== 'undefined' ? currentPage : '/dashboard-sogiaoduc';
+    %>
 
-
-                <a href="#" class="active">Trang Dashboard</a>
-                <a href="/monhoc">Quản lý môn học</a>
-                <a href="/diemthi">Nhập điểm thi</a>
+                <a href="#" class="<% if (activePage === '/dashboard-sogiaoduc') { %>active<% } %>">Trang Dashboard</a>
+                <a href="/monhoc" class="<% if (activePage === '/dashboard-admin') { %>active<% } %>">Quản lý môn học</a>
+                <a href="/diemthi" class="<% if (activePage === '/diemthi') { %>active<% } %>">Nhập điểm thi</a>
                 <a href="/xet-tuyen">Xét tuyển</a>
                 <a href="/chi-tieu">Chỉ tiêu tuyển sinh</a>
 
                 <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+                      <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
                 <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
             </nav>
+            
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function changePassword(userId) {
+  Swal.fire({
+    title: "Nhập mật khẩu mới",
+    input: "password",
+    inputPlaceholder: "Mật khẩu mới",
+    confirmButtonText: "Đổi mật khẩu",
+    showCancelButton: true
+  }).then(result => {
+    if (!result.value) return;
+
+    fetch(`/account/re-password/${userId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: result.value })
+    })
+    .then(res => {
+      if (res.ok) {
+        Swal.fire("Thành công", "Đổi mật khẩu thành công", "success");
+      } else {
+        Swal.fire("Lỗi", "Không thể đổi mật khẩu", "error");
+      }
+    });
+  });
+}
+</script>

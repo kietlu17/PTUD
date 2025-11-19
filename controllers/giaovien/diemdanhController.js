@@ -79,13 +79,9 @@ exports.getHocSinhByLop = async (req, res) => {
       monhocId: phanCong.id_MonHoc,
       lop,
       dsHocSinh,
+      currentPage: '/diemdanh'
     });
-    // console.log({
-    //   giaovien: id,
-    //   monhocId: phanCong.id_MonHoc,
-    //   lop,
-    //   dsHocSinh,
-    // })
+
   } catch (error) {
     console.error('Lỗi khi lấy danh sách học sinh:', error);
     res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });

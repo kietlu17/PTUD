@@ -3,17 +3,16 @@ const router = express.Router();
 const auth = require('../controllers/authController');
 
 // router.get('/register', auth.showRegister);
-// router.post('/register', auth.register);
+router.post('/account/re-password/:id', auth.changePassword);
 router.get('/login', auth.showLogin);
 router.post('/login', auth.login);
 router.post('/logout', auth.logout);
+
 router.get('/dashboard-giaovien', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'giáo viên') {
     return res.redirect('/login');
   }
-
   const giaovien = req.session.user.profile;
-
   res.render('./giaovien/dashboard-giaovien', {
     giaovien: {
       ...giaovien,
@@ -26,9 +25,7 @@ router.get('/dashboard-hocsinh', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'học sinh') {
     return res.redirect('/login');
   }
-
   const hocSinh = req.session.user.profile;
-
   res.render('dashboard-hocsinh', {
                 hocSinh: {
                   ...hocSinh,
@@ -42,9 +39,7 @@ router.get('/dashboard-phuhuynh', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'phụ huynh') {
     return res.redirect('/login');
   }
-
   const phuHuynh = req.session.user.profile;
-
   res.render('./phuhuynh/dashboard-phuhuynh', {
               phuHuynh: {
                 ...phuHuynh,
@@ -61,14 +56,12 @@ router.get('/dashboard-admin', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'admin') {
     return res.redirect('/login');
   }
-
   const admin = req.session.user.profile;
-  console.log(admin)
   res.render('./admin/dashboard-admin', {
               admin: {
                       ...admin,
                   Truong: admin.truong?.name || 'Chưa cập nhật'
-                }
+                },
   });
 });
 
@@ -76,9 +69,9 @@ router.get('/dashboard-sogiaoduc', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'sở giáo dục') {
     return res.redirect('/login');
   }
-
   const nhanVien = req.session.user.profile;
-  console.log(nhanVien)
   res.render('./sogiaoduc/dashboard-sogiaoduc', {nhanVien});
 });
+
+
 module.exports = router;

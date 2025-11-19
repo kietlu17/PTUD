@@ -46,7 +46,7 @@ exports.showClasses = async (req, res) => {
       lop.hocsinhs = hocsinhByLop.filter(hs => hs.id_Lop === lop.id);
     });
 
-    res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop, giaovienId });
+    res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop, giaovienId,  currentPage: '/hanhkiem' });
 
   } catch (error) {
     console.error('Lỗi khi lấy danh sách lớp của giáo viên:', error);

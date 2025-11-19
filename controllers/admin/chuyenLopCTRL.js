@@ -33,7 +33,7 @@ exports.getAllLop = async (req, res) => {
       nest: true,      // nếu muốn giữ cấu trúc lồng (lop.gvcn)
     });
 
-    res.status(200).render('admin/quanlylop/quanlylop', { dsLop });
+    res.status(200).render('admin/quanlylop/quanlylop', { dsLop, currentPage: '/quanlylop' });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách lớp:', error);
     res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
@@ -43,7 +43,7 @@ exports.getAllLop = async (req, res) => {
 exports.getHocSinhByLop = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log( id )
+    // console.log( id )
     // Kiểm tra lớp có tồn tại không
     const lop = await Lop.findByPk(id, {
       include: [
@@ -65,6 +65,7 @@ exports.getHocSinhByLop = async (req, res) => {
     res.status(200).render('admin/quanlylop/danhsachlop', {
       lop,
       dsHocSinh,
+      currentPage: '/quanlylop'
     });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách học sinh:', error);
@@ -88,7 +89,7 @@ exports.showChuyenLopForm = async (req, res) => {
 
     const dsLop = await Lop.findAll({ attributes: ['id', 'TenLop'] });
 
-    res.render('admin/quanlylop/chuyenlop', { hocSinh, dsLop });
+    res.render('admin/quanlylop/chuyenlop', { hocSinh, dsLop, currentPage: '/quanlylop' });
   } catch (error) {
     console.error('Lỗi khi hiển thị form chuyển lớp:', error);
     res.status(500).send('Lỗi máy chủ');

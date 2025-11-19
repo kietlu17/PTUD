@@ -24,6 +24,8 @@ const DiemSo = require('./DiemSo');
 // 1. Tài khoản & Vai trò
 TaiKhoan.belongsTo(VaiTro, { foreignKey: 'id_role', as: 'role' });
 VaiTro.hasMany(TaiKhoan, { foreignKey: 'id_role', as: 'accounts' });
+TaiKhoan.belongsTo(Truong, { foreignKey: "id_truong", as: "truong" });
+Truong.hasMany(TaiKhoan, { foreignKey: "id_truong", as: "users" });
 
 // 2. Học sinh & Lớp & Trường
 HocSinh.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
