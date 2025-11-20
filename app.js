@@ -54,12 +54,18 @@ app.use((req, res, next) => {
 });
 
 app.use('/', authRoutes);
+// Shortcut route: allow requests to `/diemthi` (legacy/shortcut) to reach the
+// Sở Giáo dục controller mounted at `/sogiaoduc/diemthi`.
+app.get('/diemthi', requireLogin, (req, res) => res.redirect('/sogiaoduc/diemthi'));
+// Shortcut route: allow requests to `/dashboard-sogiaoduc` to reach the
+// Sở Giáo dục dashboard mounted at `/sogiaoduc/dashboard-sogiaoduc`.
+app.get('/dashboard-sogiaoduc', requireLogin, (req, res) => res.redirect('/sogiaoduc/dashboard-sogiaoduc'));
 // app.use('/posts', postRoutes);
 
 // app.get('/', (req, res) => {
 //   res.render('dangnhap');
 // });
-app.use('/sogiaoduc', requireLogin,soGiaoDucRoute);
+app.use('/sogiaoduc', requireLogin, soGiaoDucRoute);
 app.use('/giaovien', requireLogin, giaoVienRoute);
 app.use('/admin', requireLogin,adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);

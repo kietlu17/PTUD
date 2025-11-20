@@ -77,8 +77,30 @@ body {
   font-weight: 600;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 .feature-card:hover {
   transform: translateY(-5px);
   background-color: #edf2f7;
+}
+
+/* avatar */
+.sidebar-avatar {
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#e2e8f0;
+  display:block;
+}
+.fallback-avatar {
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#cbd5e0; /* vòng tròn xám */
+  display:block;
+}
+.sidebar-info .nhanvien-ten {
+  color: #fff;
+  font-size: 0.95rem;
 }
