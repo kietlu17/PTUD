@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "legacyWatch": true,
+  "watch": ["."],
+  "ext": "js,json,ejs,html,css",
+  "ignore": ["node_modules", "public", "views/partials/header.ejs"] 
+}

@@ -1,201 +1,115 @@
-const { render } = require('ejs');
-const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh } = require('../models');
-const bcrypt = require('bcrypt');
-const { json } = require('body-parser');
-// function showRegister(req, res) {
-//   res.render('register', { error: null });
-// }
-
-// async function register(req, res) {
-//   const { name, email, password } = req.body;
-//   if (!email || !password) return res.render('register', { error: 'Email and password required' });
-//   try {
-//     const existing = await User.findOne({ where: { email } });
-//     if (existing) return res.render('register', { error: 'Email already used' });
-//     const user = await User.create({ name, email, password });
-//     req.session.user = { id: user.id, name: user.name, email: user.email };
-//     res.redirect('/posts');
-//   } catch (err) {
-//     console.error(err);
-//     res.render('register', { error: 'Registration failed' });
-//   }
-// }
+console.log(">>> FILE AUTH CONTROLLER ĐÃ ĐƯỢC LOAD <<<");
+const { TaiKhoan, VaiTro, HocSinh, Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh, BanGiamHieu } = require('../models');
 
 function showLogin(req, res) {
-  res.render('dangnhap', { error: null });
+    res.render('dangnhap', { error: null });
 }
 
 async function login(req, res) {
-  const { username, password } = req.body;
-  console.log({ username, password })
+    const { username, password } = req.body;
+    console.log("Login attempt:", { username, password });
 
-
-  try {
-    const user = await TaiKhoan.findOne({ where: { username }, include: { model: VaiTro, as: 'role' } });
-    if (!user) {
-      return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
-    }
-
-    // Bỏ qua bcrypt và so sánh trực tiếp mật khẩu
-  // const isMatch = await bcrypt.compare(password, user.password);
-  // if (!isMatch) {
-  //   return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
-
-  // }
-
-    // req.session.user = {
-    //   id: user.id,
-    //   username: user.username,
-    //   role: user.role.TenVaiTro,
-    // };
-
-
-    req.session.save(async (err) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ error: 'Đã xảy ra lỗi, vui lòng thử lại' });
-      }
-
-      // Nếu là học sinh
-        if (user.role.TenVaiTro === 'học sinh') {
-            const hocSinh = await HocSinh.findOne({
-              where: { MaHS: username },
-              include: [
-                { model: Lop, as: 'lop' },
-                { model: Truong, as: 'truong' },
-              ],
-            });
-
-        if (!hocSinh) {
-          return res.status(404).json({ error: 'Không tìm thấy thông tin học sinh' });
-        }
-            req.session.user = {
-              id: user.id,
-              username: user.username,
-              role: user.role.TenVaiTro,
-              roleId: user.role.id,
-              profile: hocSinh.toJSON()
-            };
-
-            res.redirect('/dashboard-hocsinh');
-            
-      }
-
-       // Nếu là Nhân viên sở giáo dục
-        if (user.role.TenVaiTro === 'sở giáo dục') {
-            const nhanVien = await NhanVienSo.findOne({
-              where: { MaSGD: username }
-            });
-
-        if (!nhanVien) {
-          return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
-        }
-
-          req.session.user = {
-              id: user.id,
-              username: user.username,
-              role: user.role.TenVaiTro,
-              roleId: user.role.id,
-              profile: nhanVien.toJSON()
-            };
-
-          res.redirect('/dashboard-sogiaoduc');
-      }
-
-             // Nếu là quản trị trường
-        if (user.role.TenVaiTro === 'admin') {
-            const admin = await QuanTriTruong.findOne({
-              where: { MaQTV: username },
-              include: [
-                { model: Truong, as: 'truong' },
-              ],
-            });
-
-        if (!admin) {
-          return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
-        }
-            req.session.user = {
-              id: user.id,
-              username: user.username,
-              role: user.role.TenVaiTro,
-              roleId: user.role.id,
-              profile: admin.toJSON()
-            };
-
-            res.redirect('/dashboard-admin');
-
-      }
-
-      // Nếu là giáo viên
-        if (user.role.TenVaiTro === 'giáo viên') {
-            const giaovien = await GiaoVien.findOne({
-              where: { MaGV: username },
-              include: [
-                { model: Truong, as: 'truong' }
-              ],
-            });
-            console.log(giaovien.toJSON());
-            
-        if (!giaovien) {
-          return res.status(404).json({ error: 'Không tìm thấy thông tin ' });
-        }
-
-            req.session.user = {
-              id: user.id,
-              username: user.username,
-              role: user.role.TenVaiTro,
-              roleId: user.role.id,
-              profile: giaovien.toJSON()
-            };
-
-            res.redirect('/dashboard-giaovien');
-
-      }
-
-      
-      if (user.role.TenVaiTro === 'phụ huynh') {
-        // Tìm thông tin Phụ Huynh dựa trên username (giả định username là MaPH)
-        const phuHuynh = await PhuHuynh.findOne({
-          where: { MaPH: username },
-          include: [
-            { 
-              model: HocSinh, 
-              as: 'hocsinh', // Dùng tên alias 'hocsinh' đã định nghĩa trong index.js
-              include: [
-                { model: Lop, as: 'lop' },
-                { model: Truong, as: 'truong' },
-              ]
-            },
-          ],
+    try {
+        // 1. Tìm tài khoản
+        const user = await TaiKhoan.findOne({
+            where: { username },
+            include: { model: VaiTro, as: 'role' }
         });
 
-        if (!phuHuynh) {
-          return res.status(404).json({ error: 'Không tìm thấy thông tin phụ huynh hoặc học sinh liên quan' });
+        if (!user) {
+            return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
         }
-          
-            req.session.user = {
-              id: user.id,
-              username: user.username,
-              role: user.role.TenVaiTro,
-              roleId: user.role.id,
-              profile: phuHuynh.toJSON()
-            };
-
-            res.redirect('/dashboard-phuhuynh');
 
 
-          }
+        // Chuẩn hóa tên vai trò: chuyển thành chữ thường và bỏ khoảng trắng 2 đầu
+        const tenVaiTro = user.role.TenVaiTro.toLowerCase().trim();
+        console.log("Vai trò đã chuẩn hóa:", tenVaiTro); // Log để kiểm tra
 
+        // (Bỏ qua check pass theo yêu cầu của bạn)
 
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Đã xảy ra lỗi, vui lòng thử lại' });
-  }
+        let userProfile = null;
+        const roleName = user.role.TenVaiTro.toLowerCase().trim(); // Chuẩn hóa chuỗi để so sánh
+
+        // 2. Lấy Profile dựa trên vai trò (Logic tuần tự - Async/Await chuẩn)
+        if (roleName === 'học sinh') {
+            userProfile = await HocSinh.findOne({
+                where: { MaHS: username },
+                include: [{ model: Lop, as: 'lop' }, { model: Truong, as: 'truong' }],
+            });
+            if (userProfile) {
+                res.redirectUrl = '/dashboard-hocsinh'; // Lưu URL đích tạm thời
+            }
+        } 
+        else if (roleName === 'sở giáo dục') {
+            userProfile = await NhanVienSo.findOne({ where: { MaSGD: username } });
+            if (userProfile) res.redirectUrl = '/dashboard-sogiaoduc';
+        } 
+        else if (roleName === 'admin') {
+            userProfile = await QuanTriTruong.findOne({
+                where: { MaQTV: username },
+                include: [{ model: Truong, as: 'truong' }],
+            });
+            if (userProfile) res.redirectUrl = '/dashboard-admin';
+        } 
+        else if (roleName === 'giáo viên') {
+            userProfile = await GiaoVien.findOne({
+                where: { MaGV: username },
+                include: [{ model: Truong, as: 'truong' }]
+            });
+            if (userProfile) res.redirectUrl = '/dashboard-giaovien';
+        } 
+        else if (roleName === 'ban giám hiệu' || roleName === 'bgh') { // Thêm 'bgh' đề phòng
+            console.log("--- Đang xử lý Ban Giám Hiệu ---");
+            userProfile = await BanGiamHieu.findOne({
+                where: { MaBGV: username }, // Đảm bảo cột MaBGV đúng trong DB
+                include: [{ model: Truong, as: 'truong' }],
+            });
+            if (userProfile) res.redirectUrl = '/dashboard-bangiamhieu';
+        } 
+        else if (roleName === 'phụ huynh') {
+            userProfile = await PhuHuynh.findOne({
+                where: { MaPH: username },
+                include: [{
+                    model: HocSinh, as: 'hocsinh',
+                    include: [{ model: Lop, as: 'lop' }, { model: Truong, as: 'truong' }]
+                }],
+            });
+            if (userProfile) res.redirectUrl = '/dashboard-phuhuynh';
+        }
+
+        // 3. Kiểm tra nếu không tìm thấy Profile
+        if (!userProfile) {
+            console.log(`Không tìm thấy profile cho vai trò: ${roleName}`);
+            return res.status(404).json({ error: `Không tìm thấy thông tin người dùng cho vai trò ${roleName}` });
+        }
+
+        // 4. Gán Session (Quan trọng: Làm trước khi save)
+        req.session.user = {
+            id: user.id,
+            username: user.username,
+            role: user.role.TenVaiTro,
+            roleId: user.role.id,
+            profile: userProfile.toJSON()
+        };
+
+        // 5. Lưu session và chuyển hướng (Đây là cách dùng đúng)
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({ error: 'Lỗi lưu phiên làm việc' });
+            }
+            console.log("Session saved. Redirecting to:", res.redirectUrl);
+            return res.redirect(res.redirectUrl);
+        });
+
+    } catch (err) {
+        console.error("Login Error:", err);
+        return res.status(500).json({ error: 'Đã xảy ra lỗi hệ thống, vui lòng thử lại' });
+    }
 }
 
 function logout(req, res) {
-  req.session.destroy(() => res.redirect('/login'));
+    req.session.destroy(() => res.redirect('/login'));
 }
 
 module.exports = { showLogin, login, logout };

@@ -7,6 +7,10 @@ const GiaoVien = sequelize.define('GiaoVien', {
     HoVaTen: { type: DataTypes.STRING, allowNull: false },
     NgaySinh: { type: DataTypes.DATEONLY, allowNull: false },
     GioiTinh: { type: DataTypes.STRING, allowNull: false },
+    id_MonHoc: { 
+        type: DataTypes.INTEGER,
+        allowNull: true // Có thể null nếu là GV chưa có chuyên môn hoặc GV đặc biệt
+    },
     ViTri: { type: DataTypes.STRING, allowNull: false },
     SDT: { type: DataTypes.STRING, allowNull: false },
     DiaChi: { type: DataTypes.STRING, allowNull: false },

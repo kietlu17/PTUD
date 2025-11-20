@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/sequelize');
 
-const BangPhanCongGiaoVien = sequelize.define('BangPhanCongGiaoVien', {
+const BangPhanCongChuNhiem = sequelize.define('BangPhanCongGiaoVienChuNhiem', {
     id: { 
         type: DataTypes.INTEGER, 
         primaryKey: true, 
@@ -11,16 +11,9 @@ const BangPhanCongGiaoVien = sequelize.define('BangPhanCongGiaoVien', {
         type: DataTypes.INTEGER,
         allowNull: false 
     },
-    id_MonHoc: { 
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     id_Lop: { 
         type: DataTypes.INTEGER,
         allowNull: false
-    },
-    KyHoc: { 
-        type: DataTypes.STRING(10) 
     },
     NamHoc: { 
         type: DataTypes.STRING(20) 
@@ -30,8 +23,8 @@ const BangPhanCongGiaoVien = sequelize.define('BangPhanCongGiaoVien', {
         defaultValue: DataTypes.NOW 
     }
 }, {
-    tableName: 'BangPhanCongGiaoVien',
+    tableName: 'BangPhanCongGiaoVienChuNhiem',
     timestamps: false,
 });
 
-module.exports = BangPhanCongGiaoVien;
+module.exports = BangPhanCongChuNhiem;
