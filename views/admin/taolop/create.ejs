@@ -1,0 +1,50 @@
+
+<%- include('../../partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+<%- include('../../partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+
+
+
+    <h2 class="mb-4">Tạo lớp - Bước 1: Nhập thông tin</h2>
+
+    <form method="POST" action="/admin/classes/preview" class="border p-4 rounded">
+      <div class="mb-3">
+        <label class="form-label">Khối</label>
+        <input type="number" name="grade" class="form-control" value="10" required>
+      </div>
+        <div class="mb-3">
+        <label class="form-label">Năm nhập học</label>
+        <input type="number" name="year" class="form-control" value="2025" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Số lớp muốn tạo</label>
+        <input type="number" name="numClasses" class="form-control" value="10" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Tiền tố tên lớp</label>
+        <input type="text" name="classPrefix" class="form-control" value="10A">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Sĩ số tối đa (mỗi lớp)</label>
+        <input type="number" name="maxSize" class="form-control" value="45">
+      </div>
+
+      <div class="text-end">
+        <button class="btn btn-primary">Xem gợi ý phân lớp</button>
+      </div>
+    </form>
+
+    </main>
+
+  </div>
+</div>

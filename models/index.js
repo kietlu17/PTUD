@@ -97,5 +97,9 @@ DiemSo.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
 // Quan hệ Diem - MonHoc
 MonHoc.hasMany(DiemSo, { foreignKey: 'id_MonHoc', as: 'diem' });
 DiemSo.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
+
+//học sinh với tổ hợp môn
+ToHopMon.hasMany(HocSinh, { foreignKey: 'id_tohopmon', as: 'hocsinh' });
+HocSinh.belongsTo(ToHopMon, { foreignKey: 'id_tohopmon', as: 'tohopmon' });
 // Export tất cả model
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo };

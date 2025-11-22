@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const lopController = require('../controllers/admin/chuyenLopCTRL');
 const userController = require('../controllers/admin/accountCTRL');
+const classController = require('../controllers/admin/classController');
 
 // Quản lý lớp
 // Lấy danh sách lớp + giáo viên chủ nhiệm
@@ -22,4 +23,10 @@ router.get('/users',userController.getListRole )
 router.get('/users/:roleID',userController.getUsersByRole )
 // router.post('/users/:id/password', userController.changePassword);
 router.post('/users/reset-password/:id', userController.resetDefaultPassword);
+
+//Tạo lớp
+router.get('/classes/create', classController.showCreateForm);
+router.post('/classes/preview', classController.preview);
+router.post('/classes/confirm-create',  classController.createClasses);
+
 module.exports = router;
