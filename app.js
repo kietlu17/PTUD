@@ -10,6 +10,7 @@ const giaoVienRoute = require('./routes/giaoVienRoute');
 const adminRoute = require('./routes/adminRoute');
 const { init: sequelizeInit } = require('./config/sequelize');
 const phuHuynhRoute = require('./routes/phuHuynhRoute');
+const hocSinhRoute = require('./routes/hocSinhRoute');
 const app = express();
 
 
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.role = req.session.user?.role || null;
   res.locals.profile = req.session.user?.profile || null;
+  res.locals.phuHuynh = req.session.user?.profile || null;
   next();
 });
 
@@ -62,6 +64,7 @@ app.use('/sogiaoduc', requireLogin,soGiaoDucRoute);
 app.use('/giaovien', requireLogin, giaoVienRoute);
 app.use('/admin',adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);
+app.use('/hocsinh', requireLogin,hocSinhRoute);
 
 const PORT = process.env.PORT || 3000;
 

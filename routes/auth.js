@@ -26,7 +26,7 @@ router.get('/dashboard-hocsinh', (req, res) => {
     return res.redirect('/login');
   }
   const hocSinh = req.session.user.profile;
-  res.render('dashboard-hocsinh', {
+  res.render('./hocsinh/dashboard-hocsinh', {
                 hocSinh: {
                   ...hocSinh,
                   Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
