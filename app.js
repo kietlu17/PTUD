@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const soGiaoDucRoute = require('./routes/soGiaoDucRoute');
 const giaoVienRoute = require('./routes/giaoVienRoute');
 const adminRoute = require('./routes/adminRoute');
+const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
 const { init: sequelizeInit } = require('./config/sequelize');
 const phuHuynhRoute = require('./routes/phuHuynhRoute');
 const app = express();
@@ -60,8 +61,9 @@ app.use('/', authRoutes);
 // });
 app.use('/sogiaoduc', requireLogin,soGiaoDucRoute);
 app.use('/giaovien', requireLogin, giaoVienRoute);
-app.use('/admin',adminRoute);
+app.use('/admin',requireLogin,adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);
+app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
 
 const PORT = process.env.PORT || 3000;
 

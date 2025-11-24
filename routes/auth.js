@@ -73,5 +73,19 @@ router.get('/dashboard-sogiaoduc', (req, res) => {
   res.render('./sogiaoduc/dashboard-sogiaoduc', {nhanVien});
 });
 
+router.get('/dashboard-bangiamhieu', (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'ban giám hiệu') {
+    return res.redirect('/login');
+  }
+
+  const bangiamhieu = req.session.user.profile;
+
+  res.render('./bangiamhieu/dashboard-bangiamhieu', {
+    bangiamhieu: {
+      ...bangiamhieu,
+      Truong: bangiamhieu.truong?.name || 'Chưa cập nhật'
+    }
+  });
+});
 
 module.exports = router;
