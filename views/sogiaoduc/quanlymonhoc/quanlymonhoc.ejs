@@ -69,6 +69,15 @@ function themMon() {
     return Swal.fire('Lỗi', 'Tên môn không được để trống', 'error');
   }
 
+  // validate SoTiet present and > 0
+  if (!String(SoTiet).trim()) {
+    return Swal.fire('Lỗi', 'Số tiết không được để trống', 'error');
+  }
+  const so = parseInt(String(SoTiet).trim(), 10);
+  if (isNaN(so) || so <= 0) {
+    return Swal.fire('Lỗi', 'Số tiết phải là số nguyên lớn hơn 0', 'error');
+  }
+
   fetch('/sogiaoduc/monhoc/them', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -106,6 +115,9 @@ function suaMon(id) {
       const TenMon = document.getElementById('swal-ten').value.trim();
       const SoTiet = document.getElementById('swal-sotiet').value;
       if (!TenMon) Swal.showValidationMessage('Tên môn không được để trống');
+      if (!String(SoTiet).trim()) Swal.showValidationMessage('Số tiết không được để trống');
+      const parsed = parseInt(String(SoTiet).trim(), 10);
+      if (isNaN(parsed) || parsed <= 0) Swal.showValidationMessage('Số tiết phải là số nguyên lớn hơn 0');
       return { TenMon, SoTiet };
     }
   }).then(result => {
