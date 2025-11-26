@@ -1,5 +1,5 @@
 const { render } = require('ejs');
-const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh } = require('../models');
+const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh, BanGiamHieu } = require('../models');
 const bcrypt = require('bcrypt');
 const { json } = require('body-parser');
 
@@ -144,6 +144,28 @@ async function login(req, res) {
             };
             res.redirect('/dashboard-phuhuynh');
           }
+
+                // Nếu là ban giám hiệu
+        if (user.role.TenVaiTro === 'ban giám hiệu') {
+            const bgh = await BanGiamHieu.findOne({
+              where: { MaBGH: username },
+              include: [
+                { model: Truong, as: 'truong' }
+              ],
+            });    
+        if (!bgh) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin ' });
+        }
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: bgh.toJSON()
+            };
+            console.log(req.session.user)
+            res.redirect('/dashboard-bangiamhieu');
+      }
     });
   } catch (err) {
     console.error(err);

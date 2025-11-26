@@ -6,6 +6,7 @@ const Lop = sequelize.define('Lop', {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true
   },
   TenLop: {
     type: DataTypes.STRING(10),

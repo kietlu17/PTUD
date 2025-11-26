@@ -5,7 +5,7 @@
   %>
       <a href="/dashboard-admin" class="<% if (activePage === '/dashboard-admin') { %>active<% } %>">Trang Dashboard</a>
       <a href="/admin/quanlylop" class="<% if (activePage === '/quanlylop') { %>active<% } %>">Quản Lý Lớp Học</a>
-      <a href="#">Tạo Lớp</a>
+      <a href="/admin/classes/create">Tạo Lớp</a>
       <a href="/admin/users" class="<% if (activePage === '/quanlylop') { %>active<% } %>">Quản Lý Tài Khoản</a>
       <a href="#">Thông Báo</a>
       <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>

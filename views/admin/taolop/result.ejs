@@ -1,0 +1,48 @@
+<%- include('../../partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+<%- include('../../partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+
+
+    <h2>Kết quả tạo lớp</h2>
+
+    <p><b>Tổng số lớp tạo:</b> <%= classes.length %></p>
+
+    <table class="table table-bordered text-center">
+  <thead class="table-light">
+    <tr>
+      <th>Tên lớp</th>
+      <th>Tổ hợp</th>
+      <th>Sĩ số</th>
+      <th>Nam</th>
+      <th>Nữ</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% classes.forEach(c => { %>
+      <tr>
+        <td><%= c.TenLop %></td>
+        <td><%= c.toHopName || '—' %></td>
+        <td><%= c.size %></td>
+        <td><%= c.male %></td>
+        <td><%= c.female %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+
+    <a href="/admin/classes/create" class="btn btn-primary">Tạo tiếp</a>
+
+
+      </main>
+
+  </div>
+</div>
