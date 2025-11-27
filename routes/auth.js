@@ -69,10 +69,10 @@ router.get('/dashboard-sogiaoduc', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'sở giáo dục') {
     return res.redirect('/login');
   }
-  const nhanVien = req.session.user.profile;
-  res.render('./sogiaoduc/dashboard-sogiaoduc', {nhanVien});
+  // redirect to the mounted sogiaoduc router which provides `truongs` and
+  // other data needed by the view
+  res.redirect('/sogiaoduc/dashboard-sogiaoduc');
 });
-
 router.get('/dashboard-bangiamhieu', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'ban giám hiệu') {
     return res.redirect('/login');

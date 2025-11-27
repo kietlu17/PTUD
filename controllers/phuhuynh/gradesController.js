@@ -31,7 +31,7 @@ exports.showGradesForParent = async(req, res) => {
                 DiemTrungBinh: json.DiemTrungBinh
             };
         });
-        res.render('./phuhuynh/diem/diem', { scores, hocSinh, phuHuynhId, currentPage: '/xem-diem' });
+        res.render('./phuhuynh/diem/diem', { scores, hocSinh, phuHuynhId, currentUrl: '/diem' });
     } catch (err) {
         console.error(err);
         res.status(500).send('Lỗi máy chủ.');
@@ -65,11 +65,12 @@ exports.showGradesForStudent = async(req, res) => {
                 DiemThuongKy: json.DiemThuongKy,
                 DiemGiuaKy: json.DiemGiuaKy,
                 DiemCuoiKy: json.DiemCuoiKy,
-                DiemTrungBinh: json.DiemTrungBinh
+                DiemTrungBinh: json.DiemTrungBinh,
+                
             };
         });
 
-        res.render('./hocsinh/diem/diem', { scores, hocSinh, currentPage: '/xem-diem' });
+        res.render('./phuhuynh/diem/diem', { scores, hocSinh, currentUrl: '/diem', });
     } catch (err) {
         console.error(err);
         res.status(500).send('Lỗi máy chủ.');

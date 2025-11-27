@@ -61,7 +61,8 @@ exports.getPhanCongPage = async (req, res) => {
         res.render('bangiamhieu/phancongGV/phancong', {
             ...data,
             success: req.query.success || null,
-            error: null
+            error: null,
+            currentUrl: '/phancong',
         });
     } catch (error) {
         console.error("Lỗi lấy dữ liệu trang phân công:", error);
@@ -121,7 +122,8 @@ try {
             KyHoc,
             TenGVCN: tenGVCN,
             ChiTiet: chiTietPhanCong
-        }
+        },
+        currentUrl: '/phancong',
     });
 
 } catch (error) {
@@ -135,7 +137,8 @@ try {
     res.render('bangiamhieu/phancongGV/phancong', {
         ...data,
         success: null,
-        error: "Lỗi: " + error.message
+        error: "Lỗi: " + error.message,
+        currentUrl: '/phancong',
     });
 }};
 

@@ -24,7 +24,8 @@ exports.renderFormGVCN = async (req, res) => {
             dsLop,
             dsGiaoVienChuNhiemKhaDung,
             error: null,
-            successData: null
+            successData: null,
+            currentUrl: '/phancongcn',
         });
     } catch (error) {
         console.error("Lỗi render form:", error);
@@ -32,7 +33,8 @@ exports.renderFormGVCN = async (req, res) => {
             dsLop: [],
             dsGiaoVienChuNhiemKhaDung: [],
             error: "Lỗi khi load form phân công",
-            successData: null
+            successData: null,
+            currentUrl: '/phancongcn',
         });
     }
 };
@@ -87,7 +89,7 @@ exports.saveGVCN = async (req, res) => {
                 TenLop: lop ? lop.TenLop : id_Lop,
                 NamHoc,
                 tenGVCN
-            }
+            }, currentUrl: '/phancongcn',
         });
 
     } catch (error) {
@@ -108,7 +110,8 @@ exports.saveGVCN = async (req, res) => {
             dsLop,
             dsGiaoVienChuNhiemKhaDung,
             error: "Lỗi khi lưu phân công: " + error.message,
-            successData: null
+            successData: null,
+            currentUrl: '/phancongcn',
         });
     }
 };

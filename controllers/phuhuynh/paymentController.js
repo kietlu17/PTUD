@@ -95,7 +95,8 @@ const { paymentId } = req.body; // id của bản ghi ThanhToanHocPhi
              // Alternative flow: Không còn công nợ cần thanh toán
              return res.status(200).json({ 
                  message: 'Không còn học phí cần thanh toán cho kỳ này.', 
-                 status: 'NO_DEBT' 
+                 status: 'NO_DEBT',
+                 currentUrl: '/hocphi'
              });
         }
         
@@ -109,7 +110,8 @@ const { paymentId } = req.body; // id của bản ghi ThanhToanHocPhi
             message: 'Vui lòng sử dụng mã QR để thanh toán.', 
             qrData: `ThanhToan|${payment.id}|SoTien=${conNoHienTai}`, // Dữ liệu giả lập QR
             amount: conNoHienTai,
-            status: 'QR_DISPLAYED'
+            status: 'QR_DISPLAYED',
+             currentUrl: '/hocphi'
         });
 
     } catch (err) {

@@ -1,0 +1,176 @@
+<%- include('../../partials/header', { title: 'Quản lý môn học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <%- include('../../partials/nav-sogiaoduc', { profile, currentUrl }) %>
+
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">QUẢN LÝ DANH SÁCH MÔN HỌC</h4>
+
+      <!-- FORM THÊM -->
+      <div class="card p-3 mb-4">
+        <h6 class="fw-bold">Thêm môn học</h6>
+
+        <div class="row">
+          <div class="col-md-5">
+            <input id="TenMon" class="form-control" placeholder="Tên môn">
+          </div>
+          <div class="col-md-3">
+            <input id="SoTiet" type="number" class="form-control" placeholder="Số tiết">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary" onclick="themMon()">Thêm</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BẢNG -->
+      <table class="table table-bordered text-center">
+        <thead class="table-secondary">
+          <tr>
+            <th>ID</th>
+            <th>Tên môn</th>
+            <th>Số tiết</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% monhocs.forEach(m => { %>
+            <tr>
+              <td><%= m.id %></td>
+              <td>
+                <input id="ten-<%= m.id %>" value="<%= m.TenMon %>" class="form-control">
+              </td>
+              <td>
+                <input id="sotiet-<%= m.id %>" value="<%= m.SoTiet %>" class="form-control">
+              </td>
+              <td>
+                <button class="btn btn-warning btn-sm suaMonBtn" data-id="<%= m.id %>">Sửa</button>
+                <button class="btn btn-danger btn-sm xoaMonBtn" data-id="<%= m.id %>">Xóa</button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function themMon() {
+  const TenMon = document.getElementById('TenMon').value.trim();
+  const SoTiet = document.getElementById('SoTiet').value;
+
+  if (!TenMon) {
+    return Swal.fire('Lỗi', 'Tên môn không được để trống', 'error');
+  }
+
+  // validate SoTiet present and > 0
+  if (!String(SoTiet).trim()) {
+    return Swal.fire('Lỗi', 'Số tiết không được để trống', 'error');
+  }
+  const so = parseInt(String(SoTiet).trim(), 10);
+  if (isNaN(so) || so <= 0) {
+    return Swal.fire('Lỗi', 'Số tiết phải là số nguyên lớn hơn 0', 'error');
+  }
+
+  fetch('/sogiaoduc/monhoc/them', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ TenMon, SoTiet })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      Swal.fire('Lỗi', data.error, 'error');
+    } else {
+      Swal.fire('Thành công', 'Đã thêm môn học', 'success')
+        .then(() => location.reload());
+    }
+  });
+}
+
+function suaMon(id) {
+  const currentTen = document.getElementById(`ten-${id}`).value.trim();
+  const currentSoTiet = document.getElementById(`sotiet-${id}`).value;
+
+  // escape values for safe injection into HTML string
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, function (c) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+    });
+  }
+
+  Swal.fire({
+    title: 'Sửa môn học',
+    html:
+      `<input id="swal-ten" class="swal2-input" placeholder="Tên môn" value="${escapeHtml(currentTen)}">` +
+      `<input id="swal-sotiet" type="number" class="swal2-input" placeholder="Số tiết" value="${escapeHtml(currentSoTiet)}">`,
+    showCancelButton: true,
+    preConfirm: () => {
+      const TenMon = document.getElementById('swal-ten').value.trim();
+      const SoTiet = document.getElementById('swal-sotiet').value;
+      if (!TenMon) Swal.showValidationMessage('Tên môn không được để trống');
+      if (!String(SoTiet).trim()) Swal.showValidationMessage('Số tiết không được để trống');
+      const parsed = parseInt(String(SoTiet).trim(), 10);
+      if (isNaN(parsed) || parsed <= 0) Swal.showValidationMessage('Số tiết phải là số nguyên lớn hơn 0');
+      return { TenMon, SoTiet };
+    }
+  }).then(result => {
+    if (!result.isConfirmed) return;
+
+    const { TenMon, SoTiet } = result.value;
+
+    // if no changes, don't send update
+    if (TenMon === currentTen && String(SoTiet) === String(currentSoTiet)) {
+      return Swal.fire('Không có thay đổi', 'Bạn chưa chỉnh sửa nội dung', 'info');
+    }
+
+    fetch(`/sogiaoduc/monhoc/sua/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ TenMon, SoTiet })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) Swal.fire('Lỗi', data.error, 'error');
+      else Swal.fire('Thành công', 'Cập nhật thành công', 'success')
+        .then(() => location.reload());
+    });
+  });
+}
+
+function xoaMon(id) {
+  Swal.fire({
+    title: 'Xóa môn học?',
+    text: 'Không thể hoàn tác!',
+    icon: 'warning',
+    showCancelButton: true
+  }).then(result => {
+    if (result.isConfirmed) {
+      fetch(`/sogiaoduc/monhoc/xoa/${id}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            Swal.fire('Lỗi', data.error, 'error');
+          } else {
+            Swal.fire('Thành công', 'Đã xóa môn học', 'success')
+              .then(() => location.reload());
+          }
+        });
+    }
+  });
+}
+
+// attach handlers to buttons rendered by EJS to avoid inline EJS in JS context
+document.querySelectorAll('.suaMonBtn').forEach(btn => {
+  btn.addEventListener('click', () => suaMon(btn.dataset.id));
+});
+document.querySelectorAll('.xoaMonBtn').forEach(btn => {
+  btn.addEventListener('click', () => xoaMon(btn.dataset.id));
+});
+</script>

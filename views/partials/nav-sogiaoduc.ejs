@@ -1,25 +1,55 @@
-            <nav class="col-md-2 sidebar">
-                <div class="sidebar-info mb-3">
-                    <span class="nhanvien-ten">
-                        <%= profile.HoTen %>
-                    </span>
-                </div>
-      <% 
-    const activePage = typeof currentPage !== 'undefined' ? currentPage : '/dashboard-sogiaoduc';
-    %>
+<nav class="col-md-2 sidebar">
 
-                <a href="#" class="<% if (activePage === '/dashboard-sogiaoduc') { %>active<% } %>">Trang Dashboard</a>
-                <a href="/monhoc" class="<% if (activePage === '/dashboard-admin') { %>active<% } %>">Quản lý môn học</a>
-                <a href="/diemthi" class="<% if (activePage === '/diemthi') { %>active<% } %>">Nhập điểm thi</a>
-                <a href="/xet-tuyen">Xét tuyển</a>
-                <a href="/chi-tieu">Chỉ tiêu tuyển sinh</a>
+  <div class="sidebar-info mb-3 d-flex align-items-center">
+    <% const avatar=profile?.avatarUrl || null; %>
 
-                <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
-                      <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
-                <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
-            </nav>
-            
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <div class="me-2">
+        <% if (avatar) { %>
+          <img src="<%= avatar %>" class="sidebar-avatar" />
+          <% } else { %>
+            <div class="sidebar-avatar fallback-avatar"></div>
+            <% } %>
+      </div>
+
+      <div>
+        <div class="nhanvien-ten fw-semibold">
+          <%= profile?.HoTen %>
+        </div>
+        <div class="text-muted small">
+          <%= profile?.ChucVu || "" %>
+        </div>
+      </div>
+  </div>
+<a href="/sogiaoduc/dashboard-sogiaoduc"
+  class="<%= (currentUrl === '/dashboard-sogiaoduc' || currentUrl === '/sogiaoduc/dashboard-sogiaoduc') ? 'active' : '' %>">
+  Trang Dashboard
+</a>
+
+
+  <a href="/sogiaoduc/monhoc" class="<%= currentUrl === '/monhoc' ? 'active' : '' %>">
+    Quản lý môn học
+  </a>
+
+  <a href="/sogiaoduc/diemthi" class="<%= (currentUrl === '/diemthi' || currentUrl === '/sogiaoduc/diemthi') ? 'active' : '' %>">
+    Nhập điểm thi
+  </a>
+
+  <a href="/xet-tuyen" class="<%= currentUrl === '/xet-tuyen' ? 'active' : '' %>">
+    Xét tuyển
+  </a>
+
+  <a href="/chi-tieu" class="<%= currentUrl === '/chi-tieu' ? 'active' : '' %>">
+    Chỉ tiêu tuyển sinh
+  </a>
+
+  <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+  <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
+  <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+  <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function changePassword(userId) {
   Swal.fire({

@@ -12,7 +12,7 @@ const { Op } = require('sequelize');
  * => Luôn tạo lớp khối 10 (khoi = 10)
  */
 exports.createClasses = async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
   const {
     grade,          // chỉ tạo lớp cho khối 10
     year,                // năm nhập học
@@ -175,7 +175,8 @@ exports.createClasses = async (req, res) => {
       classes: createdClasses,
       students,
       totalStudents: students.length,
-      totalClasses: createdClasses.length
+      totalClasses: createdClasses.length,
+      currentPage: '/taolop'
     });
 
 
@@ -221,12 +222,13 @@ exports.preview = async (req, res) => {
     numClasses,
     classPrefix,
     totalStudents: students.length,
-    groups: groupStats
+    groups: groupStats,
+    currentPage: '/taolop'
   });
 };
 
 exports.showCreateForm = (req, res) => {
-  res.render('admin/taolop/create'); // form nhập số lớp, năm, prefix
+  res.render('admin/taolop/create', {currentPage: '/taolop'}); // form nhập số lớp, năm, prefix
 };
 
 // exports.previewClasses = async (req, res) => {

@@ -7,9 +7,9 @@ router.get('/thanh-toan-hoc-phi', paymentController.showPaymentDashboard);
 router.post('/thanh-toan-hoc-phi/initiate', paymentController.initiatePayment);
 
 
-// Xem điểm (phụ huynh) - phụ huynh có thể truyền ?hocSinhId=...
-router.get('/:phuHuynhId/diem', gradesCtrl.showGradesForParent);
+// // Xem điểm (phụ huynh) - phụ huynh có thể truyền ?hocSinhId=...
+// router.get('/:hocSinhId/diem', gradesCtrl.showGradesForParent);
 
 // Xem điểm chi tiết theo học sinh (có thể dùng cho học sinh riêng)
-router.get('/:hocSinhId/diem', gradesCtrl.showGradesForStudent);
+router.get('/diem/:hocSinhId', gradesCtrl.showGradesForStudent);
 module.exports = router;
