@@ -1,0 +1,56 @@
+<nav class="col-md-2 sidebar">
+    <div class="text-center fw-semibold mb-3">
+        <%= profile.HoVaTen %>
+    </div>
+    <% 
+    const activePage = typeof currentPage !== 'undefined' ? currentPage : '/dashboard-admin';
+  %>
+        <a href="/dashboard-giaovien" class="<% if (activePage === '/dashboard-giaovien') { %>active<% } %>">Trang Dashboard</a>
+        <a href="/giaovien/diemdanh/<%= profile.id %>/lop" class="<% if (activePage === '/diemdanh') { %>active<% } %>">Điểm Danh</a>
+        <a href="/giaovien/hanhkiem/<%= profile.id %>/lop" class="<% if (activePage === '/hanhkiem') { %>active<% } %>">Đánh Giá Hạnh Kiểm</a>
+        <a href="/giaovien/giao-bai-tap">Giao Bài Tập</a>
+        <a href="/giaovien/cham-bai" class="<% if (activePage === '/chambai') { %>active<% } %>">
+        Chấm Bài Tập
+    </a>
+
+        <a href="/giaovien/nhap-diem" class="<% if (activePage === '/nhapdiem') { %>active<% } %>">
+        Nhập Điểm
+    </a>
+        <a href="#">Thông Báo</a>
+        <a href="#">Tài Khoản Cá Nhân</a>
+        <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
+        <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+        <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function changePassword(userId) {
+        Swal.fire({
+            title: "Nhập mật khẩu mới",
+            input: "password",
+            inputPlaceholder: "Mật khẩu mới",
+            confirmButtonText: "Đổi mật khẩu",
+            showCancelButton: true
+        }).then(result => {
+            if (!result.value) return;
+
+            fetch(`/account/re-password/${userId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        password: result.value
+                    })
+                })
+                .then(res => {
+                    if (res.ok) {
+                        Swal.fire("Thành công", "Đổi mật khẩu thành công", "success");
+                    } else {
+                        Swal.fire("Lỗi", "Không thể đổi mật khẩu", "error");
+                    }
+                });
+        });
+    }
+</script>

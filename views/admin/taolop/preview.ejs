@@ -1,0 +1,81 @@
+
+<%- include('../../partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+<%- include('../../partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+
+    <h2 class="mb-4">Tạo lớp - Bước 2: Xem và điều chỉnh phân bổ</h2>
+
+    <p><b>Tổng số học sinh:</b> <%= totalStudents %></p>
+    <p><b>Số lớp cần tạo:</b> <%= numClasses %></p>
+
+    <form id="confirmForm" method="POST" action="/admin/classes/confirm-create">
+
+      <input type="hidden" name="grade" value="<%= grade %>">
+      <input type="hidden" name="year" value="<%= year %>">
+      <input type="hidden" name="numClasses" value="<%= numClasses %>">
+      <input type="hidden" name="classPrefix" value="<%= classPrefix %>">
+
+      <table class="table table-bordered text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Tổ hợp</th>
+            <th>Số học sinh</th>
+            <th>Số lớp gợi ý</th>
+            <th>Điều chỉnh</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% groups.forEach(g => { %>
+            <tr>
+              <td><%= g.toHopName %></td>
+              <td><%= g.count %></td>
+              <td><%= g.assignedClasses %></td>
+              <td>
+                <input type="number"
+                       class="form-control text-center w-50 mx-auto"
+                       value="<%= g.assignedClasses %>"
+                       name="allocation_<%= g.id_to_hop %>"
+                       min="1">
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="mt-3 text-end">
+        <button  onclick="submitConfirm()" class="btn btn-success">
+          Tạo lớp
+        </button>
+      </div>
+    </form>
+
+
+<script>
+// function submitConfirm() {
+//   Swal.fire({
+//     title: 'Xác nhận tạo lớp?',
+//     text: "Bạn chắc chắn muốn tạo lớp theo phân bổ này?",
+//     icon: 'warning',
+//     showCancelButton: true,
+//     confirmButtonText: 'Xác nhận',
+//     cancelButtonText: 'Hủy'
+//   }).then(result => {
+//     if (result.isConfirmed) {
+//       document.getElementById('confirmForm').submit();
+//     }
+//   });
+// }
+</script>
+
+    </main>
+
+  </div>
+</div>

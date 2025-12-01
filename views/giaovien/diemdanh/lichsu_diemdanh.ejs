@@ -1,0 +1,84 @@
+<%- include('../../partials/header', { title: 'Lịch Sử Điểm Danh' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('../../partials/nav-giaovien') %>
+
+        <main class="col-md-10 content p-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-history me-2"></i> 
+                    LỊCH SỬ ĐIỂM DANH: <%= lop.TenLop %>
+                </h4>
+                <a href="/giaovien/diemdanh/<%= idGiaoVien %>/lop/<%= idLop %>" class="btn btn-secondary btn-sm shadow-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại điểm danh
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered text-center align-middle mb-0">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ngày Điểm Danh</th>
+                                    <th>Số Lượng Đã Ghi Nhận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (lichSu && lichSu.length > 0) { %>
+                                    <% lichSu.forEach((item, index) => { 
+                                        // Định dạng ngày sang YYYY-MM-DD để truyền vào URL
+                                        const ngayUrl = new Date(item.NgayHoc).toISOString().split('T')[0];
+                                    %>
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        
+                                        <td class="fw-bold text-primary">
+                                            <%= new Date(item.NgayHoc).toLocaleDateString('vi-VN') %>
+                                        </td>
+                                        
+                                        <td>
+                                            <a href="/giaovien/diemdanh/<%= idGiaoVien %>/lop/<%= idLop %>/lich-su/<%= ngayUrl %>" class="text-decoration-none">
+                                                <span class="badge bg-success rounded-pill px-3 py-2 shadow-sm hover-zoom">
+                                                    <%= item.SoLuong %> học sinh
+                                                </span>
+                                            </a>
+                                        </td>
+                                        
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">
+                                        Chưa có dữ liệu điểm danh nào.
+                                    </td>
+                                </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<style>
+    /* Thêm hiệu ứng hover cho badge số lượng */
+    .hover-zoom {
+        transition: transform 0.2s, background-color 0.2s;
+        cursor: pointer;
+    }
+    .hover-zoom:hover {
+        transform: scale(1.05);
+        background-color: #157347 !important; /* Xanh đậm hơn khi hover */
+    }
+    thead th {
+        font-weight: 600;
+        color: #fff;
+    }
+</style>

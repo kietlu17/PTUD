@@ -1,0 +1,125 @@
+<%- include('../../partials/header', { title: 'Giao Bài Tập Mới' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../../partials/nav-giaovien') %>
+
+                <main class="col-md-10 p-4 bg-light">
+
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-edit me-2"></i> Giao Bài: Lớp
+                                <%= phanCong.lop.TenLop %> - Môn
+                                    <%= phanCong.monhoc.TenMon %>
+                            </h5>
+
+                            <a href="/giaovien/giao-bai-tap" class="btn btn-sm btn-light text-primary fw-bold">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                        </div>
+
+                        <div class="card-body p-4">
+
+                            <% if (error) { %>
+                                <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <%= error %>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                <% } %>
+
+                                    <form action="/giaovien/giao-bai-tap/<%= phanCong.id %>" method="POST" enctype="multipart/form-data">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-secondary">Tiêu đề bài tập <span class="text-danger">*</span></label>
+                                                    <input type="text" name="tieuDe" class="form-control" placeholder="Nhập tiêu đề: . . ." required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-secondary">Hạn nộp <span class="text-danger">*</span></label>
+                                                    <input type="datetime-local" name="hanNop" class="form-control" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-secondary">File đính kèm (Nếu có)</label>
+                                                    <input type="file" name="fileBaiTap" class="form-control">
+                                                    <div class="form-text text-muted small">Hỗ trợ: PDF, Word, Excel, Ảnh.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold text-secondary">Nội dung / Yêu cầu chi tiết</label>
+                                            <textarea name="noiDung" class="form-control" rows="6" placeholder="Nhập nội dung bài tập tại đây..."></textarea>
+                                        </div>
+
+                                        <div class="text-end border-top pt-3">
+                                            <button type="submit" class="btn btn-primary px-5 py-2 shadow-sm">
+                                <i class="fas fa-save me-2"></i> Lưu Bài Tập
+                            </button>
+                                        </div>
+                                    </form>
+                        </div>
+                    </div>
+
+                </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Lấy giá trị biến success từ Server gửi xuống
+        const successMessage = "<%= success || '' %>";
+
+        // Nếu có thông báo thành công -> Hiện Popup
+        if (successMessage && successMessage.trim() !== '') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Giao bài tập thành công!',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#0d6efd', // Màu xanh dương
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Bấm OK xong thì quay về danh sách lớp
+                    window.location.href = '/giaovien/giao-bai-tap';
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            border-color: #0d6efd;
+        }
+        
+        .btn-primary {
+            background-color: rgb(26 137 86) !important;
+            border: none;
+            transition: all 0.3s;
+            /* Flexbox căn giữa chữ */
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: none !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>

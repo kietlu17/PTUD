@@ -1,0 +1,66 @@
+<%- include('../partials/header', { title: 'Dashboard Phụ Huynh' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+<%- include('../partials/nav-phuhuynh') %>
+
+    <!-- Main content -->
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">THÔNG TIN PHỤ HUYNH</h4>
+
+      <div class="info-card shadow-sm">
+        <div class="row align-items-center">
+          <div class="col-md-3 text-center">
+            <div class="photo-box">Ảnh</div>
+          </div>
+          <div class="col-md-9">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Mã Phụ Huynh:</strong> <%= phuHuynh.MaPH %></p>
+                <p><strong>Họ tên:</strong> <%= phuHuynh.HoVaTen %></p>
+                <p><strong>Số điện thoại:</strong> <%= phuHuynh.SDT %></p>
+                <p><strong>Email:</strong> <%= phuHuynh.email %></p>
+                <p><strong>Con đang học:</strong> <%= phuHuynh.hocSinhLienQuan.HoVaTen %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature cards -->
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="feature-card">Xem Thời Khóa Biểu</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Xin Nghỉ Học</div>
+        </div>
+        <div class="col-md-4">
+          <a href="/phuhuynh/<%= phuHuynh.id %>/diem?hocSinhId=<%= phuHuynh.id_HocSinh %>" class="text-decoration-none">
+            <div class="feature-card">Xem Điểm</div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Đăng Ký Nhập Học</div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">Đăng Ký Tuyển Sinh</div>
+        </div>
+        <div class="col-md-4">
+          <a href="phuhuynh/thanh-toan-hoc-phi" class="text-decoration-none">
+            <div class="feature-card">Thanh Toán Học Phí</div>
+          </a>
+        </div>
+        <!-- <div class="col-md-4 offset-md-4">
+          <div class="feature-card">Lịch Thi Trong Tuần</div>
+        </div> -->
+      </div>
+    </main>
+
+  </div>
+</div>
+
+</body>
+</html>

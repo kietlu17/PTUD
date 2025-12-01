@@ -1,0 +1,167 @@
+<%- include('../../partials/header', { title: 'Nộp Bài Tập' }) %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('../../partials/nav-hocsinh') %>
+        <main class="col-md-10 content p-4">
+            
+            <div class="mb-3">
+                <a href="/hocsinh/bai-tap" class="text-decoration-none text-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                
+                <% 
+                   // Kiểm tra xem có bài nộp chưa
+                   // Lưu ý: Trong Controller bạn cần truyền biến 'baiNop' xuống view này
+                   // Nếu chưa truyền, hãy xem phần Controller bên dưới để cập nhật
+                   const daNop = (typeof baiNop !== 'undefined' && baiNop); 
+                   const daCham = (daNop && baiNop.Diem !== null);
+                %>
+
+                <div class="card-header text-white <%= quaHan ? 'bg-secondary' : (daNop ? 'bg-success' : 'bg-primary') %>">
+                    <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                        <span>
+                            <% if (quaHan) { %>
+                                <i class="fas fa-lock me-2"></i> Đã Đóng: <%= baiTap.TieuDe %>
+                            <% } else if (daNop) { %>
+                                <i class="fas fa-check-circle me-2"></i> Đã Nộp: <%= baiTap.TieuDe %>
+                            <% } else { %>
+                                <i class="fas fa-upload me-2"></i> Nộp Bài: <%= baiTap.TieuDe %>
+                            <% } %>
+                        </span>
+                        
+                        <% if (daNop) { %>
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-clock me-1"></i> Nộp lúc: <%= new Date(baiNop.NgayNop).toLocaleString('vi-VN') %>
+                            </span>
+                        <% } %>
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    
+                    <div class="alert alert-light border border-secondary-subtle mb-4">
+                        <strong class="text-primary"><i class="fas fa-info-circle"></i> Yêu cầu:</strong>
+                        <p class="mb-2 mt-2 ps-3 border-start border-3 border-primary"><%= baiTap.NoiDung %></p>
+                        
+                        <% if(baiTap.File) { 
+                            let tenFileDe = baiTap.File.split(/[/\\]/).pop();
+                        %>
+                            <div class="mt-3 pt-2 border-top">
+                                <span class="text-muted small me-2">File đính kèm:</span>
+                                <a href="<%= baiTap.File %>" class="btn btn-sm btn-outline-primary fw-bold" download>
+                                    <i class="fas fa-file-download me-1"></i> <%= tenFileDe %>
+                                </a>
+                            </div>
+                        <% } %>
+                        
+                        <div class="mt-2 text-muted small text-end">
+                            Hạn nộp: <strong><%= new Date(baiTap.HanNop).toLocaleString('vi-VN') %></strong>
+                        </div>
+                    </div>
+
+                    <% if (daNop) { %>
+                        <div class="card mb-4 border-success">
+                            <div class="card-header bg-success-subtle fw-bold text-success">
+                                <i class="fas fa-file-alt me-2"></i> BÀI LÀM CỦA BẠN
+                            </div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6 border-end">
+                                        <p class="mb-1 text-muted">File đã nộp:</p>
+                                        <% if (baiNop.FileNop) { 
+                                            let tenFileNop = baiNop.FileNop.split(/[/\\]/).pop();
+                                        %>
+                                            <a href="<%= baiNop.FileNop %>" target="_blank" class="btn btn-outline-success fw-bold w-100 text-start text-truncate">
+                                                <i class="fas fa-file-word me-2"></i> <%= tenFileNop %>
+                                            </a>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <div class="col-md-6 ps-4">
+                                        <p class="mb-1 text-muted">Kết quả chấm điểm:</p>
+                                        <% if (daCham) { %>
+                                            <div class="d-flex align-items-center">
+                                                <div class="display-4 fw-bold text-danger me-3"><%= baiNop.Diem %></div>
+                                                <div>
+                                                    <span class="badge bg-warning text-dark mb-1">Lời phê:</span>
+                                                    <p class="mb-0 fst-italic text-dark"><%= baiNop.NhanXet || "Không có lời phê" %></p>
+                                                </div>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="alert alert-warning mb-0 py-2">
+                                                <i class="fas fa-hourglass-half me-2"></i> Giáo viên chưa chấm điểm.
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <% if (!quaHan) { %>
+                        
+                        <% if (daNop) { %>
+                            <div class="d-flex align-items-center mb-2">
+                                <hr class="flex-grow-1">
+                                <span class="mx-3 text-muted fw-bold small text-uppercase">Cập nhật bài làm mới</span>
+                                <hr class="flex-grow-1">
+                            </div>
+                        <% } %>
+
+                        <form action="/hocsinh/nop-bai/<%= baiTap.id %>" method="POST" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Chọn file tải lên:</label>
+                                <input type="file" name="fileBaiLam" class="form-control form-control-lg" required>
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Hỗ trợ: PDF, Word, Ảnh (Tối đa 10MB). 
+                                    <% if(daNop) { %> <span class="text-danger">(Nộp file mới sẽ ghi đè file cũ)</span> <% } %>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success px-5 py-2 fw-bold shadow-sm">
+                                    <i class="fas fa-paper-plane me-2"></i> <%= daNop ? 'CẬP NHẬT BÀI NỘP' : 'NỘP BÀI' %>
+                                </button>
+                            </div>
+                        </form>
+
+                    <% } else if (!daNop) { %>
+                        <div class="alert alert-danger text-center p-4">
+                            <h4 class="alert-heading fw-bold"><i class="fas fa-times-circle"></i> Đã Hết Hạn Nộp Bài</h4>
+                            <p class="mb-0">Bạn chưa nộp bài tập này và thời gian nộp đã kết thúc.</p>
+                        </div>
+                    <% } %>
+
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    const successMsg = "<%= success || '' %>";
+    if (successMsg && successMsg.trim() !== "") {
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: successMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#198754'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = window.location.href; // Reload lại trang để thấy kết quả
+            }
+        });
+    }
+</script>
+
+<style>
+    .card { border-radius: 10px; overflow: hidden; }
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+</style>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title || 'PERN Simple App' %></title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Home</a>
+        <% if (!currentUser) { %>
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+        <% } else { %>
+          <a href="/posts">My Posts</a>
+          <form method="post" action="/logout" style="display:inline">
+            <button type="submit">Logout</button>
+          </form>
+          <span>Hi, <%= currentUser.name || currentUser.email %></span>
+        <% } %>
+      </nav>
+    </header>
+
+    <main>
+      <%- body %>
+    </main>
+
+    <footer>
+      <p>Simple demo app</p>
+    </footer>
+  </body>
+</html>

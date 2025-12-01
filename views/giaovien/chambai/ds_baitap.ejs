@@ -1,0 +1,43 @@
+<%- include('../../partials/header', { title: 'Danh Sách Chấm Bài' }) %>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../../partials/nav-giaovien') %>
+                <main class="col-md-10 content p-4">
+                    <h4 class="text-center fw-bold text-primary mb-4">CHỌN BÀI TẬP ĐỂ CHẤM</h4>
+                    <div class="table-responsive shadow-sm">
+                        <table class="table table-bordered table-hover align-middle text-center">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Tiêu Đề</th>
+                                    <th>Lớp</th>
+                                    <th>Môn</th>
+                                    <th>Hạn Nộp</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% dsBaiTap.forEach(bt => { %>
+                                    <tr>
+                                        <td>
+                                            <%= bt.TieuDe %>
+                                        </td>
+                                        <td>
+                                            <%= bt.lop.TenLop %>
+                                        </td>
+                                        <td>
+                                            <%= bt.monhoc.TenMon %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(bt.HanNop).toLocaleDateString('vi-VN') %>
+                                        </td>
+                                        <td>
+                                            <a href="/giaovien/cham-bai/<%= bt.id %>" class="btn btn-primary btn-sm">Chấm Bài</a>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+        </div>
+    </div>

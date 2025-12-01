@@ -1,0 +1,106 @@
+<%- include('../../partials/header', { title: 'Danh Sách Lớp - Điểm Danh' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <%- include('../../partials/nav-giaovien') %>
+
+        <main class="col-md-10 content p-4">
+            
+            <h4 class="text-center fw-bold mb-4 text-primary">
+                <i class="fas fa-chalkboard-teacher me-2"></i> DANH SÁCH CÁC LỚP BẠN DẠY
+            </h4>
+
+            <div class="table-responsive shadow-sm bg-white rounded">
+                <table class="table table-hover table-bordered text-center align-middle mb-0">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th style="width: 10%">Mã Lớp</th>
+                            <th style="width: 20%">Tên Lớp</th>
+                            <th style="width: 25%">GV Chủ Nhiệm</th>
+                            <th style="width: 15%">Sĩ Số</th>
+                            <th style="width: 30%">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <% if (dsLop && dsLop.length > 0) { %>
+                            <% dsLop.forEach(item => { %>
+                                <tr>
+                                    <td class="fw-bold text-secondary">#<%= item.lop.id %></td>
+                                    
+                                    <td class=""><%= item.lop.TenLop %></td>
+                                    
+                                    <td class="text-start ps-4">
+                                        <% if (item.lop.gvcn) { %>
+                                            <i class="fas fa-user-tie me-2 text-muted"></i>
+                                            <%= item.lop.gvcn.HoVaTen %>
+                                        <% } else { %>
+                                            <span class="text-muted fst-italic">Chưa phân công</span>
+                                        <% } %>
+                                    </td>
+                                    
+                                    <td>
+                                        <span class="badge bg-info text-dark rounded-pill px-3">
+                                            <%= item.lop.SoLuongHocSinh || 0 %> học sinh
+                                        </span>
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="/giaovien/diemdanh/<%= item.id_GiaoVien %>/lop/<%= item.lop.id %>" 
+                                               class="btn btn-sm btn-primary shadow-sm fw-bold">
+                                                <i class="fas fa-edit me-1"></i> Điểm Danh
+                                            </a>
+
+                                            <a href="/giaovien/diemdanh/<%= item.id_GiaoVien %>/lop/<%= item.lop.id %>/lich-su" 
+                                               class="btn btn-sm btn-info text-white shadow-sm fw-bold">
+                                                <i class="fas fa-history me-1"></i> Xem Lịch Sử
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <i class="fas fa-folder-open fa-3x mb-3 text-secondary opacity-50"></i><br>
+                                    Chưa có lớp nào được phân công cho bạn.
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+    </div>
+</div>
+
+<style>
+    /* Header bảng */
+    thead th {
+        background-color: #e9ecef !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: #495057;
+    }
+    /* Hiệu ứng hover hàng */
+    table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    /* Nút bấm */
+    .btn-primary {
+        background-color: #0d6efd;
+        border: none;
+    }
+    .btn-primary:hover, .btn-info:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .btn-info {
+        background-color: #0d6efd;
+        border: none;
+    }
+</style>

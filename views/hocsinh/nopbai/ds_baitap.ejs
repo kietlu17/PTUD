@@ -1,0 +1,46 @@
+<%- include('../../partials/header', { title: 'Danh Sách Bài Tập' }) %>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../../partials/nav-hocsinh') %>
+                <main class="col-md-10 content p-4">
+                    <h4 class="text-primary fw-bold mb-4">DANH SÁCH BÀI TẬP CẦN LÀM</h4>
+
+                    <div class="row g-3">
+                        <% dsBaiTap.forEach(bt => { 
+                    const daNop = bt.dsBaiNop && bt.dsBaiNop.length > 0;
+                    const baiNop = daNop ? bt.dsBaiNop[0] : null;
+                    const hanNop = new Date(bt.HanNop);
+                    const quaHan = new Date() > hanNop;
+                %>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-white fw-bold d-flex justify-content-between">
+                                        <span><%= bt.monhoc.TenMon %></span>
+                                        <% if (daNop) { %>
+                                            <span class="badge bg-success">Đã nộp</span>
+                                            <% } else if (quaHan) { %>
+                                                <span class="badge bg-danger">Quá hạn</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-warning text-dark">Chưa nộp</span>
+                                                    <% } %>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title fw-bold text-primary">
+                                            <%= bt.TieuDe %>
+                                        </h5>
+                                        <p class="card-text text-muted small mb-2">
+                                            <i class="fas fa-clock me-1"></i> Hạn nộp:
+                                            <%= hanNop.toLocaleDateString('vi-VN') %>
+                                        </p>
+                                        <hr>
+                                        <a href="/hocsinh/nop-bai/<%= bt.id %>" class="btn btn-outline-primary w-100">
+                                            <%= daNop ? 'Xem / Nộp lại' : 'Nộp Bài Ngay' %>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                    </div>
+                </main>
+        </div>
+    </div>

@@ -1,0 +1,25 @@
+<nav class="col-md-2 sidebar">
+    <div class="text-center fw-semibold mb-3">
+        <%= typeof hocsinh !== 'undefined' ? hocsinh.HoVaTen : 'Học Sinh' %>
+    </div>
+
+    <% const activePage = typeof currentPage !== 'undefined' ? currentPage : ''; %>
+
+        <a href="/dashboard-hocsinh" class="<% if (activePage === '/dashboard-hocsinh') { %>active<% } %>">
+        Trang Chủ
+    </a>
+
+        <a href="/hocsinh/bai-tap" class="<% if (activePage === '/baitap') { %>active<% } %>">
+        Nộp Bài Tập
+    </a>
+
+        <a href="#">Xem Điểm Số</a>
+        <a href="#">Thời Khóa Biểu</a>
+
+        <hr class="text-white">
+
+        <a href="#">Tài Khoản</a>
+
+        <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+        <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+</nav>

@@ -1,0 +1,84 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+}
+
+.header {
+  background-color: #2b6cb0;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #1a202c;
+  min-height: 100vh;
+  padding: 20px;
+  color: #fff;
+}
+.sidebar a {
+  display: block;
+  color: #cbd5e0;
+  padding: 10px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #2b6cb0;
+  color: #fff;
+}
+.logout-btn {
+  margin-top: 15px;
+  width: 100%;
+  background-color: #e53e3e;
+  border: none;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+}
+.logout-btn:hover {
+  background-color: #c53030;
+}
+
+/* Main content */
+.content {
+  padding: 30px;
+}
+
+/* Info card */
+.info-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.photo-box {
+  width: 120px;
+  height: 120px;
+  background-color: #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  font-weight: bold;
+}
+
+/* Feature cards */
+.feature-card {
+  background-color: #fff;
+  border-radius: 10px;
+  text-align: center;
+  padding: 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+.feature-card:hover {
+  transform: translateY(-5px);
+  background-color: #edf2f7;
+}

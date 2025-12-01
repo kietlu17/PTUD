@@ -1,0 +1,259 @@
+<%- include('../../partials/header', { title: 'Phân công Giáo viên' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <%- include('../../partials/nav-bangiamhieu') %>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      
+      <h2 class="text-center mb-4 fw-bold text-primary">PHÂN CÔNG GIÁO VIÊN BỘ MÔN</h2>
+
+      <% if (error) { %>
+          <div class="alert alert-danger shadow-sm"><i class="bi bi-exclamation-triangle-fill me-2"></i> <%= error %></div>
+      <% } %>
+
+      <form id="formPhanCong" action="/bangiamhieu/phancong" method="POST" class="card p-4 shadow-sm needs-validation" novalidate>
+          
+          <div class="row mb-3">
+              <div class="col-md-4">
+                  <label class="form-label fw-bold">Chọn Lớp <span class="text-danger">*</span>:</label>
+                  <select name="id_Lop" class="form-select" required>
+                      <option value="">-- Chọn Lớp --</option>
+                      <% if(dsLop && dsLop.length > 0) { %>
+                          <% dsLop.forEach(lop => { %>
+                              <option value="<%= lop.id %>"><%= lop.TenLop %></option>
+                          <% }) %>
+                      <% } else { %>
+                          <option value="" disabled>Tất cả các lớp đã có GVCN</option>
+                      <% } %>
+                  </select>
+                  <div class="invalid-feedback">Vui lòng chọn lớp cần phân công.</div>
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label fw-bold">Năm Học <span class="text-danger">*</span>:</label>
+                  <input type="text" name="NamHoc"  id="namHoc" class="form-control" placeholder="VD: 2023-2024" required>
+                  <div class="invalid-feedback">Vui lòng nhập năm học.</div>
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label fw-bold">Học Kỳ <span class="text-danger">*</span>:</label>
+                  <select name="KyHoc" class="form-select" required>
+                      <option value="1">Học kỳ 1</option>
+                      <option value="2">Học kỳ 2</option>
+                  </select>
+              </div>
+          </div>
+
+          <hr>
+
+
+          <div class="mb-4">
+              <h5 class="text-primary fw-bold">Phân công Giáo viên Bộ môn</h5>
+              <p class="text-muted small">Vui lòng chọn giáo viên phụ trách cho tất cả các môn học bên dưới.</p>
+              <div class="table-responsive">
+                  <table class="table table-bordered table-hover align-middle">
+                      <thead class="table-light text-center">
+                          <tr>
+                              <th style="width: 50px;">STT</th>
+                              <th>Môn Học</th>
+                              <th>Giáo Viên Phụ Trách <span class="text-danger">*</span></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+
+          <div class="text-center mt-3">
+              <button type="button" class="btn btn-primary btn-lg px-5" onclick="confirmSubmit()">
+                  <i class="bi bi-save me-2"></i> Xác Nhận Phân Công
+              </button>
+          </div>
+      </form>
+
+    </main>
+  </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-question-circle-fill me-2"></i> Xác nhận lưu</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn lưu thông tin phân công này không?
+        <br><small class="text-danger">Lưu ý: Các thông tin đã nhập sẽ được cập nhật vào hệ thống.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm()">Đồng ý lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (typeof successData !== 'undefined' && successData) { %>
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-2"></i> PHÂN CÔNG THÀNH CÔNG</h5>
+      </div>
+
+      <div class="modal-body p-4">
+        <div class="alert alert-light border-start border-success border-4 shadow-sm">
+            <div class="row">
+                <div class="col-md-4"><strong>Lớp:</strong> <span class="text-primary"><%= successData.TenLop %></span></div>
+                <div class="col-md-4"><strong>Năm học:</strong> <%= successData.NamHoc %></div>
+                <div class="col-md-4"><strong>Học kỳ:</strong> <%= successData.KyHoc %></div>
+            </div>
+            <hr>
+        </div>
+
+        <h6 class="fw-bold mt-4 text-secondary">Danh sách Giáo viên Bộ môn:</h6>
+        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-striped table-hover border mb-0">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th>Môn học</th>
+                        <th>Giáo viên phụ trách</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (successData.ChiTiet && successData.ChiTiet.length > 0) { %>
+                        <% successData.ChiTiet.forEach(item => { %>
+                            <tr>
+                                <td class="fw-bold"><%= item.tenMon %></td>
+                                <td><%= item.tenGV %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr><td colspan="2" class="text-center text-muted">Chưa phân công giáo viên bộ môn nào</td></tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light">
+        <a href="/bangiamhieu/phancong" class="btn btn-primary">Tiếp tục phân công</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    window.addEventListener("load", function() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const next = year + 1;
+
+    document.getElementById("namHoc").value = `${year}-${next}`;
+});
+
+document.querySelector('select[name="id_Lop"]').addEventListener('change', async function() {
+    const idLop = this.value;
+    const tbody = document.querySelector('table tbody');
+    tbody.innerHTML = '';
+
+    if (!idLop) return;
+
+    try {
+        const res = await fetch(`/bangiamhieu/getMonHoc/${idLop}`);
+        const data = await res.json();
+
+        // Lấy danh sách GV bộ môn (từ server EJS đã gửi sẵn vào trang)
+        const dsGV = JSON.parse('<%- JSON.stringify(dsGiaoVienBoMon) %>');
+
+        let index = 1;
+
+        function renderRow(mon, loai) {
+            let options = `<option value="">-- Chọn GV ${mon.TenMon} --</option>`;
+
+            dsGV.forEach(gv => {
+                if (gv.id_MonHoc === mon.id) {
+                    options += `<option value="${gv.id}">${gv.HoVaTen}</option>`;
+                }
+            });
+
+            return `
+                <tr>
+                    <td class="text-center">${index++}</td>
+                    <td class="fw-bold">${mon.TenMon} 
+                        <span class="badge bg-${loai === 'bb' ? 'primary' : 'secondary'}">
+                            ${loai === 'bb' ? 'Bắt buộc' : 'Tự chọn'}
+                        </span>
+                    </td>
+                    <td>
+                        <select name="assignments[${mon.id}]" class="form-select" required>
+                            ${options}
+                        </select>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // --- Render môn bắt buộc ---
+        data.monBatBuoc.forEach(mon => {
+            tbody.innerHTML += renderRow(mon, "bb");
+        });
+
+        // --- Render môn tự chọn ---
+        data.monTuChon.forEach(mon => {
+            tbody.innerHTML += renderRow(mon, "tc");
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+   // 1. Logic hiển thị Modal Thành công
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra xem có element successModal không
+        var successModalEl = document.getElementById('successModal');
+        if (successModalEl) {
+            var myModal = new bootstrap.Modal(successModalEl);
+            myModal.show();
+        }
+    });
+
+    // 2. Logic Validation & Confirm Modal
+    function confirmSubmit() {
+        var form = document.getElementById('formPhanCong');
+        
+        // Kiểm tra tính hợp lệ của form (HTML5 validation)
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.classList.add('was-validated'); // Hiển thị lỗi đỏ
+            
+            // Scroll lên đầu để người dùng thấy lỗi
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return; // Dừng lại, không hiện modal xác nhận
+        }
+        
+        // Nếu form hợp lệ -> Hiện modal xác nhận
+        form.classList.add('was-validated');
+        var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        confirmModal.show();
+    }
+
+    function submitForm() {
+        // Người dùng đã nhấn "Đồng ý" trong modal
+        document.getElementById('formPhanCong').submit();
+    }
+</script>
+
+
+

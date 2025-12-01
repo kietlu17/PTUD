@@ -1,0 +1,60 @@
+<%- include('../../partials/header', { title: 'Chi Tiết Điểm Danh' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('../../partials/nav-giaovien') %>
+
+        <main class="col-md-10 content p-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i> 
+                    CHI TIẾT NGÀY: <%= new Date(ngayHoc).toLocaleDateString('vi-VN') %>
+                </h4>
+                <a href="/giaovien/diemdanh/<%= idGiaoVien %>/lop/<%= idLop %>/lich-su" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại lịch sử
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered text-center align-middle mb-0">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th style="width: 10%">STT</th>
+                                    <th style="width: 15%">Mã HS</th>
+                                    <th style="width: 40%">Họ và Tên</th>
+                                    <th style="width: 35%">Trạng Thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% dsHocSinh.forEach((hs, index) => { %>
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        <td><%= hs.id %></td>
+                                        <td class="text-start ps-4 fw-bold text-primary"><%= hs.HoVaTen %></td>
+                                        <td>
+    <% if (hs.trangThai === 'Có mặt') { %>
+        <span class="badge bg-success rounded-pill px-3">Có mặt</span>
+    <% } else if (hs.trangThai === 'Không phép' || hs.trangThai === 'Vắng') { %>
+        <span class="badge bg-danger rounded-pill px-3">Vắng</span>
+    <% } else if (hs.trangThai === 'Trễ') { %>
+        <span class="badge bg-warning text-dark rounded-pill px-3">Đi muộn</span>
+    <% } else if (hs.trangThai === 'Có phép') { %>
+        <span class="badge bg-info text-dark rounded-pill px-3">Có phép</span>
+    <% } else { %>
+        <span class="text-muted">Chưa ghi nhận</span>
+    <% } %>
+</td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>

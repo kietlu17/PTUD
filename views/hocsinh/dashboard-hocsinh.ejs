@@ -1,0 +1,96 @@
+<%- include('../partials/header', { title: 'Dashboard Học Sinh' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <%- include('../partials/nav-hocsinh') %>
+
+    <main class="col-md-10 content p-4">
+      
+      <h4 class="text-center fw-bold mb-4">THÔNG TIN HỌC SINH</h4>
+
+      <div class="info-card shadow-sm mb-4 bg-white p-4 rounded">
+        <div class="row align-items-center">
+          <div class="col-md-3 text-center">
+            <div class="photo-box bg-secondary text-white d-flex align-items-center justify-content-center mx-auto" style="width:120px; height:120px; border-radius:50%; font-size: 40px;">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+          </div>
+          
+          <div class="col-md-9">
+            <h3 class="fw-bold text-primary mb-3"><%= hocsinh.HoVaTen %></h3>
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-2"><strong>Mã Học Sinh:</strong> <%= hocsinh.MaHS %></p>
+                <p class="mb-2"><strong>Giới Tính:</strong> <%= hocsinh.GioiTinh %></p>
+                <p class="mb-2"><strong>Ngày Sinh:</strong> <%= hocsinh.NgaySinh %></p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-2"><strong>Lớp:</strong> <%= hocsinh.lop ? hocsinh.lop.TenLop : 'Chưa xếp lớp' %></p>
+                <p class="mb-2"><strong>Trường:</strong> <%= hocsinh.truong ? hocsinh.truong.TenTruong : 'THPT Phú Mỹ' %></p>
+                <p class="mb-2"><strong>Năm Học:</strong> 2025-2026</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        
+        <div class="col-md-4">
+          <a href="/hocsinh/bai-tap" class="text-decoration-none">
+            <div class="feature-card bg-white p-4 text-center shadow-sm rounded border text-dark fw-bold hover-effect">
+                Bài Tập Về Nhà
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-4">
+          <a href="#" class="text-decoration-none">
+            <div class="feature-card bg-white p-4 text-center shadow-sm rounded border text-dark fw-bold hover-effect">
+                Xem Điểm Số
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-4">
+          <a href="#" class="text-decoration-none">
+            <div class="feature-card bg-white p-4 text-center shadow-sm rounded border text-dark fw-bold hover-effect">
+                Thời Khóa Biểu
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-4">
+          <a href="#" class="text-decoration-none">
+            <div class="feature-card bg-white p-4 text-center shadow-sm rounded border text-dark fw-bold hover-effect">
+                Tài Khoản
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<style>
+  .hover-effect {
+    transition: transform 0.2s;
+  }
+  .hover-effect:hover {
+    transform: translateY(-3px);
+    background-color: #f8f9fa !important;
+    border-color: #0d6efd !important;
+    color: #0d6efd !important;
+  }
+  /* Căn chỉnh chiều cao cho đều nút */
+  .feature-card {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px; /* Chiều cao tối thiểu */
+  }
+</style>

@@ -1,0 +1,213 @@
+<%- include('../../partials/header', { title: 'Điểm Danh Lớp Học' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <%- include('../../partials/nav-giaovien', { title: 'Điểm Danh Lớp Học' }) %>
+
+        <main class="col-md-10 p-4 bg-light">
+            
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-user-check me-2"></i> 
+                    ĐIỂM DANH LỚP: <%= lop.TenLop %>
+                </h4>
+
+                <a href="/giaovien/diemdanh/<%= id %>/lop" class="btn btn-sm btn-secondary shadow-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách lớp
+                </a>
+            </div>
+
+            <div class="text-start mb-3 fw-bold text-secondary">
+                <i class="fas fa-calendar-day me-1"></i>
+                Ngày: <%= new Date().toLocaleDateString('vi-VN') %>
+            </div>
+
+            <form id="formDiemDanh" action="/giaovien/diemdanh/<%= id %>/lop/<%= lop.id %>" method="POST">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle text-center shadow-sm bg-white mb-0">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                        <th rowspan="2" style="width: 5%">ID</th>
+                                        <th rowspan="2" style="width: 25%">Họ và tên</th>
+                                        <th rowspan="2" style="width: 15%">Ngày sinh</th>
+                                        <th rowspan="2" style="width: 10%">Giới tính</th>
+                                        <th colspan="4">Trạng thái điểm danh</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-white text-success" style="width: 10%">Có mặt</th>
+                                        <th class="bg-white text-danger" style="width: 12%">Vắng (KP)</th>
+                                        <th class="bg-white text-success" style="width: 12%">Vắng (CP)</th>
+                                        <th class="bg-white text-warning" style="width: 11%">Đi muộn</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+    <% dsHocSinh.forEach(hs => { %>
+        <tr class="<%= hs.coPhep ? 'table-warning' : '' %>">
+            <td class="fw-bold text-secondary"><%= hs.id %></td>
+            
+            <td class="text-start ps-3 fw-bold text-primary">
+                <%= hs.HoVaTen %>
+                <% if (hs.coPhep) { %>
+                    <br><small class="text-danger fst-italic">(Hệ thống: <%= hs.lyDoNghi %>)</small>
+                <% } %>
+            </td>
+            
+            <td><%= hs.NgaySinh %></td>
+            <td><%= hs.GioiTinh %></td>
+
+            <% if (hs.coPhep) { %>
+                <td><input type="radio" disabled></td>
+                <td><input type="radio" disabled></td>
+                <td>
+                    <input type="radio" checked disabled>
+                    <input type="hidden" name="status_<%= hs.id %>" value="Có phép">
+                </td>
+                <td><input type="radio" disabled></td>
+
+            <% } else { %>
+                <td>
+                    <input type="radio" name="status_<%= hs.id %>" value="Có mặt" 
+                        <%= hs.trangThaiDiemDanh === 'Có mặt' ? 'checked' : '' %> required>
+                </td>
+
+                <td>
+                    <input type="radio" name="status_<%= hs.id %>" value="Không phép"
+                        <%= hs.trangThaiDiemDanh === 'Không phép' ? 'checked' : '' %>>
+                </td>
+
+                <td>
+                    <input type="radio" name="status_<%= hs.id %>" value="Có phép"
+                        <%= hs.trangThaiDiemDanh === 'Có phép' ? 'checked' : '' %>>
+                </td>
+
+                <td>
+                    <input type="radio" name="status_<%= hs.id %>" value="Trễ"
+                        <%= hs.trangThaiDiemDanh === 'Trễ' ? 'checked' : '' %>>
+                </td>
+            <% } %>
+        </tr>
+    <% }) %>
+</tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white p-3 text-end sticky-bottom">
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                            <i class="fas fa-save me-2"></i> LƯU ĐIỂM DANH
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const form = document.getElementById('formDiemDanh');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault(); 
+
+        // Kiểm tra xem tất cả dòng đều được chọn chưa
+        const allSelected = Array.from(form.querySelectorAll('tbody tr')).every(row => {
+            const radioChecked = row.querySelector('input[type="radio"]:checked');
+            const hasHiddenInput = row.querySelector('input[type="hidden"]'); 
+            return radioChecked || hasHiddenInput;
+        });
+
+        if (!allSelected) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Chưa hoàn tất!',
+                text: 'Vui lòng chọn trạng thái cho tất cả học sinh.',
+            });
+            return;
+        }
+
+        try {
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData);
+
+            Swal.fire({
+                title: 'Đang lưu...',
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: data
+            });
+
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (err) {
+                console.error("Server Error HTML:", responseText);
+                throw new Error("Lỗi Server: " + responseText.substring(0, 100));
+            }
+
+            if (response.ok && result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Điểm danh thành công!',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0d6efd'
+                }).then(() => {
+                    window.location.reload(); // Load lại trang để cập nhật trạng thái
+                });
+            } else {
+                throw new Error(result.message || 'Có lỗi xảy ra');
+            }
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi hệ thống',
+                text: error.message,
+            });
+        }
+    });
+</script>
+
+<style>
+    /* CSS đồng bộ */
+    input[type="radio"] { 
+        accent-color: #0d6efd; /* Màu xanh dương */
+        width: 18px; 
+        height: 18px; 
+        cursor: pointer; 
+    }
+
+    .btn-primary { 
+        background-color: #0d6efd; /* Xanh dương đậm */
+        border: none; 
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    .btn-primary:hover { 
+        background-color: #0b5ed7; 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .table-warning { background-color: #fff3cd !important; }
+
+    /* Custom CSS cho bảng */
+    thead th { background-color: #e9ecef !important; color: #212529; font-weight: 600; }
+    .bg-primary { background-color: #0d6efd !important; }
+    .sticky-bottom {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        border-top: 1px solid #dee2e6;
+    }
+</style>
