@@ -65,7 +65,7 @@ app.use('/admin',requireLogin,adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);
 app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 
 

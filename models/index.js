@@ -19,6 +19,9 @@ const ThanhToanHocPhi = require('./ThanhToanHocPhi');
 const PhuHuynh = require('./PhuHuynh')
 const HanhKiem = require('./HanhKiem');
 const DiemSo = require('./DiemSo');
+const HoSoTuyenSinh = require('./HoSoTuyenSinh');
+const ChiTieu = require('./ChiTieu');
+const KetQuaTuyenSinh = require('./KetQuaTuyenSinh');
 const BangPhanCongChuNhiem = require('./BangPhanCongGiaoVienChuNhiem')
 const BanGiamHieu = require('./BanGiamHieu')
 const BaiTap = require('./BaiTap');
@@ -45,6 +48,14 @@ DiemThi.belongsTo(ThiSinh, { foreignKey: 'thisinhid', as: 'thisinh' });
 
 ThiSinh.belongsTo(PhongThi, { foreignKey: 'phongthiid', as: 'phongthi' });
 PhongThi.hasMany(ThiSinh, { foreignKey: 'phongthiid', as: 'thisinhs' });
+
+// Hồ sơ tuyển sinh <-> thí sinh
+HoSoTuyenSinh.belongsTo(ThiSinh, { foreignKey: 'thisinhid', constraints: false });
+ThiSinh.hasMany(HoSoTuyenSinh, { foreignKey: 'thisinhid', constraints: false });
+
+// Chỉ tiêu tuyển sinh <-> trường
+ChiTieu.belongsTo(Truong, { foreignKey: 'truongid' });
+Truong.hasOne(ChiTieu, { foreignKey: 'truongid' });
 
 
 QuanTriTruong.belongsTo(Truong, { foreignKey: 'id_school', as: 'truong' });
@@ -150,4 +161,4 @@ GiaoVien.hasMany(BaiTap, { foreignKey: 'id_GiaoVien', as: 'dsBaiTap' });
 BaiTap.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
 
 // Export tất cả model
-module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap };
+module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi, ThiSinh, DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh };
