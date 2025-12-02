@@ -23,6 +23,7 @@ const BangPhanCongChuNhiem = require('./BangPhanCongGiaoVienChuNhiem')
 const BanGiamHieu = require('./BanGiamHieu')
 const BaiTap = require('./BaiTap');
 const NghiHoc = require('./NghiHoc')
+const DangKyTuyenSinh = require('./DangKyTuyenSinh')
 // 👉 Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò
@@ -150,4 +151,6 @@ GiaoVien.hasMany(BaiTap, { foreignKey: 'id_GiaoVien', as: 'dsBaiTap' });
 BaiTap.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
 
 // Export tất cả model
-module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap };
+module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
+    ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
+DangKyTuyenSinh };
