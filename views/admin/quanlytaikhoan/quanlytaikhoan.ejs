@@ -1,0 +1,122 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<%- include('../../partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+<%- include('../../partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+<div>
+  <h2>Quản lý tài khoản</h2>
+
+  <!-- Chọn vai trò -->
+  <div id="roles">
+    <button class="role-btn" data-role="1">Học sinh</button>
+    <button class="role-btn" data-role="3">Giáo viên</button>
+    <button class="role-btn" data-role="2">Phụ huynh</button>
+  </div>
+  <br>
+  <br>
+  <!-- Bảng user -->
+   <input 
+  type="text" 
+  id="searchInput" 
+  class="form-control mb-3" 
+  placeholder="Tìm kiếm username..."
+  onkeyup="searchUser()"
+/>
+  <div class="table-responsive shadow-sm">
+  <table id="userTable" class=" table table-bordered text-center align-middle">
+    <thead>
+      <tr>
+        <th style="width: 60px;">Stt</th>
+        <th style="width: 200px;">Username</th>
+        <th style="width: 150px;">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dữ liệu sẽ load bằng JS -->
+    </tbody>
+  </table>
+  </div>
+</div>
+    </main>
+
+  </div>
+</div>
+<script>
+  const buttons = document.querySelectorAll('.role-btn');
+  const tbody = document.querySelector('#userTable tbody');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const roleId = btn.dataset.role;
+      const res = await fetch(`/admin/users/${roleId}`);
+      const data = await res.json();
+
+      tbody.innerHTML = ''; // Xoá bảng cũ
+      data.data.forEach((user, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${index + 1}</td> <!-- STT tự tăng -->
+        <td>${user.username}</td>
+        <td>
+          <button onclick="resetPassword(${user.id})">Đặt lại mật khẩu</button>
+        </td>
+      `;
+        tbody.appendChild(tr);
+      });
+    });
+  });
+
+function resetPassword(userId) {
+    Swal.fire({
+      title: "Bạn chắc chắn?",
+      text: "Mật khẩu người dùng sẽ được đặt về 1111",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Có, reset!",
+      cancelButtonText: "Hủy"
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      fetch(`/admin/users/reset-password/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        Swal.fire({
+          icon: "success",
+          title: "Thành công",
+          text: data.message
+        });
+      })
+      .catch(err => {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi!",
+          text: "Không thể reset mật khẩu"
+        });
+      });
+    });
+  }
+
+  
+function searchUser() {
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+  
+  const rows = document.querySelectorAll("#userTable tbody tr");
+
+  rows.forEach(row => {
+    const username = row.children[1].textContent.toLowerCase();
+    row.style.display = username.includes(keyword) ? "" : "none";
+  });
+}
+
+</script>

@@ -8,6 +8,7 @@ const TaiKhoan = sequelize.define('TaiKhoan', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   username: { type: DataTypes.STRING(255), allowNull: false, unique: true },
   password: { type: DataTypes.STRING(255), allowNull: false },
+  id_truong: { type: DataTypes.INTEGER },
   id_role: { type: DataTypes.INTEGER, allowNull: false },
 }, {
   tableName: 'TaiKhoan',

@@ -27,17 +27,27 @@ const ThanhToanHocPhi = require('./ThanhToanHocPhi');
 const PhuHuynh = require('./PhuHuynh')
 const HanhKiem = require('./HanhKiem');
 const DiemSo = require('./DiemSo');
+<<<<<<< HEAD
 const BanGiamHieu = require('./BanGiamHieu');
 <<<<<<< HEAD
 >>>>>>> b138cbc (Update chuc nang phân công GVBM và GVCN)
 =======
 >>>>>>> main
 
+=======
+const BangPhanCongChuNhiem = require('./BangPhanCongGiaoVienChuNhiem')
+const BanGiamHieu = require('./BanGiamHieu')
+const BaiTap = require('./BaiTap');
+const NghiHoc = require('./NghiHoc')
+const DangKyTuyenSinh = require('./DangKyTuyenSinh')
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 // 👉 Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò
 TaiKhoan.belongsTo(VaiTro, { foreignKey: 'id_role', as: 'role' });
 VaiTro.hasMany(TaiKhoan, { foreignKey: 'id_role', as: 'accounts' });
+TaiKhoan.belongsTo(Truong, { foreignKey: "id_truong", as: "truong" });
+Truong.hasMany(TaiKhoan, { foreignKey: "id_truong", as: "users" });
 
 // 2. Học sinh & Lớp & Trường
 HocSinh.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
@@ -64,19 +74,22 @@ Lop.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVienChuNhiem', as: 'gvcn' });
 // Nếu muốn truy vấn ngược lại
 GiaoVien.belongsTo(Truong, {foreignKey: 'id_truong', as: 'truong'});
 
-ToHopMon.belongsToMany(MonHoc, {
-  through: ChiTiet_ToHopMon,
-  foreignKey: 'subject_group_id',
-  otherKey: 'subject_id',
-  as: 'danhsachmon'
+// Tổ hợp - Chi tiết tổ hợp
+ToHopMon.hasMany(ChiTiet_ToHopMon, {
+    foreignKey: 'subject_group_id'
+});
+ChiTiet_ToHopMon.belongsTo(ToHopMon, {
+    foreignKey: 'subject_group_id'
 });
 
-MonHoc.belongsToMany(ToHopMon, {
-  through: ChiTiet_ToHopMon,
-  foreignKey: 'subject_id',
-  otherKey: 'subject_group_id',
-  as: 'tohoplienquan'
+// Môn học - Chi tiết tổ hợp
+MonHoc.hasMany(ChiTiet_ToHopMon, {
+    foreignKey: 'subject_id'
 });
+ChiTiet_ToHopMon.belongsTo(MonHoc, {
+    foreignKey: 'subject_id'
+});
+
 
 DiemDanh.belongsTo(HocSinh, { foreignKey: 'student_id', as: 'hocSinh' });
 DiemDanh.belongsTo(Lop, { foreignKey: 'lop_id', as: 'lop' });
@@ -103,12 +116,23 @@ DiemSo.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
 MonHoc.hasMany(DiemSo, { foreignKey: 'id_MonHoc', as: 'diem' });
 DiemSo.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
 
+<<<<<<< HEAD
+=======
+//học sinh với tổ hợp môn
+ToHopMon.hasMany(HocSinh, { foreignKey: 'id_tohopmon', as: 'hocsinh' });
+HocSinh.belongsTo(ToHopMon, { foreignKey: 'id_tohopmon', as: 'tohopmon' });
+
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 // Quan hệ BGH - Truong
 BanGiamHieu.belongsTo(Truong, { foreignKey: 'id_truong', as: 'truong' });
 
 // --- A. Quan hệ cho Bảng Phân công Chủ nhiệm ---
 // (BangPhanCongGiaoVienChuNhiem liên kết với Lop và GiaoVien)
+<<<<<<< HEAD
 BangPhanCongChuNhiem.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
+=======
+BangPhanCongChuNhiem.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lopChuNhiem' });
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 Lop.hasMany(BangPhanCongChuNhiem, { foreignKey: 'id_Lop' });
 
 BangPhanCongChuNhiem.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
@@ -116,7 +140,11 @@ GiaoVien.hasMany(BangPhanCongChuNhiem, { foreignKey: 'id_GiaoVien' });
 
 // --- B. Quan hệ cho Bảng Phân công Bộ môn ---
 // (BangPhanCongGiaoVien liên kết với Lop, GiaoVien và MonHoc)
+<<<<<<< HEAD
 BangPhanCongGiaoVien.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
+=======
+BangPhanCongGiaoVien.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lopDayMon' });
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 Lop.hasMany(BangPhanCongGiaoVien, { foreignKey: 'id_Lop' });
 
 BangPhanCongGiaoVien.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
@@ -129,6 +157,7 @@ MonHoc.hasMany(BangPhanCongGiaoVien, { foreignKey: 'id_MonHoc' });
 GiaoVien.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'chuyenMon' });
 MonHoc.hasMany(GiaoVien, { foreignKey: 'id_MonHoc' });
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 HocSinh.hasMany(PhuHuynh, { foreignKey: 'id_HocSinh', as: 'phuhuynhs' });
 =======
@@ -230,3 +259,23 @@ module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,T
 =======
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo , BanGiamHieu , BangPhanCongChuNhiem };
 >>>>>>> main
+=======
+// --- QUAN HỆ CHO NGHI HỌC ---
+HocSinh.hasMany(NghiHoc, { foreignKey: 'student_id', as: 'dsNghiHoc' });
+NghiHoc.belongsTo(HocSinh, { foreignKey: 'student_id', as: 'hocSinh' });
+
+// --- QUAN HỆ CHO BÀI TẬP (Thêm mới) ---
+Lop.hasMany(BaiTap, { foreignKey: 'id_Lop', as: 'dsBaiTap' });
+BaiTap.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
+
+MonHoc.hasMany(BaiTap, { foreignKey: 'id_MonHoc', as: 'dsBaiTap' });
+BaiTap.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
+
+GiaoVien.hasMany(BaiTap, { foreignKey: 'id_GiaoVien', as: 'dsBaiTap' });
+BaiTap.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
+
+// Export tất cả model
+module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
+    ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
+DangKyTuyenSinh };
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6

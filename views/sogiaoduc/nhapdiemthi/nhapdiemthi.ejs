@@ -1,184 +1,216 @@
 <%- include('../../partials/header', { title: 'Nhập Điểm Thi' }) %>
-<link rel="stylesheet" href="../styles/nhapdiemthi.css">
+<link rel="stylesheet" href="/styles/nhapdiemthi.css">
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <%- include('../../partials/nav-sogiaoduc', { profile: profile, currentUrl: '/diemthi' }) %>
+<div class="container-fluid">
+    <div class="row">
 
+        <%- include('../../partials/nav-sogiaoduc', { profile: profile, currentUrl: currentUrl }) %>
 
-                <!-- Main Content -->
-                <main class="col-md-10 content">
-                    <h4 class="text-center mb-4 fw-bold">NHẬP ĐIỂM THI TUYỂN SINH</h4>
+        <main class="col-md-10 content">
+            <h4 class="text-center mb-4 fw-bold">NHẬP ĐIỂM THI TUYỂN SINH</h4>
 
-                    <!-- Bộ lọc -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Chọn Trường:</label>
-                            <select id="truong" class="form-select">
-                                <option value="">-- Chọn Trường --</option>
-                                <% truongs.forEach(t=> { %>
-                                    <option value="<%= t.id %>">
-                                        <%= t.name %>
-                                    </option>
-                                    <% }) %>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Chọn Phòng Thi:</label>
-                            <select id="phongthi" class="form-select">
-                                <option value="">-- Chọn Phòng --</option>
-                            </select>
-                        </div>
-                    </div>
+            <!-- BỘ LỌC -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Chọn Trường:</label>
+                    <select id="truong" class="form-select">
+                        <option value="">-- Chọn Trường --</option>
+                        <% truongs.forEach(t=> { %>
+                        <option value="<%= t.id %>"><%= t.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
 
-                    <!-- Bảng thí sinh -->
-                    <table class="table table-bordered text-center align-middle" id="thisinhTable">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th>Mã HS</th>
-                                <th>Họ Tên</th>
-                                <th>Ngày Sinh</th>
-                                <th>Toán</th>
-                                <th>Ngữ Văn</th>
-                                <th>Tiếng Anh</th>
-                                <th>Tổng</th>
-                                <th>Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </main>
-        </div>
-    </div>
-
-    <!-- Popup xác nhận -->
-    <div id="confirmPopup" class="popup" style="display:none;">
-        <div class="popup-content">
-            <h3>Xác nhận nhập điểm</h3>
-            <div class="confirm-text" id="confirmText"></div>
-            <div class="popup-buttons">
-                <button class="btn btn-primary" onclick="saveScores()">Xác nhận</button>
-                <button class="btn btn-secondary" onclick="cancelConfirm()">Hủy</button>
+                <div class="col-md-6">
+                    <label class="form-label">Chọn Phòng Thi:</label>
+                    <select id="phongthi" class="form-select">
+                        <option value="">-- Chọn Phòng --</option>
+                    </select>
+                </div>
             </div>
-        </div>
+
+            <!-- BẢNG THÍ SINH -->
+            <table class="table table-bordered text-center align-middle" id="thisinhTable">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Mã HS</th>
+                        <th>Họ Tên</th>
+                        <th>Ngày Sinh</th>
+                        <th>Toán</th>
+                        <th>Ngữ Văn</th>
+                        <th>Tiếng Anh</th>
+                        <th>Tổng</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <div id="saveAllContainer" style="display:none;" class="text-end mt-3">
+                <button class="btn btn-primary" onclick="showSaveAllConfirm()">Lưu tất cả điểm</button>
+            </div>
+        </main>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let pendingSave = null;
+<!-- Popup xác nhận -->
+<div id="confirmAllPopup" class="popup" style="display:none;">
+    <div class="popup-content text-center">
+        <h4>Xác nhận lưu tất cả điểm?</h4>
+        <p class="text-muted">Vui lòng kiểm tra kỹ toàn bộ điểm đã nhập!</p>
+        <button class="btn btn-secondary me-2" onclick="cancelConfirmAll()">Hủy</button>
+        <button class="btn btn-success" onclick="saveAllScores()">Xác nhận</button>
+    </div>
+</div>
 
-            // Khi chọn trường → load phòng
-            document.getElementById('truong').addEventListener('change', async function () {
-                const truongId = this.value;
-                if (!truongId) return;
-                const res = await fetch(`/sogiaoduc/diemthi/phongthi/${truongId}`);
-                const data = await res.json();
-                const phongSelect = document.getElementById('phongthi');
-                phongSelect.innerHTML = '<option value="">-- Chọn Phòng --</option>';
-                data.forEach(p => phongSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`);
-            });
+<!-- Popup lỗi -->
+<div id="errorModal" class="popup" style="display:none;">
+    <div class="popup-content text-center">
+        <h4 class="text-danger">⚠ Lỗi</h4>
+        <p id="errorMessage" class="mt-2"></p>
+        <button class="btn btn-danger mt-3" onclick="closeErrorModal()">Đóng</button>
+    </div>
+</div>
 
-            // Khi chọn phòng → load thí sinh
-            document.getElementById('phongthi').addEventListener('change', async function () {
-                const phongId = this.value;
-                if (!phongId) return;
-                const res = await fetch(`/sogiaoduc/diemthi/thisinh/${phongId}`);
-                const data = await res.json();
-                const tbody = document.querySelector('#thisinhTable tbody');
-                tbody.innerHTML = '';
+<!-- Popup thành công -->
+<div id="successModal" class="popup" style="display:none;">
+    <div class="popup-content text-center">
+        <h4 class="text-success">✅ Lưu điểm thành công!</h4>
+        <button class="btn btn-primary mt-3" onclick="closeSuccessModal()">Đóng</button>
+    </div>
+</div>
 
-                data.forEach(ts => {
-                    // ✅ đúng alias Sequelize (as: 'diem')
-                    const diem = ts.diem || {};
-                    const daNhap = diem.toan != null && diem.nguvan != null && diem.tienganh != null;
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-                    tbody.innerHTML += `
-                <tr>
-                    <td>${ts.mahs}</td>
-                    <td>${ts.hoten}</td>
-                    <td>${ts.ngaysinh ? new Date(ts.ngaysinh).toLocaleDateString() : ''}</td>
+    // Load phòng theo trường
+    document.getElementById('truong').addEventListener('change', async function () {
+        const res = await fetch(`/sogiaoduc/diemthi/phongthi/${this.value}`);
+        const data = await res.json();
 
-                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="toan-${ts.id}"
-                        value="${diem.toan ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
+        const sel = document.getElementById('phongthi');
+        sel.innerHTML = '<option value="">-- Chọn Phòng --</option>';
 
-                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="nguvan-${ts.id}"
-                        value="${diem.nguvan ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
+        data.forEach(p => sel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+    });
 
-                    <td><input type="number" min="0" max="10" class="form-control form-control-sm" id="tienganh-${ts.id}"
-                        value="${diem.tienganh ?? ''}" oninput="updateTong(${ts.id})" ${daNhap ? 'disabled' : ''}></td>
+    // Load thí sinh
+    document.getElementById('phongthi').addEventListener('change', async function () {
+        const phongId = this.value;
+        const saveAll = document.getElementById("saveAllContainer");
+        const tbody = document.querySelector('#thisinhTable tbody');
 
-                    <td id="tong-${ts.id}">${diem.tong ?? '-'}</td>
+        saveAll.style.display = "none";
+        tbody.innerHTML = "";
 
-                    <td>
-                        ${daNhap
-                            ? `<button class="btn btn-success btn-sm btn-danhap" disabled>Đã nhập</button>`
-                            : `<button class="btn btn-primary btn-sm" onclick="showConfirm(${ts.id})">Lưu</button>`
-                        }
-                    </td>
-                </tr>`;
-                });
-            });
+        if (!phongId) return;
 
-            // Hàm tính tổng điểm
-            window.updateTong = function (id) {
-                const toan = parseFloat(document.getElementById(`toan-${id}`).value) || 0;
-                const nguvan = parseFloat(document.getElementById(`nguvan-${id}`).value) || 0;
-                const tienganh = parseFloat(document.getElementById(`tienganh-${id}`).value) || 0;
-                const tong = (toan + nguvan + tienganh).toFixed(2);
-                document.getElementById(`tong-${id}`).innerText = tong;
-            };
+        const res = await fetch(`/sogiaoduc/diemthi/thisinh/${phongId}`);
+        const data = await res.json();
 
-            // Hiển thị popup xác nhận
-            window.showConfirm = function (thisinhid) {
-                const toan = document.getElementById(`toan-${thisinhid}`).value || 0;
-                const nguvan = document.getElementById(`nguvan-${thisinhid}`).value || 0;
-                const tienganh = document.getElementById(`tienganh-${thisinhid}`).value || 0;
-                const tong = (parseFloat(toan) + parseFloat(nguvan) + parseFloat(tienganh)).toFixed(2);
+        if (data.length === 0) return;
 
-                document.getElementById('confirmText').innerHTML = `
-            <p><strong>Toán:</strong> ${toan}</p>
-            <p><strong>Ngữ văn:</strong> ${nguvan}</p>
-            <p><strong>Tiếng Anh:</strong> ${tienganh}</p>
-            <p><strong>Tổng:</strong> ${tong}</p>`;
+        data.forEach(ts => {
+            const d = ts.diem || {};
+            const isLocked = d.toan != null && d.nguvan != null && d.tienganh != null;
 
-                pendingSave = { thisinhid, toan, nguvan, tienganh, tong };
-                document.getElementById('confirmPopup').style.display = 'flex';
-            };
+            tbody.innerHTML += `
+            <tr>
+                <td>${ts.mahs}</td>
+                <td>${ts.hoten}</td>
+                <td>${ts.ngaysinh ? new Date(ts.ngaysinh).toLocaleDateString() : ''}</td>
 
-            // Lưu điểm
-            window.saveScores = async function () {
-                const { thisinhid, toan, nguvan, tienganh, tong } = pendingSave;
-                const res = await fetch('/sogiaoduc/diemthi/luu', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ thisinhid, toan, nguvan, tienganh })
-                });
-                const result = await res.json();
-                document.getElementById('confirmPopup').style.display = 'none';
+                <td><input id="toan-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0" max="10"
+                    class="form-control form-control-sm" value="${d.toan ?? ''}" oninput="updateTong(${ts.id})"></td>
 
-                if (result.success) {
-                    document.getElementById(`tong-${thisinhid}`).innerText = tong;
-                    alert('✅ Lưu điểm thành công!');
+                <td><input id="nguvan-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0" max="10"
+                    class="form-control form-control-sm" value="${d.nguvan ?? ''}" oninput="updateTong(${ts.id})"></td>
 
-                    // Khóa lại các ô sau khi lưu
-                    ['toan', 'nguvan', 'tienganh'].forEach(mon => {
-                        document.getElementById(`${mon}-${thisinhid}`).disabled = true;
-                    });
+                <td><input id="tienganh-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0" max="10"
+                    class="form-control form-control-sm" value="${d.tienganh ?? ''}" oninput="updateTong(${ts.id})"></td>
 
-                    const btn = document.querySelector(`#toan-${thisinhid}`).closest('tr').querySelector('button');
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-success');
-                    btn.textContent = 'Đã nhập';
-                    btn.disabled = true;
-                } else {
-                    alert('❌ Lỗi lưu điểm!');
-                }
-            };
-
-            window.cancelConfirm = function () {
-                document.getElementById('confirmPopup').style.display = 'none';
-                pendingSave = null;
-            };
+                <td id="tong-${ts.id}">${d.tong ?? '-'}</td>
+            </tr>`;
         });
-    </script>
+
+        saveAll.style.display = "block";
+    });
+});
+
+// Tính tổng
+window.updateTong = (id) => {
+    const toan = +document.getElementById(`toan-${id}`).value || 0;
+    const nv = +document.getElementById(`nguvan-${id}`).value || 0;
+    const ta = +document.getElementById(`tienganh-${id}`).value || 0;
+
+    document.getElementById(`tong-${id}`).innerText = (toan + nv + ta).toFixed(2);
+};
+
+// Popup xác nhận
+window.showSaveAllConfirm = () => {
+    document.getElementById('confirmAllPopup').style.display = 'flex';
+};
+
+window.cancelConfirmAll = () => {
+    document.getElementById('confirmAllPopup').style.display = 'none';
+};
+
+// Lưu tất cả
+window.saveAllScores = async () => {
+    const rows = document.querySelectorAll('#thisinhTable tbody tr');
+    const dsDiem = [];
+
+    // Kiểm tra thiếu điểm
+    for (let row of rows) {
+        const id = row.querySelector("input").id.split("-")[1];
+
+        const toan = document.getElementById(`toan-${id}`).value;
+        const nv = document.getElementById(`nguvan-${id}`).value;
+        const ta = document.getElementById(`tienganh-${id}`).value;
+
+        if (toan === "" || nv === "" || ta === "") {
+            // Tắt popup xác nhận
+            document.getElementById('confirmAllPopup').style.display = 'none';
+
+            showErrorPopup("Có học sinh chưa được nhập điểm!");
+            return;
+        }
+
+        dsDiem.push({ thisinhid: id, toan, nguvan: nv, tienganh: ta });
+    }
+
+    // Gửi API
+    await fetch('/sogiaoduc/diemthi/luu-tatca', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dsDiem })
+    });
+
+    // Tắt popup xác nhận
+    document.getElementById('confirmAllPopup').style.display = 'none';
+
+    // Khóa input
+    rows.forEach(row => {
+        row.querySelectorAll("input").forEach(input => input.disabled = true);
+    });
+
+    document.getElementById("saveAllContainer").style.display = "none";
+
+    // Mở popup thành công
+    document.getElementById('successModal').style.display = 'flex';
+};
+
+// Popup lỗi
+function showErrorPopup(message) {
+    document.getElementById("errorMessage").innerText = message;
+    document.getElementById("errorModal").style.display = "flex";
+}
+
+window.closeErrorModal = () => {
+    document.getElementById('errorModal').style.display = 'none';
+};
+
+// Popup thành công
+window.closeSuccessModal = () => {
+    document.getElementById('successModal').style.display = 'none';
+};
+</script>

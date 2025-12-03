@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 const { render } = require('ejs');
+<<<<<<< HEAD
 const { TaiKhoan, VaiTro, HocSinh, Lop, Truong , PhuHuynh } = require('../models');
 
 function showRegister(req, res) {
@@ -29,6 +30,11 @@ const { TaiKhoan, VaiTro, HocSinh, Lop, Truong, NhanVienSo, QuanTriTruong, GiaoV
 console.log(">>> FILE AUTH CONTROLLER ĐÃ ĐƯỢC LOAD <<<");
 const { TaiKhoan, VaiTro, HocSinh, Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh, BanGiamHieu } = require('../models');
 >>>>>>> main
+=======
+const { TaiKhoan, VaiTro, HocSinh,Lop, Truong, NhanVienSo, QuanTriTruong, GiaoVien, PhuHuynh, BanGiamHieu } = require('../models');
+const bcrypt = require('bcrypt');
+const { json } = require('body-parser');
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 
 function showLogin(req, res) {
     res.render('dangnhap', { error: null });
@@ -38,6 +44,7 @@ async function login(req, res) {
 <<<<<<< HEAD
 <<<<<<< HEAD
   const { username, password } = req.body;
+<<<<<<< HEAD
   console.log({ username, password })
   if (!username || !password) {
     return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin đăng nhập' });
@@ -66,8 +73,103 @@ async function login(req, res) {
                   Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
                   Truong: hocSinh.truong?.name || 'Chưa cập nhật'
                 }
+=======
+  try {
+    const user = await TaiKhoan.findOne({ where: { username }, include: { model: VaiTro, as: 'role' } });
+    if (!user) {
+        // Render lại trang 'login' và truyền biến 'errorMessage'
+        return res.render('dangnhap', { errorMessage: 'Tên đăng nhập không đúng', oldUsername: username });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        // Render lại trang 'login' và truyền biến 'errorMessage'
+        return res.render('dangnhap', { errorMessage: 'Mật khẩu không đúng', oldUsername: username });
+    }
+
+
+    req.session.save(async (err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Đã xảy ra lỗi, vui lòng thử lại' });
+      }
+
+      // Nếu là học sinh
+        if (user.role.TenVaiTro === 'học sinh') {
+            const hocSinh = await HocSinh.findOne({
+              where: { MaHS: username },
+              include: [
+                { model: Lop, as: 'lop' },
+                { model: Truong, as: 'truong' },
+              ],
+            });
+
+        if (!hocSinh) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin học sinh' });
+        }
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: hocSinh.toJSON()
+            };
+            res.redirect('/dashboard-hocsinh');
+      }
+
+       // Nếu là Nhân viên sở giáo dục
+        if (user.role.TenVaiTro === 'sở giáo dục') {
+            const nhanVien = await NhanVienSo.findOne({
+              where: { MaSGD: username }
+            });
+        if (!nhanVien) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin Nhân viên' });
+        }
+          req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: nhanVien.toJSON()
+            };
+          res.redirect('/dashboard-sogiaoduc');
+      }
+
+             // Nếu là quản trị trường
+        if (user.role.TenVaiTro === 'admin') {
+            const admin = await QuanTriTruong.findOne({
+              where: { MaQTV: username },
+              include: [
+                { model: Truong, as: 'truong' },
+              ],
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
             });
       }
+<<<<<<< HEAD
+=======
+
+      // Nếu là giáo viên
+        if (user.role.TenVaiTro === 'giáo viên') {
+            const giaovien = await GiaoVien.findOne({
+              where: { MaGV: username },
+              include: [
+                { model: Truong, as: 'truong' }
+              ],
+            });    
+        if (!giaovien) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin ' });
+        }
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: giaovien.toJSON()
+            };
+            res.redirect('/dashboard-giaovien');
+      }
+
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
       
       // Redirect cho các vai trò khác
       // switch (user.role.TenVaiTro) {
@@ -116,6 +218,7 @@ async function login(req, res) {
             return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' });
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
           
           // Trả về dashboard phụ huynh với thông tin của họ và thông tin của con (hocsinh)
             res.status(200).render('dashboard-phuhuynh', {
@@ -137,6 +240,39 @@ async function login(req, res) {
           });
           }
           
+=======
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: phuHuynh.toJSON()
+            };
+            res.redirect('/dashboard-phuhuynh');
+          }
+
+                // Nếu là ban giám hiệu
+        if (user.role.TenVaiTro === 'ban giám hiệu') {
+            const bgh = await BanGiamHieu.findOne({
+              where: { MaBGH: username },
+              include: [
+                { model: Truong, as: 'truong' }
+              ],
+            });    
+        if (!bgh) {
+          return res.status(404).json({ error: 'Không tìm thấy thông tin ' });
+        }
+            req.session.user = {
+              id: user.id,
+              username: user.username,
+              role: user.role.TenVaiTro,
+              roleId: user.role.id,
+              profile: bgh.toJSON()
+            };
+            console.log(req.session.user)
+            res.redirect('/dashboard-bangiamhieu');
+      }
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
     });
 
 
@@ -249,6 +385,7 @@ function logout(req, res) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 module.exports = { showRegister, register, showLogin, login, logout };
 =======
 module.exports = { showLogin, login, logout };
@@ -256,3 +393,18 @@ module.exports = { showLogin, login, logout };
 =======
 module.exports = { showLogin, login, logout };
 >>>>>>> main
+=======
+// Xử lý đổi mật khẩu
+async function  changePassword  (req, res){
+    const newPassword = req.body.password;
+    console.log(newPassword)
+    await TaiKhoan.update(
+        { password: bcrypt.hashSync(newPassword, 10) },
+        { where: { id: req.params.id } }
+    );
+
+    res.status(200).json('thanh cong');
+};
+
+module.exports = { showLogin, login, logout, changePassword };
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6

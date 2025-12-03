@@ -1,0 +1,212 @@
+<%- include('../../partials/header', { title: 'Đăng ký tuyển sinh' }) %>
+
+<div class="container mt-4">
+  <h1>Form Đăng ký Tuyển sinh</h1>
+
+  <form id="formDangKy">
+    <!-- THÔNG TIN HỌC SINH -->
+    <h3>Thông tin học sinh</h3>
+
+    <div class="mb-3">
+      <label>Họ và tên:</label>
+      <input type="text" name="HoVaTen" class="form-control" required minlength="3">
+    </div>
+
+    <div class="mb-3">
+      <label>Ngày sinh:</label>
+      <input type="date" name="NgaySinh" class="form-control" required max="<%= new Date().toISOString().split('T')[0] %>">
+    </div>
+
+    <div class="mb-3">
+      <label>Giới tính:</label>
+      <select name="GioiTinh" class="form-select" required>
+        <option value="">--Chọn--</option>
+        <option value="Nam">Nam</option>
+        <option value="Nữ">Nữ</option>
+      </select>
+    </div>
+  <div class="mb-3"> 
+    <label>Dân tộc:</label> 
+    <input type="text" name="DanToc" class="form-control"> 
+  </div> 
+  <div class="mb-3"> 
+    <label>Tôn giáo:</label> 
+    <input type="text" name="TonGiao" class="form-control"> 
+  </div>
+    <!-- ĐỊA CHỈ -->
+    <h3>Địa chỉ cư trú (bắt buộc thuộc TP.HCM)</h3>
+
+    <div class="mb-3">
+      <label>Tỉnh/TP:</label>
+      <select id="tinh" name="Tinh" class="form-select" required>
+        <option value="Thành phố Hồ Chí Minh" selected>Thành phố Hồ Chí Minh</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Quận/Huyện:</label>
+      <select id="quan" class="form-select" required ></select>
+    </div>
+
+    <div class="mb-3">
+      <label>Phường/Xã:</label>
+      <select id="phuong" class="form-select" required disabled></select>
+    </div>
+
+    <div class="mb-3">
+      <label>Số nhà – đường:</label>
+      <input type="text" id="soNha" class="form-control" required disabled>
+    </div>
+
+    <input type="hidden" name="DiaChi" id="DiaChi">
+
+    <!-- CCCD -->
+    <div class="mb-3">
+      <label>CCCD/CMND:</label>
+      <input type="text" name="CCCD" class="form-control" pattern="[0-9]{12}" maxlength="12" placeholder="12 số" required>
+    </div>
+
+    <!-- NGUYỆN VỌNG -->
+    <h3>Nguyện vọng</h3>
+    <% ['NV1','NV2','NV3'].forEach(nv => { %>
+      <div class="mb-3">
+        <label><%= nv %>:</label>
+        <select name="<%= nv %>" class="form-select nv-select" data-nv="<%= nv %>" <%= nv==='NV1'?'required':'' %>>
+          <option value="">--Chọn trường--</option>
+          <% danhSachTruong.forEach(tr => { %>
+            <option value="<%= tr.id %>"><%= tr.name %></option>
+          <% }) %>
+        </select>
+      </div>
+    <% }) %>
+
+    <!-- ĐIỂM + HẠNH KIỂM -->
+    <h3>Điểm tổng kết cấp 2</h3>
+    <% for(let i=6;i<=9;i++){ %>
+      <div class="mb-3">
+        <label>Lớp <%= i %> - Điểm TB:</label>
+        <input type="number" step="0.01" min="0" max="10" name="DiemTongKet_Lop<%= i %>" class="form-control">
+
+        <label>Hạnh kiểm:</label>
+        <select name="HanhKiem_Lop<%= i %>" class="form-select">
+          <option value="">--Chọn--</option>
+          <option value="Tốt">Tốt</option>
+          <option value="Khá">Khá</option>
+          <option value="Trung Bình">Trung Bình</option>
+          <option value="Yếu">Yếu</option>
+        </select>
+      </div>
+    <% } %>
+
+    <button type="submit" class="btn btn-primary">Đăng ký</button>
+  </form>
+
+  <div id="thongBao" class="alert mt-3 d-none"></div>
+</div>
+
+<!-- Modal xác nhận -->
+<div class="modal fade" id="modalXacNhan" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Đăng ký thành công</h5>
+      </div>
+      <div class="modal-body">
+        Hồ sơ đang chờ duyệt. Bạn có muốn quay về trang chủ không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ở lại</button>
+        <button id="btnVeTrangChu" type="button" class="btn btn-primary">Quay về</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const tinhEl = document.getElementById("tinh");
+const quanEl = document.getElementById("quan");
+const phuongEl = document.getElementById("phuong");
+const soNhaEl = document.getElementById("soNha");
+const diaChiHidden = document.getElementById("DiaChi");
+
+/* ====== NGUYỆN VỌNG ====== */
+const selects = document.querySelectorAll('.nv-select');
+
+function updateOptions() {
+  const selectedValues = Array.from(selects).map(s => s.value).filter(v => v);
+
+  selects.forEach(select => {
+    const currentValue = select.value;
+    Array.from(select.options).forEach(opt => {
+      if (opt.value === "") return;
+      opt.disabled = selectedValues.includes(opt.value) && opt.value !== currentValue;
+    });
+  });
+}
+selects.forEach(s => s.addEventListener('change', updateOptions));
+updateOptions();
+
+/* ====== LOAD QUẬN – HCM ====== */
+fetch("https://provinces.open-api.vn/api/p/79?depth=2")
+  .then(r => r.json())
+  .then(data => {
+    data.districts.forEach(q => {
+      quanEl.innerHTML += `<option value="${q.name}" data-code="${q.code}">${q.name}</option>`;
+    });
+  });
+
+/* ====== LOAD PHƯỜNG ====== */
+quanEl.addEventListener("change", async () => {
+  const code = quanEl.selectedOptions[0].dataset.code;
+
+  phuongEl.innerHTML = `<option value="">--Chọn phường--</option>`;
+  phuongEl.disabled = false;
+  soNhaEl.disabled = true;
+
+  const data = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`).then(r => r.json());
+
+  data.wards.forEach(w => {
+    phuongEl.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+  });
+});
+
+/* ====== NHẬP SỐ NHÀ ====== */
+phuongEl.addEventListener("change", () => {
+  soNhaEl.disabled = false;
+});
+
+/* ===== SUBMIT FETCH ===== */
+document.getElementById("formDangKy").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  diaChiHidden.value =
+    `${soNhaEl.value}, ${phuongEl.value}, ${quanEl.value}, ${tinhEl.value}`;
+
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+
+  const res = await fetch("/phuhuynh/dangky", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  const json = await res.json();
+  const tb = document.getElementById("thongBao");
+
+if (res.ok) {
+  const modal = new bootstrap.Modal(document.getElementById("modalXacNhan"));
+  modal.show();
+
+  document.getElementById("btnVeTrangChu").addEventListener("click", () => {
+    window.location.href = "/dashboard-phuhuynh"; // trang chủ
+  });
+
+} else {
+  tb.className = "alert alert-danger mt-3";
+  tb.textContent = json.message;
+  tb.classList.remove("d-none");
+}
+});
+</script>

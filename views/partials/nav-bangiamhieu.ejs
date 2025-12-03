@@ -1,13 +1,77 @@
     <nav class="col-md-2 sidebar">
+<<<<<<< HEAD
       <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
       <a href="/dashboard-bangiamhieu" class="active">Trang Dashboard</a>
       <!-- <a href="/bangiamhieu/diemdanh/<%= profile.id %>/lop">Điểm Danh</a>
       <a href="/bangiamhieu/hanhkiem/<%= profile.id %>/lop">Đánh Giá Hạnh Kiểm</a> -->
       <a href="bangiamhieu/phancong"></a>
+=======
+        <div class="sidebar-info mb-3 d-flex align-items-center">
+    <% const avatar=profile?.avatarUrl || null; %>
+
+      <div class="me-2">
+        <% if (avatar) { %>
+          <img src="<%= avatar %>" class="sidebar-avatar" />
+          <% } else { %>
+            <div class="sidebar-avatar fallback-avatar"></div>
+            <% } %>
+      </div>
+
+      <div>
+        <div class="nhanvien-ten fw-semibold">
+          <%= profile?.HoVaTen %>
+        </div>
+        <div class="text-muted small">
+          <%= profile?.ChucVu || "" %>
+        </div>
+      </div>
+  </div>
+      <a href="/dashboard-bangiamhieu" class="<%= (currentUrl === '/dashboard-bangiamhieu' || currentUrl === '/bangiamhieu/dashboard-bangiamhieu') ? 'active' : '' %>">Trang Dashboard</a>
+      <!-- <a href="/bangiamhieu/diemdanh/<%= profile.id %>/lop">Điểm Danh</a>
+      <a href="/bangiamhieu/hanhkiem/<%= profile.id %>/lop">Đánh Giá Hạnh Kiểm</a> -->
+      <a href="/bangiamhieu/phancongcn" class="<%= (currentUrl === '/phancongcn' || currentUrl === '/bangiamhieu/dashboard-bangiamhieu') ? 'active' : '' %>">Phân công chủ nhiệm</a>
+      <a href="/bangiamhieu/phancong" class="<%= (currentUrl === '/phancong' || currentUrl === '/bangiamhieu/dashboard-bangiamhieu') ? 'active' : '' %>">Phân công giáo viên bộ môn</a>
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
       <a href="#">Quản Lý Tài Khoản</a>
       <a href="#">Thông Báo</a>
       <a href="#">Tài Khoản Cá Nhân</a>
       <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+<<<<<<< HEAD
 <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
 
     </nav>
+=======
+  <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
+  <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+  <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+    </nav>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function changePassword(userId) {
+  Swal.fire({
+    title: "Nhập mật khẩu mới",
+    input: "password",
+    inputPlaceholder: "Mật khẩu mới",
+    confirmButtonText: "Đổi mật khẩu",
+    showCancelButton: true
+  }).then(result => {
+    if (!result.value) return;
+
+    fetch(`/account/re-password/${userId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: result.value })
+    })
+    .then(res => {
+      if (res.ok) {
+        Swal.fire("Thành công", "Đổi mật khẩu thành công", "success");
+      } else {
+        Swal.fire("Lỗi", "Không thể đổi mật khẩu", "error");
+      }
+    });
+  });
+}
+</script>
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6

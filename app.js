@@ -19,6 +19,11 @@ const authRoutes = require('./routes/auth');
 const soGiaoDucRoute = require('./routes/soGiaoDucRoute');
 const giaoVienRoute = require('./routes/giaoVienRoute');
 const adminRoute = require('./routes/adminRoute');
+<<<<<<< HEAD
+=======
+const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
+const { init: sequelizeInit } = require('./config/sequelize');
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 const phuHuynhRoute = require('./routes/phuHuynhRoute');
 const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
 // QUAN TRỌNG: Bạn cần import route cho BGH
@@ -33,6 +38,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // 2. Middleware Cơ bản (Chỉ khai báo 1 lần duy nhất)
 app.use(express.static(path.join(__dirname, 'public')));
+<<<<<<< HEAD
 <<<<<<< HEAD
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(methodOverride('_method'));
@@ -52,6 +58,19 @@ const phuHuynhRoute = require('./routes/phuHuynhRoute');
 const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
 // QUAN TRỌNG: Bạn cần import route cho BGH
 // const banGiamHieuRoute = require('./routes/banGiamHieuRoute'); 
+=======
+
+app.use(methodOverride('_method'));
+app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave: false, saveUninitialized: false }));
+
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
+
+
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 
 const app = express();
 
@@ -139,6 +158,7 @@ app.use('/', authRoutes);
 // Áp dụng middleware bảo vệ
 app.use('/sogiaoduc', requireLogin, soGiaoDucRoute);
 app.use('/giaovien', requireLogin, giaoVienRoute);
+<<<<<<< HEAD
 app.use('/admin', requireLogin, adminRoute);
 app.use('/phuhuynh', requireLogin, phuHuynhRoute);
 app.use('/bangiamhieu', requireLogin, bangiamhieuRoute);
@@ -181,6 +201,11 @@ async function autoFixSequence() {
   }
 }
 // ============================================================
+=======
+app.use('/admin',requireLogin,adminRoute);
+app.use('/phuhuynh', requireLogin,phuHuynhRoute);
+app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
+>>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 
 const PORT = process.env.PORT || 3000;
 

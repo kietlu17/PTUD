@@ -5,15 +5,25 @@
 
     <!-- Sidebar -->
 <%- include('../../partials/nav-giaovien') %>
-
     <!-- Main Content -->
     <main class="col-md-10 content">
     <h1>Danh sách lớp của giáo viên</h1>
-
+              <div class="col-md-4">
+                  <label class="form-label fw-bold">Năm Học <span class="text-danger">*</span>:</label>
+                  <input type="text" name="NamHoc"  id="namHoc" class="form-control" placeholder="VD: 2023-2024" required>
+                  <div class="invalid-feedback">Vui lòng nhập năm học.</div>
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label fw-bold">Học Kỳ <span class="text-danger">*</span>:</label>
+                  <select name="KyHoc" class="form-select" required>
+                      <option value="1">Học kỳ 1</option>
+                      <option value="2">Học kỳ 2</option>
+                  </select>
+              </div>
 <% dsLop.forEach(lop => { %>
   <h2>Lớp: <%= lop.TenLop %> (Số học sinh: <%= lop.hocsinhs.length %>)</h2>
 
-  <form action="/giaovien/hanhkiem/<%= giaovienId %>/lop/<%= lop.id %>" method="POST">
+  <form class="hanhkiemForm" action="/giaovien/hanhkiem/<%= giaovienId %>/lop/<%= lop.id %>" method="POST">
     <table class="table table-bordered text-center">
       <thead class="table-secondary">
         <tr>
@@ -50,6 +60,7 @@
     </table>
     <button type="submit" class="btn btn-primary mb-4">Lưu Hạnh Kiểm</button>
   </form>
+  
 <% }) %>
 
         <a href="/giaovien/hanhkiem/<%= giaovienId %>/lop" class="btn btn-secondary mt-3">← Quay lại danh sách lớp</a>
@@ -58,5 +69,119 @@
 
   </div>
 </div>
-</body>
-</html>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+            window.addEventListener("load", function() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const next = year + 1;
+
+    document.getElementById("namHoc").value = `${year}-${next}`;
+});
+  const allowEdit = JSON.parse('<%- JSON.stringify(allowEdit) %>');
+
+  if (!allowEdit) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Chưa tới thời gian nhập',
+      text: 'Hệ thống chỉ cho phép nhập hạnh kiểm vào cuối học kỳ.',
+      confirmButtonColor: '#6c757d'
+    }).then(() => {
+    window.location.href = '/dashboard-giaovien'; // ← chuyển về trang chủ
+  });
+
+
+
+
+    // Khóa tất cả input + nút submit
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.hanhkiemForm select, .hanhkiemForm input').forEach(el => {
+        el.disabled = true;
+      });
+      document.querySelectorAll('.hanhkiemForm button[type="submit"]').forEach(b => {
+        b.disabled = true;
+      });
+    });
+  }
+    // Gắn handler cho tất cả form .hanhkiemForm
+   document.querySelectorAll('.hanhkiemForm').forEach(form => {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault(); // KHÔNG điều hướng sang trang khác
+
+    // Lấy năm học & học kỳ từ input/select phía trên
+    const namHoc = document.getElementById('namHoc').value;
+    const kyHoc = document.querySelector('select[name="KyHoc"]').value;
+
+    if (!namHoc || !kyHoc) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Thiếu thông tin',
+        text: 'Vui lòng điền năm học và chọn học kỳ.',
+        confirmButtonColor: '#6c757d'
+      });
+      return;
+    }
+
+    // Kiểm tra đã chọn hạnh kiểm cho mọi học sinh
+    const selects = Array.from(form.querySelectorAll('select[name^="hanhKiem["]'));
+    const allSelected = selects.every(s => s.value && s.value.trim() !== '');
+    if (!allSelected) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Chưa chọn đầy đủ!',
+        text: 'Vui lòng chọn hạnh kiểm cho tất cả học sinh.',
+        confirmButtonColor: '#6c757d'
+      });
+      return;
+    }
+
+    // Chuẩn bị dữ liệu để gửi (application/x-www-form-urlencoded)
+    const fd = new FormData(form);
+
+    // Thêm NamHoc & KyHoc vào FormData
+    fd.append('NamHoc', namHoc);
+    fd.append('KyHoc', kyHoc);
+
+    const body = new URLSearchParams();
+    for (const [k, v] of fd.entries()) body.append(k, v);
+
+    try {
+      const resp = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString()
+      });
+
+      if (!resp.ok) {
+        const t = await resp.text();
+        throw new Error(t || resp.statusText);
+      }
+
+      // server trả JSON { message: '...' }
+      let json = null;
+      try { json = await resp.json(); } catch (err) { /* ignore */ }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Lưu hạnh kiểm thành công!',
+        text: json && json.message ? json.message : 'Dữ liệu hạnh kiểm đã được lưu.',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#6c757d'
+      });
+
+    } catch (error) {
+      console.error('Lỗi khi gửi hạnh kiểm:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi lưu',
+        text: 'Không thể lưu hạnh kiểm. Vui lòng thử lại.',
+        confirmButtonColor: '#6c757d'
+      });
+    }
+  });
+});
+
+    </script>

@@ -1,0 +1,86 @@
+<%- include('../../partials/header', { title: 'Chọn Lớp Giao Bài' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <%- include('../../partials/nav-giaovien') %>
+
+                <main class="col-md-10 content p-4">
+
+                    <h4 class="text-center fw-bold mb-4">
+                        CHỌN LỚP ĐỂ GIAO BÀI TẬP
+                    </h4>
+
+                    <div class="table-responsive shadow-sm">
+                        <table class="table table-bordered text-center align-middle">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th style="width: 10%;">ID</th>
+                                    <th style="width: 20%;">Tên Lớp</th>
+                                    <th style="width: 20%;">Môn Học</th>
+                                    <th style="width: 20%;">Thao Tác</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% if (dsPhanCong && dsPhanCong.length > 0) { %>
+                                    <% dsPhanCong.forEach(item => { %>
+                                        <tr>
+                                            <td>
+                                                <%= item.id %>
+                                            </td>
+
+                                            <td>
+                                                <%= item.lop.TenLop %>
+                                            </td>
+
+                                            <td>
+                                                <%= item.monhoc.TenMon %>
+                                            </td>
+
+                                            <td>
+                                                <a href="/giaovien/giao-bai-tap/<%= item.id %>" class="btn btn-sm btn-primary px-4">
+                      Tạo Bài Tập
+                    </a>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted py-3">
+                                                        Bạn chưa được phân công dạy lớp nào.
+                                                    </td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+
+        </div>
+    </div>
+
+    <style>
+        thead th {
+            font-weight: 600;
+            color: #212529;
+        }
+        /* Căn giữa theo chiều dọc và padding vừa phải */
+        
+        td,
+        th {
+            vertical-align: middle !important;
+            padding: 12px 10px;
+        }
+        /* Chỉnh màu nút xanh dương chuẩn Bootstrap */
+        
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+    </style>
