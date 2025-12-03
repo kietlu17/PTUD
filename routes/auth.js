@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../controllers/authController');
-
+const checkDangKyToHop = require('../middlewares/checkDKTHM')
 // router.get('/register', auth.showRegister);
 router.post('/account/re-password/:id', auth.changePassword);
 router.get('/login', auth.showLogin);
@@ -21,19 +21,29 @@ router.get('/dashboard-giaovien', (req, res) => {
   });
 });
 
-router.get('/dashboard-hocsinh', (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'học sinh') {
+router.get('/dashboard-hocsinh',(req, res) => {
+    if (!req.session.user || req.session.user.role !== 'học sinh') {
     return res.redirect('/login');
-  }
+    }
   const hocSinh = req.session.user.profile;
-  res.render('dashboard-hocsinh', {
-                hocSinh: {
-                  ...hocSinh,
-                  Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
-                  Truong: hocSinh.truong?.name || 'Chưa cập nhật'
-                }
-  });
-});
+  if (hocSinh.id_tohopmon === null) {
+    // Chưa chọn tổ hợp → check thời hạn đăng ký
+    return checkDangKyToHop(req, res, () => {
+      // Nếu hết hạn, checkDangKyToHop sẽ render hethandk hoặc redirect
+      // Nếu trong hạn, redirect sang form chọn tổ hợp
+      return res.redirect('/nhaphoc/tohop');
+    });
+  }
+      res.render('./hocsinh/dashboard-hocsinh', {
+                    hocSinh: {
+                      ...hocSinh,
+                      Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
+                      Truong: hocSinh.truong?.name || 'Chưa cập nhật'
+                    }
+      });
+
+
+}, );
 
 router.get('/dashboard-phuhuynh', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'phụ huynh') {

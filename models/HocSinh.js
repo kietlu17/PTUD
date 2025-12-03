@@ -11,6 +11,7 @@ const HocSinh = sequelize.define('HocSinh', {
   id_tohopmon: { type: DataTypes.INTEGER },
   id_Lop: { type: DataTypes.INTEGER },
   id_school: { type: DataTypes.INTEGER },
+
 }, {
   tableName: 'HocSinh',
   timestamps: false,

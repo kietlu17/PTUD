@@ -49,6 +49,7 @@ async function login(req, res) {
               roleId: user.role.id,
               profile: hocSinh.toJSON()
             };
+
             res.redirect('/dashboard-hocsinh');
       }
 
@@ -163,7 +164,7 @@ async function login(req, res) {
               roleId: user.role.id,
               profile: bgh.toJSON()
             };
-            console.log(req.session.user)
+
             res.redirect('/dashboard-bangiamhieu');
       }
     });
