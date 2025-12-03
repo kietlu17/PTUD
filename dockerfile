@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # FROM node:18
 
 # WORKDIR /app
@@ -35,6 +36,8 @@ EXPOSE 3000
 # Lệnh mặc định sẽ được ghi đè bởi command trong docker-compose.yml (npm run dev)
 CMD [ "npm", "start" ]
 =======
+=======
+>>>>>>> main
 # Sử dụng image Node.js làm base
 FROM node:18
 
@@ -54,5 +57,9 @@ COPY . .
 EXPOSE 3000
 
 # Lệnh mặc định để chạy ứng dụng
+<<<<<<< HEAD
 CMD [ "node", "app.js" ]
 >>>>>>> b138cbc (Update chuc nang phân công GVBM và GVCN)
+=======
+CMD [ "node", "app.js" ]
+>>>>>>> main

@@ -23,4 +23,7 @@ HocSinh.associate = function(models) {
     });
   };
 
+
+
+
 module.exports = HocSinh;

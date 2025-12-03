@@ -2,14 +2,21 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../controllers/authController');
 
-router.get('/register', auth.showRegister);
-router.post('/register', auth.register);
+// router.get('/register', auth.showRegister);
+// router.post('/register', auth.register);
 router.get('/login', auth.showLogin);
 router.post('/login', auth.login);
 router.post('/logout', auth.logout);
+router.get('/dashboard-giaovien', (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'giáo viên') {
+    return res.redirect('/login');
+  }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> main
   const giaovien = req.session.user.profile;
 
   res.render('./giaovien/dashboard-giaovien', {
@@ -94,5 +101,8 @@ router.get('/dashboard-bangiamhieu', (req, res) => {
     }
   });
 });
+<<<<<<< HEAD
 >>>>>>> b138cbc (Update chuc nang phân công GVBM và GVCN)
+=======
+>>>>>>> main
 module.exports = router;

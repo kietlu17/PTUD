@@ -1,0 +1,40 @@
+<%- include('../../partials/header', { title: 'Quản Lý Lớp Học' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+ <%- include('../../partials/nav-admin', { title: 'Quản Lý Lớp Học' }) %>
+
+    <!-- Main Content -->
+    <main class="col-md-10 content">
+           <div class="container mt-5">
+  <h3 class="text-center fw-bold mb-4">CHUYỂN LỚP HỌC SINH</h3>
+
+  <div class="card p-4 shadow-sm">
+    <p><strong>Mã học sinh:</strong> <%= hocSinh.id %></p>
+    <p><strong>Họ và tên:</strong> <%= hocSinh.HoVaTen %></p>
+    <p><strong>Lớp hiện tại:</strong> <%= hocSinh.lop ? hocSinh.lop.TenLop : 'Chưa có lớp' %></p>
+
+    <form action="/admin/quanlylop/hocsinh/<%= hocSinh.id %>/chuyenlop" method="POST">
+      <div class="mb-3">
+        <label for="id_lop_moi" class="form-label">Chọn lớp mới</label>
+        <select class="form-select" id="id_lop_moi" name="id_lop_moi" required>
+          <option value="">-- Chọn lớp --</option>
+          <% dsLop.forEach(lop => { %>
+            <option value="<%= lop.id %>"><%= lop.TenLop %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="/admin/quanlylop/<%= hocSinh.lop ? hocSinh.lop.id : '' %>/hocsinh" class="btn btn-secondary">← Quay lại</a>
+        <button type="submit" class="btn btn-primary">Xác nhận chuyển lớp</button>
+      </div>
+    </form>
+  </div>
+</div>
+    </main>
+
+  </div>
+</div>

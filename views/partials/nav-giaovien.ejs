@@ -1,0 +1,12 @@
+    <nav class="col-md-2 sidebar">
+      <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
+      <a href="/dashboard-giaovien" class="active">Trang Dashboard</a>
+      <a href="/giaovien/diemdanh/<%= profile.id %>/lop">Điểm Danh</a>
+      <a href="/giaovien/hanhkiem/<%= profile.id %>/lop">Đánh Giá Hạnh Kiểm</a>
+      <a href="#">Quản Lý Tài Khoản</a>
+      <a href="#">Thông Báo</a>
+      <a href="#">Tài Khoản Cá Nhân</a>
+      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+<button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+
+    </nav>

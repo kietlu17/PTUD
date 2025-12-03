@@ -1,0 +1,12 @@
+    <nav class="col-md-2 sidebar">
+      <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
+      <a href="/dashboard-hocsinh" class="active">Trang Dashboard</a>
+      <a href="#">Kết Quả Học Tập</a>
+      <a href="#">Thời Khóa Biểu</a>
+      <a href="#">Bài Tập</a>
+      <a href="#">Thông Báo</a>
+      <a href="#">Tài Khoản Cá Nhân</a>
+      <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
+<button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
+
+    </nav>

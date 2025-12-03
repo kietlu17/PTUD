@@ -21,7 +21,7 @@ CREATE TABLE "HocSinh" (
   "id_school" int NOT NULL
 );
 
-CREATE TABLE "QuaTriTruong" (
+CREATE TABLE "QuanTriTruong" (
   "id" int PRIMARY KEY NOT NULL,
   "MaQTV" varchar(255),
   "HoVaTen" varchar(255),
