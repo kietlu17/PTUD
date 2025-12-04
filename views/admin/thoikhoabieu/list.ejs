@@ -1,0 +1,114 @@
+<%- include('../../partials/header', { title: 'Danh Sách Lớp - Xếp Thời Khóa Biểu' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../partials/nav-admin') %> <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      
+      <h2 class="text-center mb-4 fw-bold text-primary">CHỌN LỚP ĐỂ XẾP THỜI KHÓA BIỂU</h2>
+
+      <div class="row mb-4 justify-content-center">
+          <div class="col-md-6">
+              <input type="text" id="searchClass" class="form-control" placeholder="Tìm kiếm lớp học...">
+          </div>
+      </div>
+
+        <div class="row g-4" id="classList">
+          <% if (listLop && listLop.length > 0) { %>
+              <% listLop.forEach(lop => { %>
+                  
+                  <% const count = countMap[lop.id] || 0; %>
+                  
+                  <% 
+                    let statusClass = '';
+                    let statusText = '';
+                    let icon = '';
+                    let btnClass = '';
+                    let btnText = '';
+
+                    if (count === 0) {
+                        // Chưa xếp
+                        statusClass = 'text-secondary border-secondary bg-secondary';
+                        statusText = '⚪ Chưa có lịch';
+                        icon = 'bi-calendar';
+                        btnClass = 'btn-primary';
+                        btnText = 'Tạo Mới';
+                    } else if (count >= fullThreshold) {
+                        // Đã xong (>= 30 tiết)
+                        statusClass = 'text-success border-success bg-success';
+                        statusText = '✅ Đã hoàn tất';
+                        icon = 'bi-check-circle-fill text-success';
+                        btnClass = 'btn-outline-success';
+                        btnText = 'Xem & Sửa';
+                    } else {
+                        // Đang xếp (1 - 29 tiết)
+                        statusClass = 'text-warning border-warning bg-warning';
+                        statusText = '⏳ Đang xếp (' + count + ' tiết)';
+                        icon = 'bi-hourglass-split text-warning';
+                        btnClass = 'btn-warning text-dark';
+                        btnText = 'Tiếp tục xếp';
+                    }
+                  %>
+
+                  <div class="col-md-3 col-sm-6 class-item">
+                      <div class="card h-100 shadow-sm hover-card border-0">
+                          
+                          <div class="card-header border-0 pt-1" 
+                               style="background-color: <%= count >= fullThreshold ? '#d1e7dd' : (count > 0 ? '#fff3cd' : '#e2e3e5') %>;">
+                          </div>
+
+                          <div class="card-body text-center d-flex flex-column justify-content-center">
+                              <div class="mb-2">
+                                  <i class="bi <%= icon %>" style="font-size: 2rem;"></i>
+                              </div>
+
+                              <h5 class="card-title fw-bold mb-1"><%= lop.TenLop %></h5>
+                              
+                              <div class="mb-4">
+                                  <span class="badge bg-opacity-10 border <%= statusClass %>">
+                                      <%= statusText %>
+                                  </span>
+                              </div>
+                              
+                              <a href="/admin/thoikhoabieu/create?id_Lop=<%= lop.id %>" 
+                                 class="btn <%= btnClass %> rounded-pill stretched-link fw-bold btn-sm px-4">
+                                 <i class="bi bi-pencil-square me-1"></i> <%= btnText %>
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+              <% }) %>
+          <% } else { %>
+              <div class="text-center text-muted py-5">Chưa có lớp học nào.</div>
+          <% } %>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        border: 1px solid #0d6efd !important;
+    }
+</style>
+
+<script>
+    document.getElementById('searchClass').addEventListener('keyup', function() {
+        let filter = this.value.toUpperCase();
+        let items = document.querySelectorAll('.class-item');
+        
+        items.forEach(item => {
+            let txtValue = item.querySelector('.card-title').textContent || item.querySelector('.card-title').innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                item.style.display = "";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
+</script>

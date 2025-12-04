@@ -3,6 +3,7 @@ const router = express.Router();
 const lopController = require('../controllers/admin/chuyenLopCTRL');
 const userController = require('../controllers/admin/accountCTRL');
 const classController = require('../controllers/admin/classController');
+const scheduleController = require('../controllers/admin/scheduleController');
 
 // Quản lý lớp
 // Lấy danh sách lớp + giáo viên chủ nhiệm
@@ -28,5 +29,10 @@ router.post('/users/reset-password/:id', userController.resetDefaultPassword);
 router.get('/classes/create', classController.showCreateForm);
 router.post('/classes/preview', classController.preview);
 router.post('/classes/confirm-create',  classController.createClasses);
+
+//Tạo Thời khóa biểu 
+router.get('/thoikhoabieu', scheduleController.getListClasses);
+router.get('/thoikhoabieu/create', scheduleController.getCreatePage);
+router.post('/thoikhoabieu/save', scheduleController.saveSchedule);
 
 module.exports = router;

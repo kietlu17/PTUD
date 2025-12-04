@@ -46,16 +46,5 @@ const PhuHuynh = sequelize.define('PhuHuynh', {
   tableName: 'PhuHuynh',
   timestamps: false,
 });
-<<<<<<< HEAD
-PhuHuynh.associate = function(models) {
-    // PhuHuynh thuộc về một HocSinh (BelongsTo)
-    models.PhuHuynh.belongsTo(models.HocSinh, {
-        foreignKey: 'id_HocSinh',
-        as: 'HocSinh'
-    });
-};
-=======
-
->>>>>>> main
 
 module.exports = PhuHuynh;

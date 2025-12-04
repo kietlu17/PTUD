@@ -12,15 +12,6 @@ router.get('/dashboard-giaovien', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'giáo viên') {
     return res.redirect('/login');
   }
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> main
-=======
->>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
   const giaovien = req.session.user.profile;
   res.render('./giaovien/dashboard-giaovien', {
     giaovien: {
@@ -82,10 +73,6 @@ router.get('/dashboard-sogiaoduc', (req, res) => {
   // other data needed by the view
   res.redirect('/sogiaoduc/dashboard-sogiaoduc');
 });
-<<<<<<< HEAD
-
-=======
->>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 router.get('/dashboard-bangiamhieu', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'ban giám hiệu') {
     return res.redirect('/login');
@@ -100,12 +87,5 @@ router.get('/dashboard-bangiamhieu', (req, res) => {
     }
   });
 });
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> b138cbc (Update chuc nang phân công GVBM và GVCN)
-=======
->>>>>>> main
-=======
 
->>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
 module.exports = router;
