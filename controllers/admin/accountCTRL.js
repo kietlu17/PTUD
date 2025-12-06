@@ -3,7 +3,7 @@ const { TaiKhoan } = require('../../models');
 const bcrypt = require('bcrypt');
 
 exports.getListRole = async (req, res)=> {
-    res.render('./admin/quanlytaikhoan/quanlytaikhoan')
+    res.render('./admin/quanlytaikhoan/quanlytaikhoan', {currentPage: '/quanlyacc'})
 }
 
 exports.getUsersByRole = async (req, res) => {
@@ -35,7 +35,7 @@ exports.showChangePassword = async (req, res) => {
 
   if (!user) return res.status(404).send("User not found");
 
-  res.render('admin/account/editPassword', { user });
+  res.render('admin/account/editPassword', { user, currentPage: '/quanlyacc' });
 };
 
 

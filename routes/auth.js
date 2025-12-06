@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../controllers/authController');
-
+const checkDangKyToHop = require('../middlewares/checkDKTHM')
 // router.get('/register', auth.showRegister);
 router.post('/account/re-password/:id', auth.changePassword);
 router.get('/login', auth.showLogin);
@@ -21,11 +21,12 @@ router.get('/dashboard-giaovien', (req, res) => {
   });
 });
 
-router.get('/dashboard-hocsinh', (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'học sinh') {
+router.get('/dashboard-hocsinh',(req, res) => {
+    if (!req.session.user || req.session.user.role !== 'học sinh') {
     return res.redirect('/login');
-  }
+    }
   const hocSinh = req.session.user.profile;
+<<<<<<< HEAD
   res.render('./hocsinh/dashboard-hocsinh', {
                 hocSinh: {
                   ...hocSinh,
@@ -34,6 +35,26 @@ router.get('/dashboard-hocsinh', (req, res) => {
                 }
   });
 });
+=======
+  if (hocSinh.id_tohopmon === null) {
+    // Chưa chọn tổ hợp → check thời hạn đăng ký
+    return checkDangKyToHop(req, res, () => {
+      // Nếu hết hạn, checkDangKyToHop sẽ render hethandk hoặc redirect
+      // Nếu trong hạn, redirect sang form chọn tổ hợp
+      return res.redirect('/nhaphoc/tohop');
+    });
+  }
+      res.render('./hocsinh/dashboard-hocsinh', {
+                    hocSinh: {
+                      ...hocSinh,
+                      Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
+                      Truong: hocSinh.truong?.name || 'Chưa cập nhật'
+                    }
+      });
+
+
+}, );
+>>>>>>> main
 
 router.get('/dashboard-phuhuynh', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'phụ huynh') {
@@ -69,9 +90,23 @@ router.get('/dashboard-sogiaoduc', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'sở giáo dục') {
     return res.redirect('/login');
   }
-  const nhanVien = req.session.user.profile;
-  res.render('./sogiaoduc/dashboard-sogiaoduc', {nhanVien});
+  // redirect to the mounted sogiaoduc router which provides `truongs` and
+  // other data needed by the view
+  res.redirect('/sogiaoduc/dashboard-sogiaoduc');
 });
+router.get('/dashboard-bangiamhieu', (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'ban giám hiệu') {
+    return res.redirect('/login');
+  }
 
+  const bangiamhieu = req.session.user.profile;
+
+  res.render('./bangiamhieu/dashboard-bangiamhieu', {
+    bangiamhieu: {
+      ...bangiamhieu,
+      Truong: bangiamhieu.truong?.name || 'Chưa cập nhật'
+    }
+  });
+});
 
 module.exports = router;

@@ -4,8 +4,17 @@ const qs = require('qs')
 
 exports.showClasses = async(req, res) => {
     try {
+<<<<<<< HEAD
         const giaovienId = req.params.giaovienId;
 
+=======
+        const ALLOWED_END_MONTHS = [11, 12]; 
+        const nowMonth = new Date().getMonth() + 1;
+
+        let allowEdit = ALLOWED_END_MONTHS.includes(nowMonth);
+        const giaovienId = req.params.giaovienId;
+
+>>>>>>> main
         if (!giaovienId) {
             return res.status(400).send('Giáo viên ID không xác định');
         }
@@ -43,7 +52,11 @@ exports.showClasses = async(req, res) => {
             lop.hocsinhs = hocsinhByLop.filter(hs => hs.id_Lop === lop.id);
         });
 
+<<<<<<< HEAD
         res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop, giaovienId, currentPage: '/hanhkiem' });
+=======
+        res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop, giaovienId, currentPage: '/hanhkiem', allowEdit });
+>>>>>>> main
 
     } catch (error) {
         console.error('Lỗi khi lấy danh sách lớp của giáo viên:', error);
@@ -52,6 +65,7 @@ exports.showClasses = async(req, res) => {
 };
 
 // Lưu hạnh kiểm
+<<<<<<< HEAD
 exports.submitHanhKiem = async(req, res) => {
     const { lopId, giaovienId } = req.params;
 
@@ -129,3 +143,59 @@ exports.submitHanhKiem = async(req, res) => {
         res.status(500).send('Lỗi máy chủ khi lưu hạnh kiểm');
     }
 };
+=======
+// Lưu hạnh kiểm chỉ insert mới
+exports.submitHanhKiem = async (req, res) => {
+  const { lopId, giaovienId } = req.params;
+  const { hanhKiem, nhanXet, NamHoc, KyHoc } = req.body;
+
+  if (!hanhKiem || !nhanXet || !NamHoc || !KyHoc) {
+    return res.status(400).json({ message: 'Dữ liệu không đầy đủ' });
+  }
+
+  try {
+    // Chuyển dữ liệu từ object sang mảng để insert
+    const entries = Object.entries(hanhKiem).map(([id_HocSinh, LoaiHanhKiem]) => ({
+      id_HocSinh: parseInt(id_HocSinh),
+      LoaiHanhKiem,
+      NhanXet: nhanXet[id_HocSinh] || '',
+      HocKy: KyHoc,
+      NamHoc
+    }));
+
+    // Lưu vào DB
+    for (const entry of entries) {
+      await HanhKiem.create({
+        id_HocSinh: entry.id_HocSinh,
+        HocKy: entry.HocKy,
+        NamHoc: entry.NamHoc,
+        LoaiHanhKiem: entry.LoaiHanhKiem,
+        NhanXet: entry.NhanXet,
+        NguoiDanhGia: giaovienId,
+        NgayDanhGia: new Date(),
+      });
+    }
+
+    // Tùy chọn: load lại lớp + học sinh nếu cần render lại view
+    const lop = await Lop.findByPk(lopId, {
+      include: [
+        {
+          model: HocSinh,
+          as: 'hocsinhs',
+          include: [{ model: HanhKiem, as: 'hanhKiem', required: false }]
+        }
+      ]
+    });
+
+    if (!lop) {
+      return res.status(404).json({ message: 'Không tìm thấy lớp này' });
+    }
+
+    return res.status(200).json({ message: 'Lưu hạnh kiểm thành công', lop });
+
+  } catch (error) {
+    console.error('Lỗi khi lưu hạnh kiểm:', error);
+    return res.status(500).json({ message: 'Lỗi máy chủ khi lưu hạnh kiểm', error: error.message });
+  }
+};
+>>>>>>> main

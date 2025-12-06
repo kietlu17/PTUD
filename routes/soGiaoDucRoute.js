@@ -1,81 +1,66 @@
 const express = require('express');
 const router = express.Router();
-const Truong = require('../models/Truong');
-const PhongThi = require('../models/PhongThi');
-const ThiSinh = require('../models/ThiSinh');
-const DiemThi = require('../models/DiemThi');
 
-// middleware: kiểm tra đăng nhập
+const diemThiController = require('../controllers/sogiaoduc/nhapDiemThiController');
+const monHocController = require('../controllers/sogiaoduc/quanLyMonHocController');
+
+const { Truong } = require('../models');
+
+// Middleware login
 function requireLogin(req, res, next) {
   if (!req.session.user) return res.redirect('/login');
   next();
 }
 
-// Trang nhập điểm
-router.get('/nhapdiem', requireLogin, async (req, res) => {
+/* =========================
+   ✅ DASHBOARD SỞ GIÁO DỤC
+========================= */
+router.get("/dashboard-sogiaoduc", requireLogin, async (req, res) => {
   try {
     const truongs = await Truong.findAll();
-    res.render('./sogiaoduc/nhapdiemthi/nhapdiemthi', {
+
+    res.render("sogiaoduc/dashboard-sogiaoduc", {
+      profile: req.session.user.profile,
+      nhanVien: req.session.user.profile,
       truongs,
-      nhanVien: req.session.user
+      currentUrl: "/dashboard-sogiaoduc"
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Lỗi tải danh sách trường.');
+    console.error("Lỗi dashboard sở:", err);
+    res.status(500).send("Lỗi dashboard");
   }
 });
 
-// Lấy phòng thi theo trường
-router.get('/diemthi/phongthi/:truongId', async (req, res) => {
-  try {
-    const phongthi = await PhongThi.findAll({ where: { truongid: req.params.truongId } });
-    res.json(phongthi);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Lỗi lấy danh sách phòng thi.' });
-  }
-});
+/* =========================
+   ✅ NHẬP ĐIỂM THI
+========================= */
 
-// Lấy danh sách thí sinh + điểm nếu có
-router.get('/diemthi/thisinh/:phongId', async (req, res) => {
-  try {
-    const thisinh = await ThiSinh.findAll({
-      where: { phongthiid: req.params.phongId },
-      include: [
-        {
-          model: DiemThi, as: 'diem',
-          attributes: ['toan', 'nguvan', 'tienganh', 'tong'],
-        }
-      ]
-    });
-    res.json(thisinh);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Lỗi lấy danh sách thí sinh.' });
-  }
-});
+// Trang nhập điểm
+router.get('/diemthi', requireLogin, diemThiController.showNhapDiem);
 
-//  Lưu hoặc cập nhật điểm
-router.post('/diemthi/luu', async (req, res) => {
-  try {
-    const { thisinhid, toan, nguvan, tienganh } = req.body;
-    const tong = (+toan) + (+nguvan) + (+tienganh);
+// API lấy phòng
+router.get('/diemthi/phongthi/:truongId', requireLogin, diemThiController.getPhongThi);
 
-    const [diem, created] = await DiemThi.findOrCreate({
-      where: { thisinhid },
-      defaults: { toan, nguvan, tienganh, tong }
-    });
+// API lấy thí sinh
+router.get('/diemthi/thisinh/:phongId', requireLogin, diemThiController.getThiSinh);
 
-    if (!created) {
-      // nếu đã có → update
-      await diem.update({ toan, nguvan, tienganh, tong });
-    }
+// API lưu tất cả điểm
+router.post('/diemthi/luu-tatca', requireLogin, diemThiController.saveAllScores);
 
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Lỗi lưu điểm thi.' });
-  }
-});
+/* =========================
+   ✅ QUẢN LÝ MÔN HỌC (SỞ)
+========================= */
+
+// Trang quản lý môn học
+router.get('/monhoc', requireLogin, monHocController.showPage);
+
+// Thêm môn học
+router.post('/monhoc/them', requireLogin, monHocController.themMonHoc);
+
+// Sửa môn học
+router.post('/monhoc/sua/:id', requireLogin, monHocController.suaMonHoc);
+
+// Xóa môn học
+router.post('/monhoc/xoa/:id', requireLogin, monHocController.xoaMonHoc);
 
 module.exports = router;

@@ -1,0 +1,66 @@
+<%- include('../../partials/header', { title: 'Đăng ký tổ hợp môn' }) %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+          <h3>Đăng ký tổ hợp môn</h3>
+        </div>
+
+        <div class="card-body">
+          <form id="formToHop">
+            <div class="mb-3">
+              <label for="id_tohopmon" class="form-label">Chọn tổ hợp môn học</label>
+              <select id="id_tohopmon" name="id_tohopmon" class="form-select" required>
+                <option value="">-- Chọn tổ hợp --</option>
+                <% toHop.forEach(th => { %>
+                  <option value="<%= th.id %>"><%= th.TenToHop%>: <%= th.mota%> </option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success">Xác nhận</button>
+            </div>
+          </form>
+
+          <div id="tb" class="alert mt-3 d-none text-center"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById("formToHop").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const form = new FormData(e.target);
+  const data = Object.fromEntries(form.entries());
+
+  const res = await fetch("/hocsinh/nhaphoc/tohop", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  const json = await res.json();
+  const tb = document.getElementById("tb");
+
+  if (res.ok) {
+    tb.className = "alert alert-success text-center mt-3";
+    tb.textContent = json.message;
+    tb.classList.remove("d-none");
+
+    // Chờ 1.5 giây rồi quay về dashboard
+    setTimeout(() => window.location.href = "/login", 3000);
+  } else {
+    tb.className = "alert alert-danger text-center mt-3";
+    tb.textContent = json.message;
+    tb.classList.remove("d-none");
+  }
+});
+</script>

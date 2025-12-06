@@ -8,9 +8,14 @@ const authRoutes = require('./routes/auth');
 const soGiaoDucRoute = require('./routes/soGiaoDucRoute');
 const giaoVienRoute = require('./routes/giaoVienRoute');
 const adminRoute = require('./routes/adminRoute');
+const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
 const { init: sequelizeInit } = require('./config/sequelize');
 const phuHuynhRoute = require('./routes/phuHuynhRoute');
+<<<<<<< HEAD
 const hocSinhRoute = require('./routes/hocSinhRoute');
+=======
+const hocsinhRoute = require("./routes/hocsinhRoute")
+>>>>>>> main
 const app = express();
 
 
@@ -24,18 +29,17 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(methodOverride('_method'));
 app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave: false, saveUninitialized: false }));
-app.use(bodyParser.json());
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json()); 
-app.use(methodOverride('_method'));
-app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave: false, saveUninitialized: false }));
+
+
+
 
 // expose currentUser to views
 app.use((req, res, next) => {
@@ -63,9 +67,14 @@ app.use('/', authRoutes);
 // });
 app.use('/sogiaoduc', requireLogin,soGiaoDucRoute);
 app.use('/giaovien', requireLogin, giaoVienRoute);
-app.use('/admin', requireLogin,adminRoute);
+app.use('/admin',requireLogin,adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);
+<<<<<<< HEAD
 app.use('/hocsinh', requireLogin,hocSinhRoute);
+=======
+app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
+app.use('/hocsinh', requireLogin, hocsinhRoute);
+>>>>>>> main
 
 const PORT = process.env.PORT || 3000;
 

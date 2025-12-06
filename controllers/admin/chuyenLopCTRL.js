@@ -109,7 +109,7 @@ exports.handleChuyenLop = async (req, res) => {
 
     await hocSinh.update({ id_Lop: id_lop_moi });
 
-    res.redirect(`/admin/quanlylop/${id_lop_moi}/hocsinh`);
+    res.redirect(`/admin/quanlylop/${id_lop_moi}/hocsinh`, {currentPage: '/quanlylop'});
   } catch (error) {
     console.error('Lỗi khi chuyển lớp:', error);
     res.status(500).send('Lỗi máy chủ');
