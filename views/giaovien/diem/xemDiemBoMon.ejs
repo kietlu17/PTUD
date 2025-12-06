@@ -1,0 +1,128 @@
+<%- include('../../partials/header', { title: 'Xem Điểm - Giáo Viên Bộ Môn' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../partials/nav-giaovien', { profile: profile, currentPage: currentPage }) %>
+
+    <main class="col-md-10 content">
+      <h3 class="text-center fw-bold mb-4">XEM ĐIỂM LỚP (GV BỘ MÔN)</h3>
+
+      <!-- Bộ lọc -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Chọn Lớp:</label>
+          <select class="form-select" id="selectLop" onchange="window.location.href='/giaovien/xem-diem-bo-mon/<%= profile.id %>?lopId=' + this.value">
+            <% dsLop.forEach(item => { %>
+              <option value="<%= item.id_Lop %>" <%= item.id_Lop == selectedLopId ? 'selected' : '' %>>
+                <%= item.lop.TenLop %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Học Kỳ:</label>
+          <select class="form-select" id="selectHK">
+            <option value="">-- Tất cả --</option>
+            <option value="1" <%= hocKy == '1' ? 'selected' : '' %>>Học Kỳ 1</option>
+            <option value="2" <%= hocKy == '2' ? 'selected' : '' %>>Học Kỳ 2</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Năm Học:</label>
+          <select class="form-select" id="selectYear">
+            <option value="">-- Tất cả --</option>
+            <% 
+              // Hiển thị danh sách năm học từ database
+              if (typeof danhSachNamHoc !== 'undefined' && danhSachNamHoc.length > 0) {
+                danhSachNamHoc.forEach(year => { 
+            %>
+              <option value="<%= year %>" <%= namHoc == year ? 'selected' : '' %>>
+                <%= year %>
+              </option>
+            <%   
+                });
+              } else {
+                // Fallback: Tạo năm học mặc định nếu không có dữ liệu
+                const currentYear = new Date().getFullYear();
+                const defaultYears = [
+                  `${currentYear}-${currentYear + 1}`,
+                  `${currentYear - 1}-${currentYear}`,
+                  `${currentYear - 2}-${currentYear - 1}`
+                ];
+                defaultYears.forEach(year => {
+            %>
+              <option value="<%= year %>" <%= namHoc == year ? 'selected' : '' %>>
+                <%= year %>
+              </option>
+            <%   
+                });
+              }
+            %>
+          </select>
+          <button class="btn btn-primary mt-2 w-100" onclick="applyFilter()">Lọc</button>
+        </div>
+      </div>
+
+      <!-- Bảng điểm -->
+      <div class="table-responsive shadow-sm">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-secondary">
+            <tr>
+              <th>ID</th>
+              <th>Họ và Tên</th>
+              <% giaovien.chuyenMon.forEach(mon => { %>
+                <th><%= mon.TenMon %></th>
+              <% }) %>
+            </tr>
+          </thead>
+          <tbody>
+            <% lop.hocsinhs.forEach(hs => { %>
+              <tr>
+                <td><%= hs.id %></td>
+                <td class="text-start"><%= hs.HoVaTen %></td>
+                <% giaovien.chuyenMon.forEach(mon => { %>
+                  <td>
+                    <% 
+                      const diem = diemData.find(d => 
+                        d.id_HocSinh === hs.id && d.id_MonHoc === mon.id
+                      );
+                    %>
+                    <%= diem && diem.DiemTrungBinh ? Number(diem.DiemTrungBinh).toFixed(2) : '-' %>
+                  </td>
+                <% }) %>
+              </tr>
+            <% }) %>
+          </tbody>
+          <tfoot class="table-secondary fw-bold">
+            <tr>
+              <td colspan="2">TB Lớp</td>
+              <% giaovien.chuyenMon.forEach(mon => { %>
+                <td>
+                  <% 
+                    const key = `${mon.id}-${hocKy || 'all'}`;
+                    const tbLop = classAverages[key];
+                  %>
+                  <%= tbLop %>
+                </td>
+              <% }) %>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function applyFilter() {
+  const hk = document.getElementById('selectHK').value;
+  const year = document.getElementById('selectYear').value;
+  const lop = document.getElementById('selectLop').value;
+  let url = '/giaovien/xem-diem-bo-mon/<%= profile.id %>?lopId=' + lop;
+  if (hk) url += '&hocKy=' + hk;
+  if (year) url += '&namHoc=' + year;
+  window.location.href = url;
+}
+</script>

@@ -1,0 +1,126 @@
+<%- include('../../partials/header', { title: 'Thời Khóa Biểu' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <%- include('../../partials/nav-hocsinh') %>
+
+    <!-- Main content -->
+    <main class="col-md-10 content">
+      <h2 class="text-center mb-4">THỜI KHÓA BIỂU</h2>
+      
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Thông tin:</h5>
+          <p><strong>Học sinh:</strong> <%= hocSinh.HoVaTen %></p>
+          <p><strong>Lớp:</strong> <%= hocSinh.TenLop %></p>
+          <p><strong>Năm học:</strong> 2025-2026</p>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-primary">
+            <tr>
+              <th style="width: 100px;">Tiết</th>
+              <th>Thứ 2</th>
+              <th>Thứ 3</th>
+              <th>Thứ 4</th>
+              <th>Thứ 5</th>
+              <th>Thứ 6</th>
+              <th>Thứ 7</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% 
+            const tietHoc = [1, 2, 3, 4, 5];
+            const tietTime = {
+              1: '7:00 - 7:45',
+              2: '7:50 - 8:35',
+              3: '8:40 - 9:25',
+              4: '9:30 - 10:15',
+              5: '10:20 - 11:05'
+            };
+            
+            tietHoc.forEach(tiet => { %>
+              <tr>
+                <td class="text-center">
+                  <strong>Tiết <%= tiet %></strong><br>
+                  <small class="text-muted"><%= tietTime[tiet] %></small>
+                </td>
+                <% 
+                const days = ['Hai', 'Ba', 'Tu', 'Nam', 'Sau', 'Bay'];
+                days.forEach(day => {
+                  const lesson = scheduleByDay[day]?.find(l => l.Tiet === tiet);
+                  if (lesson) { %>
+                    <td class="schedule-cell">
+                      <div class="lesson-card">
+                        <strong class="text-primary"><%= lesson.TenMon %></strong><br>
+                        <small>GV: <%= lesson.TenGiaoVien || 'Chưa phân công' %></small>
+                      </div>
+                    </td>
+                  <% } else { %>
+                    <td class="text-center text-muted">-</td>
+                  <% } 
+                }); %>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-info mt-4">
+        <strong>Lưu ý:</strong>
+        <ul class="mb-0">
+          <li>Thời khóa biểu có thể thay đổi, vui lòng theo dõi thông báo từ nhà trường</li>
+          <li>Tiết học bắt đầu đúng giờ, học sinh cần có mặt trước 5 phút</li>
+        </ul>
+      </div>
+
+      <div class="text-center mt-3">
+        <button onclick="window.print()" class="btn btn-primary">
+          <i class="bi bi-printer"></i> In thời khóa biểu
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+.schedule-cell {
+  padding: 8px;
+  vertical-align: middle;
+}
+
+.lesson-card {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 4px solid #0d6efd;
+}
+
+.table th {
+  text-align: center;
+  vertical-align: middle;
+  background-color: #0d6efd;
+  color: white;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+@media print {
+  .navbar, .btn, .alert, aside {
+    display: none !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 20px !important;
+  }
+}
+</style>
+
+</body>
+</html>

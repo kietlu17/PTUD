@@ -1,0 +1,151 @@
+<%- include('../../partials/header', { title: 'Xem Điểm - GVCN' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../partials/nav-giaovien', { profile: profile, currentPage: currentPage }) %>
+
+    <main class="col-md-10 content">
+      <h3 class="text-center fw-bold mb-4">XEM ĐIỂM LỚP CHỦ NHIỆM</h3>
+
+      <p class="fw-bold">Lớp: <%= lop.TenLop %> — GVCN: <%= gv.HoVaTen %></p>
+
+      <!-- ✅ Bộ lọc năm học -->
+      <div class="row mb-3 bg-light p-3 rounded shadow-sm">
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Năm Học:</label>
+          <select class="form-select" id="selectNamHoc">
+            <% 
+              if (typeof danhSachNamHoc !== 'undefined' && danhSachNamHoc.length > 0) {
+                danhSachNamHoc.forEach(year => { 
+            %>
+              <option value="<%= year %>" <%= NamHoc == year ? 'selected' : '' %>>
+                <%= year %>
+              </option>
+            <%   
+                });
+              } else {
+                // Fallback
+                const currentYear = new Date().getFullYear();
+                const defaultYears = [
+                  `${currentYear}-${currentYear + 1}`,
+                  `${currentYear - 1}-${currentYear}`
+                ];
+                defaultYears.forEach(year => {
+            %>
+              <option value="<%= year %>" <%= NamHoc == year ? 'selected' : '' %>>
+                <%= year %>
+              </option>
+            <%   
+                });
+              }
+            %>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-primary w-100" onclick="changeYear()">Chọn Năm Học</button>
+        </div>
+      </div>
+
+      <!-- BẢNG ĐIỂM TRUNG BÌNH -->
+      <div class="table-responsive shadow-sm mb-4">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-secondary fw-bold">
+            <tr>
+              <th>ID</th>
+              <th>Học Sinh</th>
+              <th>TB HK1</th>
+              <th>TB HK2</th>
+              <th>TB Năm</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% resultList.forEach(r => { %>
+              <tr>
+                <td><%= r.id %></td>
+                <td class="text-start"><%= r.HoVaTen %></td>
+                <td><%= r.tbHK1 != null ? r.tbHK1.toFixed(2) : '-' %></td>
+                <td><%= r.tbHK2 != null ? r.tbHK2.toFixed(2) : '-' %></td>
+                <td class="fw-bold"><%= r.tbNam != null ? r.tbNam.toFixed(2) : '-' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bộ lọc chi tiết -->
+      <div class="row mb-4 bg-light p-3 rounded shadow-sm">
+        <h5 class="fw-bold mb-3">Lọc Chi Tiết Điểm</h5>
+        <div class="col-md-4">
+          <label class="form-label fw-bold">ID Học Sinh:</label>
+          <input type="number" class="form-control" id="selectHsId" placeholder="Nhập ID HS" value="<%= selectedHsId || '' %>"/>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Học Kỳ:</label>
+          <select class="form-select" id="selectDetailHocKy">
+            <option value="">-- Tất cả --</option>
+            <option value="1" <%= selectedHocKy == '1' ? 'selected' : '' %>>Học Kỳ 1</option>
+            <option value="2" <%= selectedHocKy == '2' ? 'selected' : '' %>>Học Kỳ 2</option>
+          </select>
+        </div>
+        
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-info w-100" onclick="applyDetailFilter()">Lọc Chi Tiết</button>
+        </div>
+      </div>
+
+      <!-- CHI TIẾT ĐIỂM -->
+      <h5 class="fw-bold mb-3">Chi tiết điểm theo môn & học kỳ</h5>
+
+      <div class="table-responsive shadow-sm">
+        <table class="table table-striped text-center align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Học Sinh</th>
+              <th>Môn</th>
+              <th>Điểm</th>
+              <th>Học kỳ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (details && details.length) { %>
+              <% details.forEach(d => { %>
+                <tr>
+                  <td><%= d.hocSinh?.HoVaTen %></td>
+                  <td><%= d.monHoc?.TenMon || '-' %></td>
+                  <td class="fw-bold"><%= d.DiemTrungBinh ?? d.Diem ?? '-' %></td>
+                  <td><%= d.HocKy %></td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="4">Không có dữ liệu điểm</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+// Thay đổi năm học
+function changeYear() {
+  const namHoc = document.getElementById('selectNamHoc').value;
+  window.location.href = '/giaovien/xem-diem-chu-nhiem/<%= gv.id %>?namHoc=' + namHoc;
+}
+
+// Lọc chi tiết điểm
+function applyDetailFilter() {
+  const hsId = document.getElementById('selectHsId').value;
+  const hocKy = document.getElementById('selectDetailHocKy').value;
+  const namHoc = document.getElementById('selectNamHoc').value;
+  
+  let url = '/giaovien/xem-diem-chu-nhiem/<%= gv.id %>?namHoc=' + namHoc;
+  
+  if (hsId) url += '&hsId=' + hsId;
+  if (hocKy) url += '&hocKy=' + hocKy;
+  
+  window.location.href = url;
+}
+</script>
