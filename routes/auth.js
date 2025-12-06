@@ -26,6 +26,16 @@ router.get('/dashboard-hocsinh',(req, res) => {
     return res.redirect('/login');
     }
   const hocSinh = req.session.user.profile;
+<<<<<<< HEAD
+  res.render('./hocsinh/dashboard-hocsinh', {
+                hocSinh: {
+                  ...hocSinh,
+                  Lop: hocSinh.lop?.TenLop || 'Chưa cập nhật',
+                  Truong: hocSinh.truong?.name || 'Chưa cập nhật'
+                }
+  });
+});
+=======
   if (hocSinh.id_tohopmon === null) {
     // Chưa chọn tổ hợp → check thời hạn đăng ký
     return checkDangKyToHop(req, res, () => {
@@ -44,6 +54,7 @@ router.get('/dashboard-hocsinh',(req, res) => {
 
 
 }, );
+>>>>>>> main
 
 router.get('/dashboard-phuhuynh', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'phụ huynh') {

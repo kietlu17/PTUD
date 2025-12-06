@@ -2,9 +2,10 @@
       <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
       <a href="/dashboard-hocsinh" class="active">Trang Dashboard</a>
       <a href="#">Kết Quả Học Tập</a>
-      <a href="#">Thời Khóa Biểu</a>
+      <a href="/hocsinh/thoikhoabieu">Thời Khóa Biểu</a>
       <a href="#">Bài Tập</a>
       <a href="#">Thông Báo</a>
+      <a href="/hocsinh/<%= hocSinh.id %>/diem">Điểm các môn</a>
       <a href="#">Tài Khoản Cá Nhân</a>
             <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
       <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>

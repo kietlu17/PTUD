@@ -3,6 +3,7 @@ const router = express.Router();
 const diemdanhController = require('../controllers/giaovien/diemdanhController');
 const hanhkiem = require('../controllers/giaovien/hanhkiem');
 const baitapController = require('../controllers/giaovien/baitapController');
+const gradesController = require('../controllers/giaovien/gradesController');
 
 const upload = require('../config/uploadConfig');
 // Điểm Danh
@@ -20,7 +21,7 @@ router.post('/diemdanh/:id/lop/:lopId', diemdanhController.submitAttendance);
 router.get('/hanhkiem/:giaovienId/lop', hanhkiem.showClasses);
 
 // Hiển thị danh sách học sinh trong lớp để nhập hạnh kiểm
-// router.get('/hanhkiem/:giaovienId/lop/:lopId', hanhkiem.getHocSinhByLop);
+//router.get('/hanhkiem/:giaovienId/lop/:lopId', hanhkiem.getHocSinhByLop);
 
 // Xử lý lưu hạnh kiểm
 router.post('/hanhkiem/:giaovienId/lop/:lopId', hanhkiem.submitHanhKiem);
@@ -38,4 +39,11 @@ router.get('/giao-bai-tap/:idPhanCong', baitapController.hienThiFormGiaoBai);
 
 // Bước 3: Xử lý lưu bài tập vào CSDL (Có hỗ trợ upload file)
 router.post('/giao-bai-tap/:idPhanCong', upload.single('fileBaiTap'), baitapController.luuBaiTap);
+// XEM ĐIỂM
+// GV Bộ môn: Xem điểm lớp mình dạy (chỉ môn mình)
+router.get('/xem-diem-bo-mon/:giaovienId', gradesController.xemDiemGVBoMon);
+
+// GVCN: Xem điểm lớp mình (tất cả môn)
+router.get('/xem-diem-chu-nhiem/:giaovienId', gradesController.xemDiemGVChuNhiem);
+
 module.exports = router;

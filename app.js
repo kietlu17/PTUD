@@ -11,7 +11,11 @@ const adminRoute = require('./routes/adminRoute');
 const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
 const { init: sequelizeInit } = require('./config/sequelize');
 const phuHuynhRoute = require('./routes/phuHuynhRoute');
+<<<<<<< HEAD
+const hocSinhRoute = require('./routes/hocSinhRoute');
+=======
 const hocsinhRoute = require("./routes/hocsinhRoute")
+>>>>>>> main
 const app = express();
 
 
@@ -42,6 +46,7 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.role = req.session.user?.role || null;
   res.locals.profile = req.session.user?.profile || null;
+  res.locals.phuHuynh = req.session.user?.profile || null;
   next();
 });
 
@@ -64,8 +69,12 @@ app.use('/sogiaoduc', requireLogin,soGiaoDucRoute);
 app.use('/giaovien', requireLogin, giaoVienRoute);
 app.use('/admin',requireLogin,adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);
+<<<<<<< HEAD
+app.use('/hocsinh', requireLogin,hocSinhRoute);
+=======
 app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
 app.use('/hocsinh', requireLogin, hocsinhRoute);
+>>>>>>> main
 
 const PORT = process.env.PORT || 3000;
 
