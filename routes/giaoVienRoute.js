@@ -5,6 +5,7 @@ const hanhkiem = require('../controllers/giaovien/hanhkiem');
 const baitapController = require('../controllers/giaovien/baitapController');
 const chamBaiController = require('../controllers/giaovien/chamBaiController');
 const nhapDiemController = require('../controllers/giaovien/nhapDiemController');
+const gradesController = require('../controllers/giaovien/gradesController');
 const upload = require('../config/uploadConfig');
 // Điểm Danh
 // Hiển thị danh sách lớp giáo viên dạy
@@ -58,4 +59,12 @@ router.post('/cham-bai/luu-tat-ca/:idBaiTap', chamBaiController.luuDiemBaiTap);
 router.get('/nhap-diem', nhapDiemController.hienThiDanhSachLop);
 router.get('/nhap-diem/:idPhanCong', nhapDiemController.hienThiBangDiem);
 router.post('/nhap-diem/:idPhanCong', nhapDiemController.luuBangDiem);
+
+// XEM ĐIỂM
+// GV Bộ môn: Xem điểm lớp mình dạy (chỉ môn mình)
+router.get('/xem-diem-bo-mon/:giaovienId', gradesController.xemDiemGVBoMon);
+
+// GVCN: Xem điểm lớp mình (tất cả môn)
+router.get('/xem-diem-chu-nhiem/:giaovienId', gradesController.xemDiemGVChuNhiem);
+
 module.exports = router;

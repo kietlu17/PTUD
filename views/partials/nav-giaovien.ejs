@@ -10,6 +10,15 @@
       <a href="/giaovien/cham-bai" class="<% if (activePage === '/chambai') { %>active<% } %>">Chấm Bài Tập</a>
 
       <a href="/giaovien/nhap-diem" class="<% if (activePage === '/nhapdiem') { %>active<% } %>">Nhập Điểm</a>
+            <a href="/giaovien/xem-diem-bo-mon/<%= profile.id %>" 
+         class="<% if (activePage === '/xem-diem-bo-mon') { %>active<% } %>">
+        Xem Điểm Bộ Môn
+      </a>
+      
+      <a href="/giaovien/xem-diem-chu-nhiem/<%= profile.id %>" 
+         class="<% if (activePage === '/xem-diem-chu-nhiem') { %>active<% } %>">
+        Xem Điểm Chủ Nhiệm
+      </a>
       <a href="#">Thông Báo</a>
       <a href="#">Tài Khoản Cá Nhân</a>
       <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
