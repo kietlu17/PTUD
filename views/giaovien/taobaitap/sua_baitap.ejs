@@ -1,0 +1,122 @@
+<%- include('../../partials/header', { title: 'Sửa Bài Tập' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('../../partials/nav-giaovien') %>
+
+        <main class="col-md-10 content p-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-edit me-2"></i> SỬA BÀI TẬP
+                </h4>
+                <a href="/giaovien/giao-bai-tap" class="btn btn-secondary btn-sm shadow-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-bold d-flex align-items-center">
+                    <i class="fas fa-book-open me-2"></i>
+                    <%= baiTap.TieuDe %> (<%= baiTap.lop.TenLop %> - <%= baiTap.monhoc.TenMon %>)
+                </div>
+                
+                <div class="card-body p-4">
+                    
+                    <% if (error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+                            <i class="fas fa-exclamation-circle me-2"></i> <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <form action="/giaovien/giao-bai-tap/sua/<%= baiTap.id %>" method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Tiêu đề:</label>
+                                    <input type="text" name="tieuDe" class="form-control" value="<%= baiTap.TieuDe %>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">Hạn nộp:</label>
+                                    <% 
+                                        const d = new Date(baiTap.HanNop);
+                                        const dStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+                                    %>
+                                    <input type="datetime-local" name="hanNop" class="form-control" value="<%= dStr %>" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-secondary">File đính kèm:</label>
+                                    <input type="file" name="fileBaiTap" class="form-control">
+                                    <div class="form-text mt-2">
+                                        <% if(baiTap.File) { 
+                                             let tenFile = baiTap.File.split(/[/\\]/).pop();
+                                        %>
+                                            <i class="fas fa-paperclip me-1"></i> Hiện tại: 
+                                            <a href="<%= baiTap.File %>" target="_blank" class="fw-bold text-decoration-none"><%= tenFile %></a>
+                                        <% } else { %>
+                                            <span class="text-muted fst-italic">Chưa có file đính kèm.</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Nội dung / Yêu cầu:</label>
+                            <textarea name="noiDung" class="form-control" rows="6"><%= baiTap.NoiDung %></textarea>
+                        </div>
+
+                        <div class="text-end border-top pt-3">
+                            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                                <i class="fas fa-save me-2"></i> CẬP NHẬT
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const successMsg = "<%= success || '' %>";
+
+    if (successMsg && successMsg.trim() !== "") {
+        Swal.fire({
+            icon: 'success',
+            title: 'Cập nhật thành công!',
+            text: 'Thông tin bài tập đã được lưu lại.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#0d6efd' // Màu xanh dương
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Load lại trang để thấy dữ liệu mới
+                window.location.href = window.location.href;
+            }
+        });
+    }
+</script>
+
+<style>
+    .card { border-radius: 10px; overflow: hidden; }
+    .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); border-color: #0d6efd; }
+    
+    /* Style nút bấm xanh dương */
+    .btn-primary { 
+        background-color: #0d6efd; 
+        border: none; 
+        transition: all 0.3s; 
+    }
+    .btn-primary:hover { 
+        background-color: #0b5ed7; 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+    }
+</style>

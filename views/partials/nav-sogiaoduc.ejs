@@ -34,12 +34,12 @@
     Nhập điểm thi
   </a>
 
-  <a href="/xet-tuyen" class="<%= currentUrl === '/xet-tuyen' ? 'active' : '' %>">
+  <a href="/sogiaoduc/xet-tuyen" class="<%= (currentUrl === '/xet-tuyen' || currentUrl === '/sogiaoduc/xet-tuyen' || currentUrl === '/sogiaoduc/xettuyen') ? 'active' : '' %>">
     Xét tuyển
   </a>
 
-  <a href="/chi-tieu" class="<%= currentUrl === '/chi-tieu' ? 'active' : '' %>">
-    Chỉ tiêu tuyển sinh
+  <a href="/sogiaoduc/chi-tieu" class="<%= (currentUrl === '/chi-tieu' || currentUrl === '/sogiaoduc/chi-tieu') ? 'active' : '' %>">
+    Chỉ tiêu & Điểm chuẩn
   </a>
 
   <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>

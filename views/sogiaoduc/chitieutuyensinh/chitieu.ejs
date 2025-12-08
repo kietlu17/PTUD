@@ -1,0 +1,67 @@
+
+<%- include('../../partials/header', { title: 'Chỉ tiêu và điểm chuẩn tuyển sinh' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <%- include('../../partials/nav-sogiaoduc', { profile, currentUrl }) %>
+
+    <main class="col-md-10 content">
+      <h4 class="text-center fw-bold mb-4">CHỈ TIÊU VÀ ĐIỂM CHUẨN TUYỂN SINH</h4>
+
+      <div class="card p-3 mb-4">
+        <table class="table table-bordered text-center">
+          <thead class="table-secondary">
+            <tr><th>ID</th><th>Trường</th><th>Chỉ tiêu (số lượng)</th><th>Điểm chuẩn</th><th>Thao tác</th></tr>
+          </thead>
+          <tbody>
+            <% truongs.forEach(t => { %>
+              <tr>
+                  <td><%= t.id %></td>
+                  <td><%= t.name %></td>
+                  <td>
+                    <input id="chitieu-<%= t.id %>" type="number" value="<%= t.soLuong %>" min="1" class="form-control" />
+                  </td>
+                  <td>
+                    <input id="diemchuan-<%= t.id %>" type="number" step="0.01" value="<%= t.diemChuan %>" min="0" class="form-control" />
+                  </td>
+                  <td>
+                    <button class="btn btn-primary" onclick="luuChiTieu('<%= t.id %>')">Lưu</button>
+                  </td>
+                </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  async function luuChiTieu(truongid) {
+  const input = document.getElementById(`chitieu-${truongid}`);
+  const dcInput = document.getElementById(`diemchuan-${truongid}`);
+  const value = String(input.value || '').trim();
+  const dcValue = String(dcInput.value || '').trim();
+  if (!value) return Swal.fire('Lỗi', 'Chỉ tiêu không được để trống', 'error');
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed) || parsed <= 0) return Swal.fire('Lỗi', 'Chỉ tiêu phải là số nguyên lớn hơn 0', 'error');
+
+  if (!dcValue && dcValue !== '0') return Swal.fire('Lỗi', 'Điểm chuẩn không được để trống', 'error');
+  const parsedDc = parseFloat(dcValue);
+  if (isNaN(parsedDc) || parsedDc < 0) return Swal.fire('Lỗi', 'Điểm chuẩn phải là số >= 0', 'error');
+
+  const res = await fetch('/sogiaoduc/chi-tieu/save', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ truongid, soLuong: parsed, diemChuan: parsedDc })
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    Swal.fire('Đã lưu', 'Chỉ tiêu đã được cập nhật', 'success');
+  } else {
+    Swal.fire('Lỗi', data.error || 'Không thể lưu chỉ tiêu', 'error');
+  }
+}
+</script>

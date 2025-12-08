@@ -1,0 +1,255 @@
+<%- include('../../partials/header', { title: 'Nhập Điểm Số' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../../partials/nav-giaovien') %>
+
+                <main class="col-md-10 content p-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="text-primary fw-bold mb-0">
+                            <i class="fas fa-edit me-2"></i> SỔ ĐIỂM: LỚP
+                            <%= phanCong.lop.TenLop %> - MÔN
+                                <%= phanCong.monhoc.TenMon %>
+                        </h4>
+                        <a href="/giaovien/nhap-diem" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                        </a>
+                    </div>
+
+                    <form id="formNhapDiem" action="/giaovien/nhap-diem/<%= phanCong.id %>" method="POST">
+
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover text-center align-middle mb-0">
+                                        <thead class="bg-primary text-white">
+                                            <tr>
+                                                <th rowspan="2" style="width: 50px;">STT</th>
+                                                <th rowspan="2" style="min-width: 200px;">Họ và Tên</th>
+                                                <th colspan="2" class="bg-info text-dark bg-opacity-75">Thường xuyên (HS1)</th>
+                                                <th colspan="2" class="bg-warning text-dark bg-opacity-75">1 Tiết (HS2)</th>
+                                                <th rowspan="2" style="width: 80px;" class="bg-success text-white bg-opacity-75">Giữa Kỳ (HS2)</th>
+                                                <th rowspan="2" style="width: 80px;" class="bg-danger text-white bg-opacity-75">Cuối Kỳ (HS3)</th>
+                                                <th rowspan="2" style="width: 80px;" class="bg-dark text-white">T.Bình</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="width: 70px;" class="bg-info bg-opacity-25 text-dark">Lần 1</th>
+                                                <th style="width: 70px;" class="bg-info bg-opacity-25 text-dark">Lần 2</th>
+                                                <th style="width: 70px;" class="bg-warning bg-opacity-25 text-dark">Lần 1</th>
+                                                <th style="width: 70px;" class="bg-warning bg-opacity-25 text-dark">Lần 2</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% dsHocSinh.forEach((hs, index) => { 
+                                        // Lấy điểm nếu đã có trong database
+                                        let diem = {};
+                                        if (hs.bangDiem && hs.bangDiem.length > 0) {
+                                            diem = hs.bangDiem[0];
+                                        }
+                                    %>
+                                                <tr data-id="<%= hs.id %>">
+                                                    <td class="fw-bold text-secondary">
+                                                        <%= index + 1 %>
+                                                    </td>
+                                                    <td class="text-start fw-bold text-primary ps-3">
+                                                        <%= hs.HoVaTen %>
+                                                    </td>
+
+                                                    <td><input type="number" step="0.1" min="0" max="10" class="form-control text-center inp-diem tx" name="grades[<%= hs.id %>][DiemTX1]" value="<%= diem.DiemTX1 %>"></td>
+                                                    <td><input type="number" step="0.1" min="0" max="10" class="form-control text-center inp-diem tx" name="grades[<%= hs.id %>][DiemTX2]" value="<%= diem.DiemTX2 %>"></td>
+
+                                                    <td><input type="number" step="0.1" min="0" max="10" class="form-control text-center inp-diem mt" name="grades[<%= hs.id %>][Diem1T1]" value="<%= diem.Diem1T1 %>"></td>
+                                                    <td><input type="number" step="0.1" min="0" max="10" class="form-control text-center inp-diem mt" name="grades[<%= hs.id %>][Diem1T2]" value="<%= diem.Diem1T2 %>"></td>
+
+                                                    <td><input type="number" step="0.1" min="0" max="10" class="form-control text-center fw-bold inp-diem gk" name="grades[<%= hs.id %>][DiemGK]" value="<%= diem.DiemGK %>"></td>
+
+                                                    <td><input type="number" step="0.1" min="0" max="10" class="form-control text-center fw-bold text-danger inp-diem ck" name="grades[<%= hs.id %>][DiemCK]" value="<%= diem.DiemCK %>"></td>
+
+                                                    <td class="fw-bold bg-light text-center diem-tb">
+                                                        <%= diem.DiemTB || '-' %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center sticky-bottom">
+                                <small class="text-muted fst-italic">
+                            <i class="fas fa-info-circle"></i> Điểm TB được tính tự động: (TX + 1Tiết*2 + GK*2 + CK*3) / 11
+                        </small>
+                                <button type="submit" class="btn btn-success px-5 py-2 fw-bold shadow-sm">
+                            <i class="fas fa-save me-2"></i> LƯU BẢNG ĐIỂM
+                        </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // 1. Tự động tính điểm trung bình khi nhập liệu
+        document.querySelectorAll('.inp-diem').forEach(input => {
+            input.addEventListener('input', function() {
+                const row = this.closest('tr');
+                tinhDiemTB(row);
+            });
+        });
+
+        function tinhDiemTB(row) {
+            // Hàm lấy giá trị (nếu rỗng thì trả về null)
+            const getVal = (name) => {
+                const el = row.querySelector(`input[name*="[${name}]"]`);
+                return (el && el.value !== "") ? parseFloat(el.value) : null;
+            };
+
+            const tx1 = getVal('DiemTX1');
+            const tx2 = getVal('DiemTX2');
+            const mt1 = getVal('Diem1T1');
+            const mt2 = getVal('Diem1T2');
+            const gk = getVal('DiemGK');
+            const ck = getVal('DiemCK');
+
+            // QUY TẮC TÍNH: 
+            // Coi như các điểm chưa nhập là 0 để tính tạm thời
+            // Hoặc chỉ tính khi đã nhập đủ (tùy bạn chọn, ở đây mình để tính luôn realtime)
+
+            let tongDiem = 0;
+            let tongHeSo = 11; // Tổng hệ số chuẩn: 1+1+2+2+2+3 = 11
+
+            // Nếu muốn chỉ khi nhập đủ mới tính thì bỏ comment dòng dưới:
+            // if (tx1===null || tx2===null || mt1===null || mt2===null || gk===null || ck===null) return;
+
+            // Tính tổng (những ô null coi là 0)
+            tongDiem += (tx1 || 0) * 1;
+            tongDiem += (tx2 || 0) * 1;
+            tongDiem += (mt1 || 0) * 2;
+            tongDiem += (mt2 || 0) * 2;
+            tongDiem += (gk || 0) * 2;
+            tongDiem += (ck || 0) * 3;
+
+            // Tính trung bình
+            let dtb = (tongDiem / tongHeSo).toFixed(1);
+
+            // Hiển thị ra màn hình
+            const cell = row.querySelector('.diem-tb');
+            cell.innerText = dtb;
+
+            // Tô màu
+            cell.className = "fw-bold bg-light text-center diem-tb"; // Reset class
+            if (dtb < 5.0) cell.classList.add("text-danger");
+            else if (dtb >= 8.0) cell.classList.add("text-success");
+            else cell.classList.add("text-dark");
+        }
+
+        // 2. Xử lý Submit Form (Đoạn này giữ nguyên logic JSON đã sửa ở bài trước)
+        const form = document.getElementById('formNhapDiem');
+        form.addEventListener('submit', async(e) => {
+            e.preventDefault();
+
+            // Validate sơ bộ
+            let isValid = true;
+            document.querySelectorAll('.inp-diem').forEach(inp => {
+                if (inp.value !== "" && (inp.value < 0 || inp.value > 10)) {
+                    isValid = false;
+                    inp.classList.add('is-invalid');
+                } else {
+                    inp.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Điểm số phải từ 0 đến 10!'
+                });
+                return;
+            }
+
+            // Thu thập dữ liệu JSON
+            const grades = {};
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const studentId = row.getAttribute('data-id');
+                const getInputVal = (name) => row.querySelector(`input[name*="[${name}]"]`).value;
+
+                if (studentId) {
+                    grades[studentId] = {
+                        DiemTX1: getInputVal('DiemTX1'),
+                        DiemTX2: getInputVal('DiemTX2'),
+                        Diem1T1: getInputVal('Diem1T1'),
+                        Diem1T2: getInputVal('Diem1T2'),
+                        DiemGK: getInputVal('DiemGK'),
+                        DiemCK: getInputVal('DiemCK')
+                    };
+                }
+            });
+
+            // Gửi đi
+            Swal.fire({
+                title: 'Đang lưu...',
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        grades: grades
+                    })
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: 'Đã lưu sổ điểm vào hệ thống.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi lưu điểm',
+                    text: err.message
+                });
+            }
+        });
+    </script>
+    <style>
+        /* Input điểm gọn gàng */
+        
+        .inp-diem {
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #dee2e6;
+        }
+        /* Khi focus vào ô nào thì ô đó sáng lên */
+        
+        .inp-diem:focus {
+            border-color: #0d6efd;
+            background-color: #f0f8ff;
+            box-shadow: none;
+        }
+        /* Tô đỏ ô lỗi */
+        
+        .is-invalid {
+            border-color: red !important;
+            background-color: #ffe6e6 !important;
+        }
+    </style>

@@ -1,11 +1,11 @@
 const { GiaoVien, BangPhanCongGiaoVien, Lop, HocSinh, DiemDanh, NghiHoc } = require('../../models'); 
-// Bây giờ import như này CHẮC CHẮN chạy được
 const { Sequelize, Op } = require('sequelize');
 
-// 1. Hiển thị danh sách lớp
+// 1. HIỂN THỊ DANH SÁCH LỚP
 exports.showClasses = async (req, res) => {
     try {
         const giaoVienId = req.params.id;
+        
         const dsLop = await BangPhanCongGiaoVien.findAll({
             where: { id_GiaoVien: giaoVienId },
             include: [{
@@ -19,24 +19,30 @@ exports.showClasses = async (req, res) => {
             group: ['BangPhanCongGiaoVien.id', 'lop.id', 'lop->gvcn.id'],
             raw: true, nest: true,
         });
+
         res.status(200).render('./giaovien/diemdanh/diemdanh', { dsLop });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi server' });
+        res.status(500).json({ message: 'Lỗi server: ' + error.message });
     }
 };
 
-// 2. Lấy danh sách học sinh & Tự động tích phép (Chuẩn nhất)
+// 2. LẤY DANH SÁCH HỌC SINH (Kèm trạng thái cũ & Nghỉ phép)
 exports.getHocSinhByLop = async (req, res) => {
     try {
         const { lopId, id } = req.params;
 
-        // Lấy ngày hôm nay để log
+        // Lấy ngày hôm nay chuẩn
         const d = new Date();
-        console.log(`--- TÌM ĐƠN NGÀY: ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ---`);
+        const dDate = d.getDate();
+        const dMonth = d.getMonth() + 1;
+        const dYear = d.getFullYear();
+        const homNayStr = `${dYear}-${String(dMonth).padStart(2, '0')}-${String(dDate).padStart(2, '0')}`;
+
+        console.log(`--- ĐANG ĐIỂM DANH NGÀY: ${homNayStr} ---`);
 
         const phanCong = await BangPhanCongGiaoVien.findOne({ where: { id_GiaoVien: id, id_Lop: lopId } });
-        if (!phanCong) return res.status(403).send('Chưa phân công.');
+        if (!phanCong) return res.status(403).send('Bạn không được phân công dạy lớp này.');
 
         const lop = await Lop.findByPk(lopId, {
             include: [{ model: GiaoVien, as: 'gvcn', attributes: ['id', 'HoVaTen'] }],
@@ -49,30 +55,38 @@ exports.getHocSinhByLop = async (req, res) => {
             raw: true
         });
 
-        // Lấy đơn nghỉ phép (Lấy hết để JS xử lý ngày)
+        // Lấy điểm danh cũ
+        const diemDanhCu = await DiemDanh.findAll({
+            where: {
+                lop_id: lopId,
+                monhoc_id: phanCong.id_MonHoc,
+                NgayHoc: homNayStr 
+            },
+            raw: true
+        });
+
+        // Lấy đơn nghỉ phép
         const tatCaDon = await NghiHoc.findAll({
             where: { TinhTrang: ['Đã duyệt', 'Approved'] },
             raw: true
         });
 
-        // So sánh ngày chính xác 100%
         dsHocSinh = dsHocSinh.map(hs => {
             const donNghi = tatCaDon.find(don => {
                 const dbDate = new Date(don.NgayNghi);
                 const isSameDate = 
-                    dbDate.getDate() === d.getDate() &&
-                    dbDate.getMonth() === d.getMonth() &&
-                    dbDate.getFullYear() === d.getFullYear();
-                
+                    dbDate.getDate() === dDate &&
+                    dbDate.getMonth() + 1 === dMonth &&
+                    dbDate.getFullYear() === dYear;
                 const isSameID = String(don.student_id) === String(hs.id);
-                
-                if (isSameID && isSameDate) console.log(`✅ HS ID ${hs.id} có phép.`);
-                
                 return isSameID && isSameDate;
             });
 
+            const recordCu = diemDanhCu.find(dd => String(dd.student_id) === String(hs.id));
+
             return {
                 ...hs,
+                trangThaiDiemDanh: recordCu ? recordCu.TinhTrang : null,
                 coPhep: !!donNghi,
                 lyDoNghi: donNghi ? donNghi.LyDo : ''
             };
@@ -88,7 +102,7 @@ exports.getHocSinhByLop = async (req, res) => {
     }
 };
 
-// 3. Lưu điểm danh
+// 3. LƯU ĐIỂM DANH
 exports.submitAttendance = async (req, res) => {
     const { lopId, id } = req.params;
     try {
@@ -108,8 +122,12 @@ exports.submitAttendance = async (req, res) => {
                 status: value
             }));
 
-        // Xóa điểm danh cũ của hôm nay (nếu muốn ghi đè) hoặc chỉ insert mới
-        // Ở đây mình dùng create (như cũ)
+        await DiemDanh.destroy({
+            where: {
+                lop_id: lopId, monhoc_id: monhocId, NgayHoc: ngayHoc, giaovien_id: id
+            }
+        });
+
         for (const { studentId, status } of attendanceEntries) {
             await DiemDanh.create({
                 student_id: studentId, lop_id: lopId, monhoc_id: monhocId,
@@ -117,9 +135,77 @@ exports.submitAttendance = async (req, res) => {
             });
         }
 
-        return res.status(200).json({ success: true, message: 'Thành công!' });
+        return res.status(200).json({ success: true, message: 'Điểm danh thành công!' });
+        
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: 'Lỗi server' });
+    }
+};
+
+// 4. XEM LỊCH SỬ ĐIỂM DANH
+exports.xemLichSuDiemDanh = async (req, res) => {
+    try {
+        const { lopId, id } = req.params;
+        const lop = await Lop.findByPk(lopId);
+
+        const lichSu = await DiemDanh.findAll({
+            attributes: [
+                'NgayHoc',
+                [Sequelize.fn('COUNT', Sequelize.col('id')), 'SoLuong']
+            ],
+            where: { lop_id: lopId, giaovien_id: id },
+            group: ['NgayHoc'],
+            order: [['NgayHoc', 'DESC']],
+            raw: true
+        });
+
+        res.render('giaovien/diemdanh/lichsu_diemdanh', {
+            lop, lichSu, idGiaoVien: id, idLop: lopId
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Lỗi server: " + error.message);
+    }
+};
+
+// 5. XEM CHI TIẾT 1 NGÀY CỤ THỂ
+exports.xemChiTietNgay = async (req, res) => {
+    try {
+        const { lopId, id, ngayHoc } = req.params;
+
+        const lop = await Lop.findByPk(lopId);
+
+        let dsHocSinh = await HocSinh.findAll({
+            where: { id_Lop: lopId },
+            attributes: ['id', 'HoVaTen', 'NgaySinh'],
+            order: [['HoVaTen', 'ASC']],
+            raw: true
+        });
+
+        const chiTietDiemDanh = await DiemDanh.findAll({
+            where: {
+                lop_id: lopId,
+                NgayHoc: ngayHoc 
+            },
+            raw: true
+        });
+
+        dsHocSinh = dsHocSinh.map(hs => {
+            const record = chiTietDiemDanh.find(dd => String(dd.student_id) === String(hs.id));
+            return {
+                ...hs,
+                trangThai: record ? record.TinhTrang : 'Chưa ghi nhận'
+            };
+        });
+
+        res.render('giaovien/diemdanh/chitiet_ngay', {
+            lop, dsHocSinh, ngayHoc, idGiaoVien: id, idLop: lopId
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Lỗi server: " + error.message);
     }
 };

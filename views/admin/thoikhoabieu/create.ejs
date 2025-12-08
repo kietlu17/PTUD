@@ -1,0 +1,506 @@
+<%- include('../../partials/header', { title: 'Tạo Thời Khóa Biểu' }) %>
+
+
+<style>
+    /* (Giữ nguyên CSS cũ của bạn cho Table và Cell) */
+    .tkb-table th, .tkb-table td { text-align: center; vertical-align: middle; height: 60px; }
+    .th-ca-hoc { width: 60px; } .th-thu { width: 13.5%; }
+    .tkb-cell {
+        background-color: #f0f9ff; border: 1px solid #e0f2fe; cursor: pointer;
+        border-radius: 8px; padding: 4px; height: 65px;
+        display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
+    }
+    .tkb-cell:hover { background-color: #bae6fd; transform: translateY(-2px); z-index: 5; }
+    .tkb-cell.filled { background-color: #dbeafe; border: 1px solid #3b82f6; }
+    .period-badge {
+        position: absolute; top: 4px; left: 4px; background-color: #94a3b8; color: white;
+        border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center;
+    }
+    .cell-subject { font-weight: 800; color: #1e40af; font-size: 0.9rem; }
+    .cell-teacher { font-size: 0.75rem; color: #4b5563; }
+    /* Style cho ô cố định (Chào cờ) */
+    .cell-fixed {
+        background-color: #fff7ed; /* Màu cam nhạt */
+        border: 1px solid #fed7aa;
+        color: #c2410c; /* Chữ cam đậm */
+        cursor: default; /* Con trỏ bình thường */
+        height: 65px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: relative;
+        box-shadow: none !important; /* Không đổ bóng khi hover */
+    }
+    
+    /* Badge cho ô cố định */
+    .cell-fixed .period-badge {
+        background-color: #fb923c; 
+    }
+
+    /* Modal Selection Styles */
+    .row-selectable { cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;;}
+    .row-selectable:hover { background-color: #f8fafc; }
+    .row-selectable.selected { background-color: rgba(0, 0, 0, 0.6) !important; color: white !important; }
+    .row-selectable.selected td {
+        background-color: rgba(55, 53, 53, 0.3) !important; /* Đen trong suốt 30% */
+        backdrop-filter: blur(2px); /* Hiệu ứng mờ nền nếu cần */
+    }
+    
+    .busy-badge { background-color: #ef4444; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; }
+
+    /* Cảnh báo quá tải (Số tiết màu đỏ) */
+    .text-overload { color: #dc2626; font-weight: bold; }
+    .text-safe { color: #16a34a; font-weight: bold; }
+
+    /* Style cho dòng bị quá tải (Full số tiết) */
+    .row-full {
+        background-color: #fee2e2;
+        color: #991b1b;
+        cursor: not-allowed; 
+    }
+
+    .row-busy {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+    .full-badge {
+        background-color: #dc2626;
+        color: white;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 8px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+        /* Nút bấm trong modal */
+    .btn-confirm-modal {
+        background-color: #16a34a;
+        color: white;
+        padding: 8px 30px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    .btn-confirm-modal:hover { background-color: #15803d; }
+    
+    .btn-cancel-modal {
+        background-color: #f62020;
+        color: #ffffff;
+        padding: 8px 30px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    .btn-cancel-modal:hover { background-color: #c20c0c; }
+</style>
+
+<div id="tkb-data-store" 
+     data-schedule="<%= JSON.stringify(currentSchedule || []) %>"
+     data-phancong="<%= JSON.stringify(listPhanCong || []) %>"
+     data-busy="<%= JSON.stringify(busyMap || {}) %>"
+     data-load="<%= JSON.stringify(teacherLoad || {}) %>"
+     style="display: none;">
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../partials/nav-admin') %>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold text-primary mb-1">Xếp Thời Khóa Biểu</h4>
+                <span class="text-muted">Lớp: <strong><%= lop.TenLop %></strong></span>
+            </div>
+            <button class="btn btn-success fw-bold shadow-sm px-4" onclick="saveScheduleToDB()">
+                <i class="bi bi-save me-2"></i> Lưu Thay Đổi
+            </button>
+        </div>
+
+        <input type="hidden" id="classId" value="<%= lop.id %>">
+        <input type="hidden" id="currentYear" value="2025-2026">
+        <input type="hidden" id="currentSemester" value="1">
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-bordered tkb-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="th-ca-hoc">Ca</th>
+                            <% ['2', '3', '4', '5', '6', '7'].forEach(d => { %>
+                                <th class="th-thu">Thứ <%= d %></th>
+                            <% }) %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% const periods = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; %>
+                        <% periods.forEach((tiet) => { %>
+                            <tr>
+                                <% if (tiet === 1) { %> <td rowspan="5" class="bg-light fw-bold text-secondary align-middle">SÁNG</td> <% } %>
+                                <% if (tiet === 6) { %> <td rowspan="5" class="bg-light fw-bold text-secondary align-middle">CHIỀU</td> <% } %>
+
+                                <% ['2', '3', '4', '5', '6', '7'].forEach(thu => { %>
+                                    <td class="p-1">
+                                        
+                                        <% if (thu === '2' && (tiet === 1 || tiet === 2)) { %>
+                                            
+                                            <div class="cell-fixed">
+                                                <div class="period-badge"><%= tiet %></div>
+                                                <div class="mt-2"><i class="bi bi-flag-fill me-1"></i> CHÀO CỜ</div>
+                                            </div>
+
+                                        <% } else { %>
+                                            
+                                            <div class="tkb-cell" 
+                                                id="cell-<%= thu %>-<%= tiet %>" 
+                                                onclick="openSelectModal('<%= thu %>', '<%= tiet %>')">
+                                                
+                                                <div class="period-badge"><%= tiet %></div>
+                                                
+                                                <div class="default-content mt-3"><span class="small text-muted" style="font-size:0.7rem">-- Trống --</span></div>
+                                                
+                                                <div class="filled-content d-none mt-2 text-center">
+                                                    <div class="cell-subject" id="sub-<%= thu %>-<%= tiet %>"></div>
+                                                    <div class="cell-teacher" id="tea-<%= thu %>-<%= tiet %>"></div>
+                                                </div>
+
+                                                <input type="hidden" class="schedule-input" 
+                                                       data-thu="<%= thu %>" data-tiet="<%= tiet %>" value="">
+                                            </div>
+
+                                        <% } %>
+                                    </td>
+                                <% }) %>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="modal fade" id="selectionModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white py-2">
+                <h6 class="modal-title fw-bold">Chọn môn cho: <span id="modalTitleInfo" class="text-warning"></span></h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table mb-0 align-middle text-center">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th class="py-3">Giáo viên</th>
+                                <th class="py-3">Môn học</th>
+                                <th class="py-3">Số tiết/Ngày (Max 5)</th>
+                                <th class="py-3">Số tiết/Tuần (Max 30)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center bg-light py-2">
+                <button type="button" class="btn-confirm-modal" onclick="confirmSelection()">Xác Nhận</button>
+                <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="saveSuccessModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h4 class="fw-bold text-success mb-3">Lưu Thành Công!</h4>
+                <p class="text-muted mb-4">Thời khóa biểu đã được cập nhật vào hệ thống.</p>
+                
+                <a href="/admin/thoikhoabieu" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                    <i class="bi bi-arrow-left me-2"></i> Quay lại Chọn Lớp
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // --- 1. KHỞI TẠO DỮ LIỆU ---
+    const dataStore = document.getElementById('tkb-data-store');
+    let savedSchedule = [], listPhanCong = [], busyMap = {}, teacherLoad = {};
+    
+    try {
+        savedSchedule = JSON.parse(dataStore.dataset.schedule || '[]');
+        listPhanCong = JSON.parse(dataStore.dataset.phancong || '[]');
+        busyMap = JSON.parse(dataStore.dataset.busy || '{}');
+        teacherLoad = JSON.parse(dataStore.dataset.load || '{}');
+    } catch (e) { console.error("Lỗi parse data", e); }
+
+    let currentThu = null, currentTiet = null, currentSelection = null;
+
+    // Helper chuyển đổi Thứ
+    const dayMap = {'Hai':'2', 'Ba':'3', 'Tư':'4', 'Tu':'4', 'Năm':'5', 'Nam':'5', 'Sáu':'6', 'Sau':'6', 'Bảy':'7', 'Bay':'7'};
+    const reverseDayMap = {'2':'Hai', '3':'Ba', '4':'Tư', '5':'Năm', '6':'Sáu', '7':'Bảy'};
+    function normalizeDay(dbDay) { return dayMap[dbDay] || dbDay.toString(); }
+    function denormalizeDay(uiDay) { return reverseDayMap[uiDay] || uiDay; }
+
+    // Load dữ liệu cũ
+    document.addEventListener("DOMContentLoaded", () => {
+        savedSchedule.forEach(item => {
+            const tenGV = item.giaoVien?.HoVaTen || 'Unknown';
+            const tenMon = item.monHoc?.TenMon || 'Unknown';
+            updateCellUI(item.Thu, item.Tiet, tenGV, tenMon, item.id_GiaoVien, item.id_MonHoc, false);
+        });
+    });
+
+    // --- 2. MỞ MODAL ---
+    function openSelectModal(thu, tiet) {
+        currentThu = thu; currentTiet = tiet; currentSelection = null;
+        document.getElementById('modalTitleInfo').innerText = `Thứ ${thu} - Tiết ${tiet}`;
+        renderModalList(); 
+        new bootstrap.Modal(document.getElementById('selectionModal')).show();
+    }
+
+    // --- 3. RENDER LIST (QUAN TRỌNG: LOGIC CLICK VÀ CHẶN) ---
+    function renderModalList() {
+        const tbody = document.getElementById('modalListBody');
+        tbody.innerHTML = '';
+
+        // Lấy giáo viên đang dạy ô này (để không chặn chính họ)
+        const nThu = normalizeDay(currentThu);
+        const cellId = `cell-${nThu}-${currentTiet}`;
+        const currentInput = document.getElementById(cellId).querySelector('input');
+        let currentGvID = null;
+        try { currentGvID = JSON.parse(currentInput.value).id_GV; } catch(e){}
+
+        // DÒNG HỦY TIẾT (Luôn cho phép click)
+        const emptyRow = document.createElement('tr');
+        emptyRow.className = 'row-selectable';
+        emptyRow.onclick = () => selectRow(emptyRow, null); // Null = Hủy tiết
+        emptyRow.innerHTML = `<td colspan="4" class="text-danger fw-bold py-3">-- Trống (Hủy tiết) --</td>`;
+        tbody.appendChild(emptyRow);
+
+        const dbThu = denormalizeDay(currentThu);
+
+        listPhanCong.forEach(pc => {
+            if (!pc.giaoVien || !pc.monHoc) return;
+
+            const gvID = pc.giaoVien.id;
+            const tr = document.createElement('tr');
+            
+            // Kiểm tra Bận & Quá tải
+            const busyKey = `${gvID}-${dbThu}-${currentTiet}`;
+            const busyClass = busyMap[busyKey];
+
+            const tLoad = teacherLoad[gvID] || { total: 0, days: {} };
+            const loadDay = tLoad.days[dbThu] || 0; 
+            const loadWeek = tLoad.total;
+
+            const isOverloadDay = loadDay >= 5;
+            const isOverloadWeek = loadWeek >= 30;
+            const isSelf = (gvID == currentGvID); // Là chính mình -> Không tính là thêm mới
+            
+            // Xác định trạng thái (Bị chặn hay không)
+            let isDisabled = false;
+            let reason = "";
+
+            if (busyClass) {
+                isDisabled = true;
+                reason = `đang dạy lớp ${busyClass}`;
+            } else if ((isOverloadDay || isOverloadWeek) && !isSelf) {
+                isDisabled = true;
+                reason = isOverloadDay ? "đã dạy đủ 5 tiết hôm nay" : "đã dạy đủ 30 tiết tuần này";
+            }
+
+            if (isDisabled) {
+                // TRƯỜNG HỢP BỊ CHẶN (Vẫn cho click để hiện thông báo lỗi)
+                tr.className = busyClass ? 'row-selectable row-busy' : 'row-selectable row-full';
+                
+                tr.onclick = () => {
+                    alert(`🚫 Không thể chọn!\nGiáo viên ${pc.giaoVien.HoVaTen} ${reason}.`);
+                };
+
+                let badge = busyClass ? `<span class="busy-badge">Bận: ${busyClass}</span>` 
+                            : `<span class="full-badge">${isOverloadDay ? 'Max Ngày' : 'Max Tuần'}</span>`;
+
+                tr.innerHTML = `
+                    <td class="text-start ps-4 text-muted">${pc.giaoVien.HoVaTen} ${badge}</td>
+                    <td class="text-decoration-line-through text-muted">${pc.monHoc.TenMon}</td>
+                    <td class="text-muted">${loadDay}</td>
+                    <td class="text-muted">${loadWeek}</td>
+                `;
+            } else {
+                // TRƯỜNG HỢP ĐƯỢC CHỌN
+                tr.className = 'row-selectable';
+                if (isSelf) tr.classList.add('table-active');
+
+                const data = { 
+                    idGV: gvID, idMon: pc.monHoc.id, 
+                    tenGV: pc.giaoVien.HoVaTen, tenMon: pc.monHoc.TenMon 
+                };
+                
+                tr.onclick = () => selectRow(tr, data);
+                
+                // Tô màu số tiết để cảnh báo sắp đầy
+                const styleDay = loadDay >= 4 ? 'text-warning fw-bold' : 'text-success';
+                const styleWeek = loadWeek >= 25 ? 'text-warning fw-bold' : 'text-success';
+
+                tr.innerHTML = `
+                    <td class="teacher-name text-start ps-4">
+                        ${pc.giaoVien.HoVaTen} 
+                        ${isSelf ? '<span class="badge bg-info text-dark ms-2">Đang dạy</span>' : ''}
+                    </td>
+                    <td class="fw-bold text-primary">${pc.monHoc.TenMon}</td>
+                    <td class="${styleDay}">${loadDay}</td>
+                    <td class="${styleWeek}">${loadWeek}</td>
+                `;
+            }
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- 4. HÀM CHỌN DÒNG ---
+    function selectRow(el, data) {
+        // Xóa highlight cũ
+        document.querySelectorAll('.row-selectable').forEach(r => r.classList.remove('selected'));
+        // Highlight dòng mới
+        el.classList.add('selected');
+        // Lưu dữ liệu vào biến toàn cục
+        currentSelection = data;
+        console.log("Đã chọn:", currentSelection); // Debug xem có nhận click không
+    }
+
+    // --- 5. XÁC NHẬN CHỌN ---
+    function confirmSelection() {
+        // Nếu currentSelection có dữ liệu -> Chọn GV
+        // Nếu currentSelection là null -> Hủy tiết (chọn dòng Trống)
+        
+        // Kiểm tra xem người dùng có chọn dòng nào chưa (có class selected không)
+        const isSelectedRow = document.querySelector('.row-selectable.selected');
+        
+        if (!isSelectedRow) {
+            alert("Vui lòng chọn một giáo viên hoặc chọn 'Hủy tiết'.");
+            return;
+        }
+
+        if (currentSelection) {
+            // Chọn giáo viên
+            updateCellUI(currentThu, currentTiet, currentSelection.tenGV, currentSelection.tenMon, currentSelection.idGV, currentSelection.idMon, true);
+        } else {
+            // Chọn Hủy tiết (currentSelection là null nhưng có dòng selected)
+            updateCellUI(currentThu, currentTiet, null, null, null, null, true);
+        }
+        
+        bootstrap.Modal.getInstance(document.getElementById('selectionModal')).hide();
+    }
+
+    // --- 6. UPDATE UI & REALTIME CALC ---
+    function updateCellUI(thu, tiet, tenGV, tenMon, idGV, idMon, updateStats = false) {
+        const nThu = normalizeDay(thu); 
+        const dbThu = denormalizeDay(thu);
+        
+        const cell = document.getElementById(`cell-${nThu}-${tiet}`);
+        if (!cell) return;
+
+        const input = cell.querySelector('input');
+        const defDiv = cell.querySelector('.default-content');
+        const fillDiv = cell.querySelector('.filled-content');
+
+        // === LOGIC CẬP NHẬT SỐ TIẾT (REALTIME) ===
+        if (updateStats) {
+            let oldData = null;
+            try { oldData = input.value ? JSON.parse(input.value) : null; } catch(e){}
+            const oldGvID = oldData ? oldData.id_GV : null;
+            const newGvID = idGV;
+
+            if (oldGvID != newGvID) {
+                // TRỪ CŨ
+                if (oldGvID && teacherLoad[oldGvID]) {
+                    teacherLoad[oldGvID].total--;
+                    if (teacherLoad[oldGvID].days[dbThu]) teacherLoad[oldGvID].days[dbThu]--;
+                }
+                // CỘNG MỚI
+                if (newGvID) {
+                    if (!teacherLoad[newGvID]) teacherLoad[newGvID] = { total: 0, days: {} };
+                    teacherLoad[newGvID].total++;
+                    if (!teacherLoad[newGvID].days[dbThu]) teacherLoad[newGvID].days[dbThu] = 0;
+                    teacherLoad[newGvID].days[dbThu]++;
+                }
+            }
+        }
+
+        // Cập nhật Giao diện Ô Lưới
+        if (idGV && idMon) {
+            cell.classList.add('filled');
+            defDiv.classList.add('d-none');
+            fillDiv.classList.remove('d-none');
+            document.getElementById(`sub-${nThu}-${tiet}`).innerText = tenMon;
+            document.getElementById(`tea-${nThu}-${tiet}`).innerText = tenGV;
+            input.dataset.thu = nThu; 
+            input.value = JSON.stringify({ id_GV: idGV, id_Mon: idMon });
+        } else {
+            cell.classList.remove('filled');
+            defDiv.classList.remove('d-none');
+            fillDiv.classList.add('d-none');
+            input.value = "";
+        }
+    }
+
+    // --- 7. SAVE DB ---
+    async function saveScheduleToDB() {
+        const id_Lop = document.getElementById('classId').value;
+        const scheduleData = [];
+
+        document.querySelectorAll('.schedule-input').forEach(input => {
+            if (input.value) {
+                try {
+                    const val = JSON.parse(input.value);
+                    const dbThu = denormalizeDay(input.dataset.thu);
+                    scheduleData.push({ thu: dbThu, tiet: input.dataset.tiet, id_GV: val.id_GV, id_Mon: val.id_Mon });
+                } catch(e) {}
+            }
+        });
+
+        try {
+            const res = await fetch('/admin/thoikhoabieu/save', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    id_Lop: id_Lop, 
+                    NamHoc: document.getElementById('currentYear').value,
+                    HocKy: document.getElementById('currentSemester').value,
+                    scheduleData 
+                })
+            });
+            
+            const result = await res.json();
+            
+            if (result.success) {
+                new bootstrap.Modal(document.getElementById('saveSuccessModal')).show();
+            } else {
+                alert("❌ " + result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("❌ Lỗi kết nối server");
+        }
+    }
+</script>

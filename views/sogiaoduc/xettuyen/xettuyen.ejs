@@ -1,0 +1,87 @@
+<%- include('../../partials/header', { title: 'Xét tuyển' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <%- include('../../partials/nav-sogiaoduc', { profile, currentUrl }) %>
+
+    <main class="col-md-10 content">
+      <h4 class="fw-bold text-center mb-4">XÉT TUYỂN HỌC SINH</h4>
+
+      <div class="text-center mb-3">
+        <button class="btn btn-outline-success btn-lg rounded-pill px-4" onclick="xetTuyen()">
+          Tiến hành xét tuyển
+        </button>
+      </div>
+
+      <table class="table table-bordered text-center">
+        <thead class="table-secondary">
+          <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Tổng điểm</th>
+            <th>Trường</th>
+            <th>Nguyện vọng</th>
+          </tr>
+        </thead>
+        <tbody id="ketquaBody"></tbody>
+      </table>
+
+      <div class="text-end">
+        <button class="btn btn-primary btn-sm rounded" onclick="luuKetQua()">Lưu kết quả</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let dsKetQua = [];
+
+function xetTuyen() {
+  fetch('/sogiaoduc/xet-tuyen/tienhanh', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        // show specific message from server if provided
+        const msg = data.error || 'Không thể xét tuyển';
+        return Swal.fire('Lỗi', msg, 'error');
+      }
+
+      dsKetQua = data.ketqua;
+      const tbody = document.getElementById('ketquaBody');
+      tbody.innerHTML = '';
+
+      dsKetQua.forEach(kq => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${kq.thisinhid}</td>
+            <td>${kq.hoten}</td>
+            <td>${kq.tong}</td>
+            <td>${kq.truongid}</td>
+            <td>${kq.nguyenvong}</td>
+          </tr>
+        `;
+      });
+
+      Swal.fire('Thành công', 'Đã xét tuyển xong', 'success');
+    });
+}
+
+function luuKetQua() {
+  fetch('/sogiaoduc/xet-tuyen/luu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ danhsach: dsKetQua })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      Swal.fire('Đã lưu', 'Lưu kết quả thành công', 'success');
+    } else {
+      Swal.fire('Lỗi', 'Không thể lưu kết quả', 'error');
+    }
+  });
+}
+</script>

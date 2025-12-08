@@ -1,0 +1,177 @@
+<%- include('../../partials/header', { title: 'Chấm Bài Tập' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('../../partials/nav-giaovien') %>
+
+        <main class="col-md-10 content p-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-check-double me-2"></i> 
+                    CHẤM BÀI: <%= baiTap.TieuDe %> (<%= baiTap.lop.TenLop %>)
+                </h4>
+                <a href="/giaovien/cham-bai" class="btn btn-secondary btn-sm shadow-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+            </div>
+
+            <form id="formChamBai" action="/giaovien/cham-bai/luu-tat-ca/<%= baiTap.id %>" method="POST">
+                
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0">
+                                <thead class="bg-primary text-white text-center">
+                                    <tr>
+                                        <th style="width: 5%">STT</th>
+                                        <th style="width: 20%">Học Sinh</th>
+                                        <th style="width: 10%">Trạng Thái</th>
+                                        <th style="width: 15%">File Nộp</th> <th style="width: 15%">Điểm (0-10)</th>
+                                        <th style="width: 35%">Nhận Xét</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% dsHocSinh.forEach((hs, index) => { 
+                                        const baiNop = hs.dsBaiNop && hs.dsBaiNop.length > 0 ? hs.dsBaiNop[0] : null;
+                                    %>
+                                    <tr data-bainop-id="<%= baiNop ? baiNop.id : '' %>">
+                                        <td class="text-center fw-bold text-secondary"><%= index + 1 %></td>
+                                        
+                                        <td class="fw-bold text-primary">
+                                            <%= hs.HoVaTen %>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <% if(baiNop) { %>
+                                                <span class="badge bg-success rounded-pill px-3">Đã nộp</span>
+                                                <br>
+                                                <small class="text-muted" style="font-size: 11px;">
+                                                    <%= new Date(baiNop.NgayNop).toLocaleString('vi-VN') %>
+                                                </small>
+                                            <% } else { %>
+                                                <span class="badge bg-danger rounded-pill px-3">Chưa nộp</span>
+                                            <% } %>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <% if(baiNop && baiNop.FileNop) { %>
+                                                <a href="<%= baiNop.FileNop %>" target="_blank" class="btn btn-sm btn-outline-primary fw-bold px-3 shadow-sm">
+                                                    <i class="fas fa-download me-1"></i> Tải về
+                                                </a>
+                                            <% } else { %>
+                                                <span class="text-muted small">Không có file</span>
+                                            <% } %>
+                                        </td>
+                                        
+                                        <% if(baiNop) { %>
+                                            <td>
+                                                <input type="number" name="diem" 
+                                                       class="form-control text-center fw-bold text-danger inp-diem" 
+                                                       value="<%= baiNop.Diem %>" step="0.1" min="0" max="10" placeholder="">
+                                            </td>
+
+                                            <td>
+                                                <input type="text" name="nhanXet" 
+                                                       class="form-control inp-nhanxet" 
+                                                       value="<%= baiNop.NhanXet || '' %>" placeholder="Nhập lời phê...">
+                                            </td>
+                                        <% } else { %>
+                                            <td colspan="2" class="text-center text-muted bg-light fst-italic small">
+                                                Chưa có bài để chấm
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white p-3 text-end sticky-bottom">
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                            <i class="fas fa-save me-2"></i> LƯU KẾT QUẢ
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const form = document.getElementById('formChamBai');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const grades = {};
+        const rows = document.querySelectorAll('tbody tr');
+        let hasData = false;
+
+        rows.forEach(row => {
+            const baiNopId = row.getAttribute('data-bainop-id');
+            if (baiNopId && baiNopId !== '') {
+                const diemInput = row.querySelector('input[name="diem"]');
+                const nhanXetInput = row.querySelector('input[name="nhanXet"]');
+                if (diemInput) {
+                    grades[baiNopId] = {
+                        diem: diemInput.value,
+                        nhanXet: nhanXetInput.value
+                    };
+                    hasData = true;
+                }
+            }
+        });
+
+        if (!hasData) {
+            Swal.fire('Thông báo', 'Không có bài nộp nào để chấm!', 'info');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Đang lưu...',
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const res = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ grades: grades })
+            });
+            
+            const result = await res.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: result.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                throw new Error(result.message);
+            }
+
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: err.message });
+        }
+    });
+</script>
+
+<style>
+    input[type="number"] { font-size: 1.1rem; }
+    table tbody tr:hover { background-color: #f8f9fa; }
+    .sticky-bottom {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        border-top: 1px solid #dee2e6;
+    }
+</style>

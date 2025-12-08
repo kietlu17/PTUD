@@ -25,6 +25,12 @@ const BaiTap = require('./BaiTap');
 const NghiHoc = require('./NghiHoc')
 const DangKyTuyenSinh = require('./DangKyTuyenSinh')
 const CauHinhNhapHoc = require('./CauHinhNhapHoc')
+const HoSoTuyenSinh = require('./HoSoTuyenSinh');
+const ChiTieu = require('./ChiTieu');
+const KetQuaTuyenSinh = require('./KetQuaTuyenSinh');
+const BaiNop = require('./BaiNop');
+const ThoiKhoaBieu = require('./ThoiKhoaBieu');
+const LichSuDongBoThiSinh = require('./LichSuDongBoThiSinh')
 // 👉 Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò
@@ -100,7 +106,7 @@ HanhKiem.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
 GiaoVien.hasMany(HanhKiem, { foreignKey: 'NguoiDanhGia', as: 'danhGia' });
 HanhKiem.belongsTo(GiaoVien, { foreignKey: 'NguoiDanhGia', as: 'giaovienDanhGia' });
 
-HocSinh.hasMany(DiemSo, { foreignKey: 'id_HocSinh', as: 'diem' });
+HocSinh.hasMany(DiemSo, { foreignKey: 'id_HocSinh', as: 'bangDiem' });
 DiemSo.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
 
 // Quan hệ Diem - MonHoc
@@ -137,21 +143,39 @@ MonHoc.hasMany(BangPhanCongGiaoVien, { foreignKey: 'id_MonHoc' });
 GiaoVien.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'chuyenMon' });
 MonHoc.hasMany(GiaoVien, { foreignKey: 'id_MonHoc' });
 
-// --- QUAN HỆ CHO NGHI HỌC ---
+// 11. NGHI HỌC
 HocSinh.hasMany(NghiHoc, { foreignKey: 'student_id', as: 'dsNghiHoc' });
 NghiHoc.belongsTo(HocSinh, { foreignKey: 'student_id', as: 'hocSinh' });
 
-// --- QUAN HỆ CHO BÀI TẬP (Thêm mới) ---
+// 12. BÀI TẬP (Quan trọng cho chức năng Giao bài)
 Lop.hasMany(BaiTap, { foreignKey: 'id_Lop', as: 'dsBaiTap' });
 BaiTap.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
-
 MonHoc.hasMany(BaiTap, { foreignKey: 'id_MonHoc', as: 'dsBaiTap' });
-BaiTap.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
-
+BaiTap.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monhoc' });
 GiaoVien.hasMany(BaiTap, { foreignKey: 'id_GiaoVien', as: 'dsBaiTap' });
 BaiTap.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
+
+// 13. BÀI NỘP (Quan trọng cho chức năng Chấm bài)
+BaiTap.hasMany(BaiNop, { foreignKey: 'id_BaiTap', as: 'dsBaiNop' });
+BaiNop.belongsTo(BaiTap, { foreignKey: 'id_BaiTap', as: 'baiTap' });
+HocSinh.hasMany(BaiNop, { foreignKey: 'id_HocSinh', as: 'dsBaiNop' });
+BaiNop.belongsTo(HocSinh, { foreignKey: 'id_HocSinh', as: 'hocSinh' });
+
+
+// Hồ sơ tuyển sinh <-> thí sinh
+HoSoTuyenSinh.belongsTo(ThiSinh, { foreignKey: 'thisinhid', constraints: false });
+ThiSinh.hasMany(HoSoTuyenSinh, { foreignKey: 'thisinhid', constraints: false });
+
+// Chỉ tiêu tuyển sinh <-> trường
+ChiTieu.belongsTo(Truong, { foreignKey: 'truongid' });
+Truong.hasOne(ChiTieu, { foreignKey: 'truongid' });
+
+// Quan hệ cho TKB
+ThoiKhoaBieu.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
+ThoiKhoaBieu.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
+ThoiKhoaBieu.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
 
 // Export tất cả model
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
     ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
-DangKyTuyenSinh, CauHinhNhapHoc };
+DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh };

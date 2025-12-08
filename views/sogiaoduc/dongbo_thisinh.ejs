@@ -1,0 +1,35 @@
+<div class="container mt-4">
+
+    <h3 class="mb-3">Đồng bộ thí sinh từ hồ sơ đăng ký</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <!-- Số hồ sơ chờ đồng bộ -->
+            <p class="fs-5 mb-3">
+                <strong>Số hồ sơ chờ đồng bộ:</strong>
+                <span class="badge bg-primary fs-6">
+                    <%= soChoDongBo %>
+                </span>
+            </p>
+
+            <!-- Các nút chức năng -->
+            <div class="d-flex gap-2">
+
+                <!-- Nút đồng bộ -->
+                <form action="/sogiaoduc/tuyensinh/dongbo" method="POST">
+                    <button class="btn btn-success px-4">
+                        Đồng bộ ngay
+                    </button>
+                </form>
+
+                <!-- Nút xem lịch sử -->
+                <a href="/admin/dongbo/thisinh/lichsu" class="btn btn-secondary px-4">
+                    Xem lịch sử
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>

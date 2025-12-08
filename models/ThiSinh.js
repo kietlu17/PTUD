@@ -22,7 +22,7 @@ const ThiSinh = sequelize.define('ThiSinh', {
   },
   phongthiid: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: { model: 'PhongThi', key: 'id' }
   }
 }, {
