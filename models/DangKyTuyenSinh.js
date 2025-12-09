@@ -19,7 +19,7 @@ const DangKyTuyenSinh = sequelize.define('DangKyTuyenSinh', {
   NV3: { type: DataTypes.INTEGER, allowNull: true },
 
   // Trạng thái hồ sơ
-  TrangThai: { type: DataTypes.STRING, defaultValue: 'Chờ duyệt' },
+  TrangThai: { type: DataTypes.STRING, defaultValue: 'Đã duyệt' },
 
   // Điểm tổng kết cấp 2
   DiemTongKet_Lop6: { type: DataTypes.FLOAT, allowNull: true },
@@ -32,7 +32,9 @@ const DangKyTuyenSinh = sequelize.define('DangKyTuyenSinh', {
   HanhKiem_Lop7: { type: DataTypes.STRING, allowNull: true },
   HanhKiem_Lop8: { type: DataTypes.STRING, allowNull: true },
   HanhKiem_Lop9: { type: DataTypes.STRING, allowNull: true },
-
+}, {
+  tableName: 'DangKyTuyenSinh',
+  timestamps: false,
 });
 
   module.exports = DangKyTuyenSinh

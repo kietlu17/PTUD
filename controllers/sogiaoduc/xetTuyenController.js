@@ -93,7 +93,7 @@ exports.tienHanhXetTuyen = async (req, res) => {
 };
 
 
-// ✅ LƯU KẾT QUẢ VÀO KetQuaTuyenSinh
+// LƯU KẾT QUẢ VÀO KetQuaTuyenSinh
 exports.luuKetQua = async (req, res) => {
   try {
     const ds = req.body.danhsach;

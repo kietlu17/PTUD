@@ -109,18 +109,39 @@ exports.phanThiSinhPreview = async (req, res) => {
     const truongs = await Truong.findAll({ order: [['id', 'ASC']] });
     const allRooms = await PhongThi.findAll({ order: [['id', 'ASC']] });
 
-    // Lấy danh sách thí sinh đăng ký (HoSoTuyenSinh) để xây map thisinhid->truongid
-    const hs = await HoSoTuyenSinh.findAll({ attributes: ['thisinhid', 'truongid'] });
-    const mapTruong = new Map();
-    for (const h of hs) {
-      if (!mapTruong.has(h.thisinhid)) mapTruong.set(h.thisinhid, h.truongid);
-    }
+        // Lấy danh sách đăng ký (id -> NV1)
+      const hs = await DangKyTuyenSinh.findAll({ attributes: ['id', 'NV1'] });
+      // Tạo map: idDangKy -> truongId (NV1)
+      const mapDangKy = new Map();
+      const dangKyIds = [];
+      for (const h of hs) {
+        mapDangKy.set(h.id, h.NV1);
+        dangKyIds.push(h.id);
+      }
 
-    // Lấy tất cả thí sinh (ThiSinh) có id trong map và chưa có phòng
-    const thisinhIds = Array.from(mapTruong.keys());
-    const existingThiSinh = await ThiSinh.findAll({ where: { id: thisinhIds, phongthiid: null }, attributes: ['id', 'hoten'] });
+      // Lấy thí sinh chưa có phòng nhưng đã được sinh từ hồ sơ đăng ký
+      // => WHERE id_dangky IN (dangKyIds) AND phongthiid IS NULL
+      if (dangKyIds.length === 0) {
+        return res.json({ success: false, error: 'Không có hồ sơ đăng ký.' });
+      }
 
-    const candidates = existingThiSinh.map(ts => ({ id: ts.id, hoten: ts.hoten, truongid: mapTruong.get(ts.id) }));
+      const existingThiSinh = await ThiSinh.findAll({
+        where: {
+          id_dangky: dangKyIds,
+          phongthiid: null
+        },
+        attributes: ['id', 'hoten', 'id_dangky'],
+        order: [['hoten', 'ASC']]
+      });
+
+      // Build candidates: chỉ lấy thí sinh mà mapDangKy có entry
+      const candidates = existingThiSinh
+        .map(ts => {
+          const truongid = mapDangKy.get(ts.id_dangky);
+          if (!truongid) return null; // không tìm thấy NV1 => bỏ
+          return { id: ts.id, hoten: ts.hoten, truongid };
+        })
+        .filter(Boolean);
 
     if (candidates.length === 0) return res.json({ success: false, error: 'Không có thí sinh chưa được phân phòng.' });
     if (allRooms.length === 0) return res.json({ success: false, error: 'Không có phòng thi trong hệ thống.' });

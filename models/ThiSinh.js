@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/sequelize');
-const DiemThi = require('./DiemThi');
+const DangKyTuyenSinh = require('./DangKyTuyenSinh');
 
 const ThiSinh = sequelize.define('ThiSinh', {
   id: {
@@ -24,7 +24,11 @@ const ThiSinh = sequelize.define('ThiSinh', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: { model: 'PhongThi', key: 'id' }
-  }
+  },
+  id_dangky: {
+   type: DataTypes.INTEGER,
+   references: { model: DangKyTuyenSinh, key: 'id' }
+}
 }, {
   tableName: 'ThiSinh',
   timestamps: false
