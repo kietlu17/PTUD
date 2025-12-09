@@ -101,7 +101,12 @@
         transition: 0.2s;
     }
     .btn-cancel-modal:hover { background-color: #c20c0c; }
+
+    .progress-text { font-size: 0.85rem; font-weight: 600; }
+    .over-limit { color: #dc2626; } /* Đỏ */
+    .within-limit { color: #16a34a; } /* Xanh */
 </style>
+
 
 <div id="tkb-data-store" 
      data-schedule="<%= JSON.stringify(currentSchedule || []) %>"
@@ -116,20 +121,20 @@
     <%- include('../../partials/nav-admin') %>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-        
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h4 class="fw-bold text-primary mb-1">Xếp Thời Khóa Biểu</h4>
-                <span class="text-muted">Lớp: <strong><%= lop.TenLop %></strong></span>
+                <h4 class="fw-bold text-primary mb-1">Xếp Thời Khóa Biểu (Học Kỳ <%= selectedHocKy %>)</h4>
+                <span class="text-muted">Lớp: <strong><%= lop.TenLop %></strong> | Năm học: <%= selectedNamHoc %></span>
             </div>
+            
+            <input type="hidden" id="classId" value="<%= lop.id %>">
+            <input type="hidden" id="currentYear" value="<%= selectedNamHoc %>">
+            <input type="hidden" id="currentSemester" value="<%= selectedHocKy %>">
+
             <button class="btn btn-success fw-bold shadow-sm px-4" onclick="saveScheduleToDB()">
                 <i class="bi bi-save me-2"></i> Lưu Thay Đổi
             </button>
         </div>
-
-        <input type="hidden" id="classId" value="<%= lop.id %>">
-        <input type="hidden" id="currentYear" value="2025-2026">
-        <input type="hidden" id="currentSemester" value="1">
 
         <div class="card shadow-sm border-0">
             <div class="card-body p-0">
@@ -151,33 +156,21 @@
 
                                 <% ['2', '3', '4', '5', '6', '7'].forEach(thu => { %>
                                     <td class="p-1">
-                                        
                                         <% if (thu === '2' && (tiet === 1 || tiet === 2)) { %>
-                                            
-                                            <div class="cell-fixed">
-                                                <div class="period-badge"><%= tiet %></div>
-                                                <div class="mt-2"><i class="bi bi-flag-fill me-1"></i> CHÀO CỜ</div>
+                                            <div class="cell-fixed" style="background:#fff7ed; border:1px solid #fed7aa; color:#c2410c; height:65px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; font-weight:bold; cursor:default;">
+                                                <div class="period-badge" style="background:#fb923c;"><%= tiet %></div>
+                                                <div class="mt-2 text-uppercase" style="font-size:0.8rem"><i class="bi bi-flag-fill me-1"></i> Chào cờ</div>
                                             </div>
-
                                         <% } else { %>
-                                            
-                                            <div class="tkb-cell" 
-                                                id="cell-<%= thu %>-<%= tiet %>" 
-                                                onclick="openSelectModal('<%= thu %>', '<%= tiet %>')">
-                                                
+                                            <div class="tkb-cell" id="cell-<%= thu %>-<%= tiet %>" onclick="openSelectModal('<%= thu %>', '<%= tiet %>')">
                                                 <div class="period-badge"><%= tiet %></div>
-                                                
                                                 <div class="default-content mt-3"><span class="small text-muted" style="font-size:0.7rem">-- Trống --</span></div>
-                                                
                                                 <div class="filled-content d-none mt-2 text-center">
                                                     <div class="cell-subject" id="sub-<%= thu %>-<%= tiet %>"></div>
                                                     <div class="cell-teacher" id="tea-<%= thu %>-<%= tiet %>"></div>
                                                 </div>
-
-                                                <input type="hidden" class="schedule-input" 
-                                                       data-thu="<%= thu %>" data-tiet="<%= tiet %>" value="">
+                                                <input type="hidden" class="schedule-input" data-thu="<%= thu %>" data-tiet="<%= tiet %>" value="">
                                             </div>
-
                                         <% } %>
                                     </td>
                                 <% }) %>
@@ -187,7 +180,6 @@
                 </table>
             </div>
         </div>
-
     </main>
   </div>
 </div>
@@ -196,7 +188,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg border-0">
             <div class="modal-header bg-primary text-white py-2">
-                <h6 class="modal-title fw-bold">Chọn môn cho: <span id="modalTitleInfo" class="text-warning"></span></h6>
+                <h6 class="modal-title fw-bold">Chọn môn: <span id="modalTitleInfo" class="text-warning"></span></h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-0">
@@ -206,8 +198,8 @@
                             <tr>
                                 <th class="py-3">Giáo viên</th>
                                 <th class="py-3">Môn học</th>
-                                <th class="py-3">Số tiết/Ngày (Max 5)</th>
-                                <th class="py-3">Số tiết/Tuần (Max 30)</th>
+                                <th class="py-3" style="width: 25%">Tiến độ (Tiết/Học kỳ)</th> 
+                                <th class="py-3" style="width: 30%">Tổng tiết dạy (Toàn trường)</th>
                             </tr>
                         </thead>
                         <tbody id="modalListBody"></tbody>
@@ -215,54 +207,50 @@
                 </div>
             </div>
             <div class="modal-footer justify-content-center bg-light py-2">
-                <button type="button" class="btn-confirm-modal" onclick="confirmSelection()">Xác Nhận</button>
-                <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-confirm-modal" onclick="confirmSelection()">Xác Nhận</button>
+                <button type="button" class="btn btn-cancel-modal" data-bs-dismiss="modal">Hủy</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="saveSuccessModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="saveSuccessModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-body text-center p-5">
-                <div class="mb-4">
-                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                </div>
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
                 <h4 class="fw-bold text-success mb-3">Lưu Thành Công!</h4>
-                <p class="text-muted mb-4">Thời khóa biểu đã được cập nhật vào hệ thống.</p>
-                
-                <a href="/admin/thoikhoabieu" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
-                    <i class="bi bi-arrow-left me-2"></i> Quay lại Chọn Lớp
-                </a>
+                <p class="text-muted">Thời khóa biểu đã được cập nhật.</p>
+                <a href="/admin/thoikhoabieu" class="btn btn-primary rounded-pill px-5">Quay lại Chọn Lớp</a>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // --- 1. KHỞI TẠO DỮ LIỆU ---
+    // --- INIT DATA ---
     const dataStore = document.getElementById('tkb-data-store');
     let savedSchedule = [], listPhanCong = [], busyMap = {}, teacherLoad = {};
-    
     try {
         savedSchedule = JSON.parse(dataStore.dataset.schedule || '[]');
         listPhanCong = JSON.parse(dataStore.dataset.phancong || '[]');
         busyMap = JSON.parse(dataStore.dataset.busy || '{}');
         teacherLoad = JSON.parse(dataStore.dataset.load || '{}');
-    } catch (e) { console.error("Lỗi parse data", e); }
+    } catch (e) {}
 
     let currentThu = null, currentTiet = null, currentSelection = null;
+    
+    // === CẤU HÌNH QUAN TRỌNG ĐỂ QUY ĐỔI ===
+    const WEEKS_PER_YEAR = 35;      // 1 Năm học = 35 tuần
+    const WEEKS_PER_SEMESTER = 18;  // 1 Học kỳ = 18 tuần (để hiển thị)
 
-    // Helper chuyển đổi Thứ
+    // Helper
     const dayMap = {'Hai':'2', 'Ba':'3', 'Tư':'4', 'Tu':'4', 'Năm':'5', 'Nam':'5', 'Sáu':'6', 'Sau':'6', 'Bảy':'7', 'Bay':'7'};
     const reverseDayMap = {'2':'Hai', '3':'Ba', '4':'Tư', '5':'Năm', '6':'Sáu', '7':'Bảy'};
     function normalizeDay(dbDay) { return dayMap[dbDay] || dbDay.toString(); }
     function denormalizeDay(uiDay) { return reverseDayMap[uiDay] || uiDay; }
 
-    // Load dữ liệu cũ
     document.addEventListener("DOMContentLoaded", () => {
         savedSchedule.forEach(item => {
             const tenGV = item.giaoVien?.HoVaTen || 'Unknown';
@@ -271,7 +259,20 @@
         });
     });
 
-    // --- 2. MỞ MODAL ---
+    function countSubjectOnGrid() {
+        const counts = {};
+        document.querySelectorAll('.schedule-input').forEach(input => {
+            if (input.value) {
+                try {
+                    const val = JSON.parse(input.value);
+                    if (!counts[val.id_Mon]) counts[val.id_Mon] = 0;
+                    counts[val.id_Mon]++;
+                } catch(e){}
+            }
+        });
+        return counts;
+    }
+
     function openSelectModal(thu, tiet) {
         currentThu = thu; currentTiet = tiet; currentSelection = null;
         document.getElementById('modalTitleInfo').innerText = `Thứ ${thu} - Tiết ${tiet}`;
@@ -279,144 +280,150 @@
         new bootstrap.Modal(document.getElementById('selectionModal')).show();
     }
 
-    // --- 3. RENDER LIST (QUAN TRỌNG: LOGIC CLICK VÀ CHẶN) ---
+    // --- RENDER LIST (LOGIC MỚI: TÍNH THEO HỌC KỲ) ---
     function renderModalList() {
         const tbody = document.getElementById('modalListBody');
         tbody.innerHTML = '';
 
-        // Lấy giáo viên đang dạy ô này (để không chặn chính họ)
         const nThu = normalizeDay(currentThu);
         const cellId = `cell-${nThu}-${currentTiet}`;
-        const currentInput = document.getElementById(cellId).querySelector('input');
-        let currentGvID = null;
-        try { currentGvID = JSON.parse(currentInput.value).id_GV; } catch(e){}
+        const input = document.getElementById(cellId)?.querySelector('input');
+        let currentMonID = null, currentGvID = null;
+        if(input?.value) {
+            try { 
+                const v = JSON.parse(input.value); 
+                currentMonID = v.id_Mon; currentGvID = v.id_GV;
+            } catch(e){}
+        }
 
-        // DÒNG HỦY TIẾT (Luôn cho phép click)
+        const subjectCounts = countSubjectOnGrid(); // Đếm số tiết trên lưới (1 tuần)
+        const dbThu = denormalizeDay(currentThu);
+
+        // Dòng Hủy
         const emptyRow = document.createElement('tr');
         emptyRow.className = 'row-selectable';
-        emptyRow.onclick = () => selectRow(emptyRow, null); // Null = Hủy tiết
         emptyRow.innerHTML = `<td colspan="4" class="text-danger fw-bold py-3">-- Trống (Hủy tiết) --</td>`;
+        emptyRow.addEventListener('click', () => selectRow(emptyRow, null));
         tbody.appendChild(emptyRow);
-
-        const dbThu = denormalizeDay(currentThu);
 
         listPhanCong.forEach(pc => {
             if (!pc.giaoVien || !pc.monHoc) return;
-
             const gvID = pc.giaoVien.id;
-            const tr = document.createElement('tr');
+            const monID = pc.monHoc.id;
+
+            // 1. TÍNH TOÁN GIỚI HẠN (QUY ĐỔI NĂM -> TUẦN -> KỲ)
+            const totalPeriodsYear = pc.monHoc.SoTiet || 0; // VD: 105
             
-            // Kiểm tra Bận & Quá tải
+            // a. Số tiết tối đa trong 1 tuần (105 / 35 = 3 tiết/tuần)
+            let maxPerWeek = Math.ceil(totalPeriodsYear / WEEKS_PER_YEAR);
+            if (maxPerWeek === 0) maxPerWeek = 5;
+
+            // b. Quy ra tổng tiết Học Kỳ để hiển thị (3 tiết/tuần * 18 tuần = 54 tiết)
+            const limitSemester = maxPerWeek * WEEKS_PER_SEMESTER;
+
+            // 2. TÍNH TIẾN ĐỘ HIỆN TẠI
+            let usedOnGrid = subjectCounts[monID] || 0;
+            if (monID == currentMonID) usedOnGrid--; 
+
+            // Tiến độ kỳ = (Số tiết trên lưới) * 18 tuần
+            const currentUsedSemester = usedOnGrid * WEEKS_PER_SEMESTER;
+            const nextUsedSemester = (usedOnGrid + 1) * WEEKS_PER_SEMESTER;
+
+            // 3. CHECK FULL (Dựa trên giới hạn tuần cho chính xác)
+            const isSubjectFull = usedOnGrid >= maxPerWeek;
+
+            // 4. CHECK GV
             const busyKey = `${gvID}-${dbThu}-${currentTiet}`;
             const busyClass = busyMap[busyKey];
-
             const tLoad = teacherLoad[gvID] || { total: 0, days: {} };
-            const loadDay = tLoad.days[dbThu] || 0; 
+            const loadDay = tLoad.days[dbThu] || 0;
             const loadWeek = tLoad.total;
+            const isGvOverload = (loadDay >= 5 || loadWeek >= 30) && (gvID != currentGvID);
 
-            const isOverloadDay = loadDay >= 5;
-            const isOverloadWeek = loadWeek >= 30;
-            const isSelf = (gvID == currentGvID); // Là chính mình -> Không tính là thêm mới
-            
-            // Xác định trạng thái (Bị chặn hay không)
-            let isDisabled = false;
-            let reason = "";
+            const tr = document.createElement('tr');
+            let isDisabled = false, reason = "", badge = "";
 
             if (busyClass) {
-                isDisabled = true;
-                reason = `đang dạy lớp ${busyClass}`;
-            } else if ((isOverloadDay || isOverloadWeek) && !isSelf) {
-                isDisabled = true;
-                reason = isOverloadDay ? "đã dạy đủ 5 tiết hôm nay" : "đã dạy đủ 30 tiết tuần này";
+                isDisabled = true; reason = `GV bận dạy lớp ${busyClass}`; badge = `<span class="busy-badge">Bận</span>`;
+            } else if (isGvOverload) {
+                isDisabled = true; reason = "GV quá tải"; badge = `<span class="full-badge">GV Full</span>`;
+            } else if (isSubjectFull) {
+                isDisabled = true; reason = `Môn này đã đủ ${limitSemester} tiết/kỳ`; badge = `<span class="full-badge bg-secondary">Đủ tiết</span>`;
             }
 
             if (isDisabled) {
-                // TRƯỜNG HỢP BỊ CHẶN (Vẫn cho click để hiện thông báo lỗi)
                 tr.className = busyClass ? 'row-selectable row-busy' : 'row-selectable row-full';
-                
-                tr.onclick = () => {
-                    alert(`🚫 Không thể chọn!\nGiáo viên ${pc.giaoVien.HoVaTen} ${reason}.`);
-                };
-
-                let badge = busyClass ? `<span class="busy-badge">Bận: ${busyClass}</span>` 
-                            : `<span class="full-badge">${isOverloadDay ? 'Max Ngày' : 'Max Tuần'}</span>`;
-
+                tr.addEventListener('click', () => alert(`🚫 Không thể chọn!\n${reason}.`));
                 tr.innerHTML = `
                     <td class="text-start ps-4 text-muted">${pc.giaoVien.HoVaTen} ${badge}</td>
-                    <td class="text-decoration-line-through text-muted">${pc.monHoc.TenMon}</td>
-                    <td class="text-muted">${loadDay}</td>
+                    <td class="text-muted fw-bold">${pc.monHoc.TenMon}</td>
+                    <td class="text-muted">${currentUsedSemester}/${limitSemester}</td>
                     <td class="text-muted">${loadWeek}</td>
                 `;
             } else {
-                // TRƯỜNG HỢP ĐƯỢC CHỌN
                 tr.className = 'row-selectable';
-                if (isSelf) tr.classList.add('table-active');
+                if (gvID == currentGvID) tr.classList.add('table-active');
+                
+                const data = { idGV: gvID, idMon: monID, tenGV: pc.giaoVien.HoVaTen, tenMon: pc.monHoc.TenMon };
+                tr.addEventListener('click', function() { selectRow(this, data); });
 
-                const data = { 
-                    idGV: gvID, idMon: pc.monHoc.id, 
-                    tenGV: pc.giaoVien.HoVaTen, tenMon: pc.monHoc.TenMon 
-                };
+                const statusClass = (currentUsedSemester >= limitSemester - WEEKS_PER_SEMESTER) ? 'text-warning-custom' : 'text-safe';
+
+                // --- TÍNH TOÁN THANH TIẾN ĐỘ CHO "TỔNG TIẾT DẠY" ---
+                const maxLoadWeek = 30; // Giới hạn chuẩn
+                const percentLoad = Math.min((loadWeek / maxLoadWeek) * 100, 100); // Tính % để vẽ thanh
                 
-                tr.onclick = () => selectRow(tr, data);
-                
-                // Tô màu số tiết để cảnh báo sắp đầy
-                const styleDay = loadDay >= 4 ? 'text-warning fw-bold' : 'text-success';
-                const styleWeek = loadWeek >= 25 ? 'text-warning fw-bold' : 'text-success';
+                // Chọn màu: Xanh (An toàn) -> Vàng (Sắp đầy) -> Đỏ (Nguy hiểm)
+                let barColor = 'bg-success'; 
+                if (loadWeek >= 20) barColor = 'bg-warning';
+                if (loadWeek >= 28) barColor = 'bg-danger';
 
                 tr.innerHTML = `
                     <td class="teacher-name text-start ps-4">
                         ${pc.giaoVien.HoVaTen} 
-                        ${isSelf ? '<span class="badge bg-info text-dark ms-2">Đang dạy</span>' : ''}
+                        ${gvID == currentGvID ? '<span class="badge bg-info text-dark ms-2" style="font-size:0.6rem">Đang dạy</span>' : ''}
                     </td>
-                    <td class="fw-bold text-primary">${pc.monHoc.TenMon}</td>
-                    <td class="${styleDay}">${loadDay}</td>
-                    <td class="${styleWeek}">${loadWeek}</td>
+                    <td class="${statusClass}">${pc.monHoc.TenMon}</td>
+                    
+                    <td class="${statusClass}">
+                        ${currentUsedSemester} / ${limitSemester}
+                    </td>
+                    
+                    <td class="align-middle px-3">
+                        <div class="d-flex justify-content-between mb-1" style="font-size: 0.75rem;">
+                            <span class="fw-bold text-secondary">${loadWeek} tiết</span>
+                            <span class="text-muted">Max ${maxLoadWeek}</span>
+                        </div>
+                        <div class="progress" style="height: 6px; background-color: #e9ecef; border-radius: 10px;">
+                            <div class="progress-bar ${barColor}" role="progressbar" 
+                                 style="width: ${percentLoad}%; border-radius: 10px;" 
+                                 aria-valuenow="${loadWeek}" aria-valuemin="0" aria-valuemax="${maxLoadWeek}">
+                            </div>
+                        </div>
+                    </td>
                 `;
             }
             tbody.appendChild(tr);
         });
     }
 
-    // --- 4. HÀM CHỌN DÒNG ---
     function selectRow(el, data) {
-        // Xóa highlight cũ
         document.querySelectorAll('.row-selectable').forEach(r => r.classList.remove('selected'));
-        // Highlight dòng mới
         el.classList.add('selected');
-        // Lưu dữ liệu vào biến toàn cục
         currentSelection = data;
-        console.log("Đã chọn:", currentSelection); // Debug xem có nhận click không
     }
 
-    // --- 5. XÁC NHẬN CHỌN ---
     function confirmSelection() {
-        // Nếu currentSelection có dữ liệu -> Chọn GV
-        // Nếu currentSelection là null -> Hủy tiết (chọn dòng Trống)
-        
-        // Kiểm tra xem người dùng có chọn dòng nào chưa (có class selected không)
         const isSelectedRow = document.querySelector('.row-selectable.selected');
-        
-        if (!isSelectedRow) {
-            alert("Vui lòng chọn một giáo viên hoặc chọn 'Hủy tiết'.");
-            return;
-        }
-
-        if (currentSelection) {
-            // Chọn giáo viên
-            updateCellUI(currentThu, currentTiet, currentSelection.tenGV, currentSelection.tenMon, currentSelection.idGV, currentSelection.idMon, true);
-        } else {
-            // Chọn Hủy tiết (currentSelection là null nhưng có dòng selected)
-            updateCellUI(currentThu, currentTiet, null, null, null, null, true);
-        }
-        
+        if (!isSelectedRow) { alert("Vui lòng chọn!"); return; }
+        if (currentSelection) updateCellUI(currentThu, currentTiet, currentSelection.tenGV, currentSelection.tenMon, currentSelection.idGV, currentSelection.idMon, true);
+        else updateCellUI(currentThu, currentTiet, null, null, null, null, true);
         bootstrap.Modal.getInstance(document.getElementById('selectionModal')).hide();
     }
 
-    // --- 6. UPDATE UI & REALTIME CALC ---
     function updateCellUI(thu, tiet, tenGV, tenMon, idGV, idMon, updateStats = false) {
         const nThu = normalizeDay(thu); 
         const dbThu = denormalizeDay(thu);
-        
         const cell = document.getElementById(`cell-${nThu}-${tiet}`);
         if (!cell) return;
 
@@ -424,7 +431,6 @@
         const defDiv = cell.querySelector('.default-content');
         const fillDiv = cell.querySelector('.filled-content');
 
-        // === LOGIC CẬP NHẬT SỐ TIẾT (REALTIME) ===
         if (updateStats) {
             let oldData = null;
             try { oldData = input.value ? JSON.parse(input.value) : null; } catch(e){}
@@ -432,12 +438,10 @@
             const newGvID = idGV;
 
             if (oldGvID != newGvID) {
-                // TRỪ CŨ
                 if (oldGvID && teacherLoad[oldGvID]) {
                     teacherLoad[oldGvID].total--;
                     if (teacherLoad[oldGvID].days[dbThu]) teacherLoad[oldGvID].days[dbThu]--;
                 }
-                // CỘNG MỚI
                 if (newGvID) {
                     if (!teacherLoad[newGvID]) teacherLoad[newGvID] = { total: 0, days: {} };
                     teacherLoad[newGvID].total++;
@@ -447,7 +451,6 @@
             }
         }
 
-        // Cập nhật Giao diện Ô Lưới
         if (idGV && idMon) {
             cell.classList.add('filled');
             defDiv.classList.add('d-none');
@@ -464,11 +467,10 @@
         }
     }
 
-    // --- 7. SAVE DB ---
     async function saveScheduleToDB() {
         const id_Lop = document.getElementById('classId').value;
         const scheduleData = [];
-
+        
         document.querySelectorAll('.schedule-input').forEach(input => {
             if (input.value) {
                 try {
@@ -490,17 +492,9 @@
                     scheduleData 
                 })
             });
-            
             const result = await res.json();
-            
-            if (result.success) {
-                new bootstrap.Modal(document.getElementById('saveSuccessModal')).show();
-            } else {
-                alert("❌ " + result.message);
-            }
-        } catch (err) {
-            console.error(err);
-            alert("❌ Lỗi kết nối server");
-        }
+            if (result.success) new bootstrap.Modal(document.getElementById('saveSuccessModal')).show();
+            else alert("❌ " + result.message);
+        } catch (err) { alert("❌ Lỗi kết nối server"); }
     }
 </script>
