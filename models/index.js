@@ -175,6 +175,16 @@ ThoiKhoaBieu.belongsTo(Lop, { foreignKey: 'id_Lop', as: 'lop' });
 ThoiKhoaBieu.belongsTo(MonHoc, { foreignKey: 'id_MonHoc', as: 'monHoc' });
 ThoiKhoaBieu.belongsTo(GiaoVien, { foreignKey: 'id_GiaoVien', as: 'giaoVien' });
 
+DangKyTuyenSinh.hasOne(ThiSinh, {
+  foreignKey: 'id_dangky',
+  as: 'thisinh'
+});
+
+ThiSinh.belongsTo(DangKyTuyenSinh, {
+  foreignKey: 'id_dangky',
+  as: 'dangky'
+});
+
 // Export tất cả model
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
     ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
