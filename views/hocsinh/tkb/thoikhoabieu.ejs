@@ -1,0 +1,46 @@
+<h2>Thời khóa biểu – Tuần <%= week %></h2>
+
+<div class="d-flex justify-content-between mb-3">
+  <a href="?week=<%= week - 1 %>"
+     class="btn btn-outline-secondary <%= week <= 1 ? 'disabled' : '' %>">
+    ← Tuần trước
+  </a>
+
+  <strong>Tuần <%= week %></strong>
+
+  <a href="?week=<%= week + 1 %>"
+     class="btn btn-outline-secondary <%= week >= maxWeek ? 'disabled' : '' %>">
+    Tuần sau →
+  </a>
+</div>
+
+<table class="table table-bordered text-center">
+  <thead>
+    <tr>
+      <th>Tiết</th>
+      <th>Thứ 2</th>
+      <th>Thứ 3</th>
+      <th>Thứ 4</th>
+      <th>Thứ 5</th>
+      <th>Thứ 6</th>
+      <th>Thứ 7</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% for (let t = 1; t <= 10; t++) { %>
+      <tr>
+        <td>Tiết <%= t %></td>
+        <% ['Hai','Ba','Tu','Nam','Sau','Bay'].forEach(thu => { %>
+          <td>
+            <% const item = tkb.find(x => x.Tiet === t && x.Thu === thu); %>
+            <% if (item) { %>
+              <strong><%= item.monHoc?.TenMon %></strong><br>
+              <small><%= item.giaoVien?.HoVaTen %></small>
+            <% } %>
+          </td>
+        <% }) %>
+      </tr>
+    <% } %>
+  </tbody>
+</table>

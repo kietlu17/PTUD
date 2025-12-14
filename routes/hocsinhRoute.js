@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dangkynhaphocCTRL = require('../controllers/hocsinh/dangkynhaphocCTRL')
 const nopBaiController = require('../controllers/hocsinh/nopBaiController')
-
+const tkbController = require('../controllers/hocsinh/tkb')
 router.get('/nhaphoc/tohop', dangkynhaphocCTRL.viewForm);
 router.post('/nhaphoc/tohop', dangkynhaphocCTRL.submit);
 
@@ -20,4 +20,5 @@ router.get('/nop-bai/:idBaiTap', nopBaiController.hienThiFormNopBai);
 // 3. Xử lý nộp bài (POST) - Có middleware upload.single('fileBaiLam')
 router.post('/nop-bai/:idBaiTap', upload.single('fileBaiLam'), nopBaiController.xuLyNopBai);
 
+router.get('/thoikhoabieu', tkbController.viewTKBHocSinh);
 module.exports = router;

@@ -35,12 +35,12 @@
                     let statusClass = '', statusText = '', btnText = 'Tạo Mới', borderClass = 'border-secondary';
                     
                     if (count === 0) {
-                        statusClass = 'bg-secondary bg-opacity-10 text-secondary'; statusText = '⚪ Chưa có lịch';
+                        statusClass = 'bg-secondary bg-opacity-10 text-secondary'; statusText = ' Chưa có lịch';
                     } else if (count >= fullThreshold) {
-                        statusClass = 'bg-success bg-opacity-10 text-success'; statusText = '✅ Đã hoàn tất'; 
+                        statusClass = 'bg-success bg-opacity-10 text-success'; statusText = ' Đã hoàn tất'; 
                         btnText = 'Chỉnh Sửa'; borderClass = 'border-success';
                     } else {
-                        statusClass = 'bg-warning bg-opacity-10 text-warning'; statusText = '⏳ Đang xếp'; 
+                        statusClass = 'bg-warning bg-opacity-10 text-warning'; statusText = ' Đang xếp'; 
                         btnText = 'Tiếp tục'; borderClass = 'border-warning';
                     }
                   %>

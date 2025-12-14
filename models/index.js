@@ -31,6 +31,7 @@ const KetQuaTuyenSinh = require('./KetQuaTuyenSinh');
 const BaiNop = require('./BaiNop');
 const ThoiKhoaBieu = require('./ThoiKhoaBieu');
 const LichSuDongBoThiSinh = require('./LichSuDongBoThiSinh')
+const CauHinhNamHoc = require('./CauHinhNamHoc')
 // 👉 Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò
@@ -188,4 +189,4 @@ ThiSinh.belongsTo(DangKyTuyenSinh, {
 // Export tất cả model
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
     ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
-DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh };
+DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh, CauHinhNamHoc };
