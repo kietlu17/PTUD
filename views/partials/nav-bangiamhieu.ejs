@@ -1,11 +1,4 @@
     <nav class="col-md-2 sidebar">
-<<<<<<< HEAD
-      <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
-      <a href="/dashboard-bangiamhieu" class="active">Trang Dashboard</a>
-      <!-- <a href="/bangiamhieu/diemdanh/<%= profile.id %>/lop">Điểm Danh</a>
-      <a href="/bangiamhieu/hanhkiem/<%= profile.id %>/lop">Đánh Giá Hạnh Kiểm</a> -->
-      <a href="bangiamhieu/phancong"></a>
-=======
         <div class="sidebar-info mb-3 d-flex align-items-center">
     <% const avatar=profile?.avatarUrl || null; %>
 
@@ -31,16 +24,11 @@
       <a href="/bangiamhieu/hanhkiem/<%= profile.id %>/lop">Đánh Giá Hạnh Kiểm</a> -->
       <a href="/bangiamhieu/phancongcn" class="<%= (currentUrl === '/phancongcn' || currentUrl === '/bangiamhieu/dashboard-bangiamhieu') ? 'active' : '' %>">Phân công chủ nhiệm</a>
       <a href="/bangiamhieu/phancong" class="<%= (currentUrl === '/phancong' || currentUrl === '/bangiamhieu/dashboard-bangiamhieu') ? 'active' : '' %>">Phân công giáo viên bộ môn</a>
->>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6
+      <a href="/bangiamhieu/thongke" class="<%= (currentUrl === '/thongke' || currentUrl === '/bangiamhieu/dashboard-bangiamhieu') ? 'active' : '' %>">Thống kê</a>
       <a href="#">Quản Lý Tài Khoản</a>
       <a href="#">Thông Báo</a>
       <a href="#">Tài Khoản Cá Nhân</a>
       <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
-<<<<<<< HEAD
-<button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
-
-    </nav>
-=======
   <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
   <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
   <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>
@@ -74,4 +62,3 @@ function changePassword(userId) {
   });
 }
 </script>
->>>>>>> 1f26f04d5f47ef00b6d633733decf4e26684f9b6

@@ -3,6 +3,7 @@ const router = express.Router();
 const diemdanhController = require('../controllers/giaovien/diemdanhController');
 const hanhkiem = require('../controllers/giaovien/hanhkiem');
 const baitapController = require('../controllers/giaovien/baitapController');
+const statisticsController = require('../controllers/statisticsController');
 
 const upload = require('../config/uploadConfig');
 // Điểm Danh
@@ -38,4 +39,8 @@ router.get('/giao-bai-tap/:idPhanCong', baitapController.hienThiFormGiaoBai);
 
 // Bước 3: Xử lý lưu bài tập vào CSDL (Có hỗ trợ upload file)
 router.post('/giao-bai-tap/:idPhanCong', upload.single('fileBaiTap'), baitapController.luuBaiTap);
+
+router.get('/thongke', statisticsController.getStatisticsPage);
+router.post('/thongke/get-data', statisticsController.getStatisticsData);
+
 module.exports = router;
