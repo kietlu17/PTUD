@@ -39,7 +39,8 @@ async function showPaymentDashboard(req, res) {
             // Lỗi này giờ có thể là do thiếu dữ liệu MaPH trong CSDL
             return res.render('phuhuynh/congno/payment-dashboard', { 
                 error: 'Không tìm thấy thông tin học sinh liên quan.', 
-                payments: [] 
+                payments: [],
+                currentUrl: '/hocphi'
             });
         }
 
@@ -56,6 +57,7 @@ async function showPaymentDashboard(req, res) {
             phuHuynh: phuHuynh,
             // Thêm logic tổng hợp nếu cần: Ví dụ tính tổng công nợ
             totalCongNo: payments.reduce((sum, p) => sum + (p.CongNo - p.TienDaNop), 0),
+            currentUrl: '/hocphi'
         });
 
     } catch (err) {
@@ -63,7 +65,8 @@ async function showPaymentDashboard(req, res) {
         // 4. Alternative flow: Lỗi CSDL
         res.render('phuhuynh/congno/payment-dashboard', { 
             error: 'Lỗi hệ thống, vui lòng thử lại sau.', 
-            payments: [] 
+            payments: [],
+            currentUrl: '/hocphi'
         });
     }
 }

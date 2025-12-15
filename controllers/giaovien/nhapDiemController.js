@@ -1,4 +1,4 @@
-const { BangPhanCongGiaoVien, Lop, MonHoc, HocSinh, DiemSo, GiaoVien } = require('../../models');
+const {sequelize,  BangPhanCongGiaoVien, Lop, MonHoc, HocSinh, DiemSo, GiaoVien } = require('../../models');
 
 // 1. Chọn Lớp (Giống bài trước)
 exports.hienThiDanhSachLop = async(req, res) => {
@@ -12,7 +12,7 @@ exports.hienThiDanhSachLop = async(req, res) => {
         raw: true,
         nest: true
     });
-    res.render('giaovien/nhapdiem/chon_lop', { dsPhanCong });
+    res.render('giaovien/nhapdiem/chon_lop', { dsPhanCong, currentPage: '/nhapdiem' });
 };
 
 // 2. Hiển thị bảng điểm
@@ -38,38 +38,102 @@ exports.hienThiBangDiem = async(req, res) => {
         ]
     });
 
-    res.render('giaovien/nhapdiem/nhap_diem_form', { phanCong, dsHocSinh, isHetHan });
+    res.render('giaovien/nhapdiem/nhap_diem_form', { phanCong, dsHocSinh, isHetHan, currentPage: '/nhapdiem' });
 };
 
 // 3. Lưu điểm (Có Validate 0-10)
-exports.luuBangDiem = async(req, res) => {
-    const idPhanCong = req.params.idPhanCong;
-    try {
-        const { grades } = req.body;
-        const phanCong = await BangPhanCongGiaoVien.findByPk(idPhanCong);
+exports.luuBangDiem = async (req, res) => {
+  const t = await sequelize.transaction();
 
-        // Validation 0-10 cho toàn bộ dữ liệu
-        for (const sid in grades) {
-            const d = grades[sid];
-            const check = (val) => {
-                if (val === '') return true;
-                const num = parseFloat(val);
-                return num >= 0 && num <= 10;
-            };
+  try {
+    const phanCongId = req.params.idPhanCong; // id phân công
+    const { grades } = req.body;
 
-            if (!check(d.DiemTX1) || !check(d.DiemTX2) || !check(d.DiemGK) || !check(d.DiemCK)) {
-                // Alternative flow 6.1
-                throw new Error(`Điểm không hợp lệ (Phải từ 0-10). Vui lòng kiểm tra lại!`);
-            }
-        }
-
-        // ... Logic lưu vào DB (Giống code tối ưu ở bài trước dùng Promise.all) ...
-        // (Copy đoạn logic lưu ở bài trước vào đây)
-
-        res.json({ success: true, message: "Lưu điểm thành công!" });
-
-    } catch (error) {
-        // Exception 8.1: Lỗi lưu
-        res.status(400).json({ success: false, message: error.message });
+    // Lấy thông tin phân công (để biết môn, lớp, học kỳ, năm học)
+    const phanCong = await BangPhanCongGiaoVien.findByPk(phanCongId);
+    if (!phanCong) {
+      await t.rollback();
+      return res.json({ success: false, message: 'Không tìm thấy phân công' });
     }
+
+    const {
+      id_MonHoc,
+      KyHoc,
+      NamHoc
+    } = phanCong;
+
+    // Duyệt từng học sinh
+    for (const hocSinhId of Object.keys(grades)) {
+      const g = grades[hocSinhId];
+
+      // Parse điểm (rỗng => null)
+      const tx1 = g.DiemTX1 !== '' ? parseFloat(g.DiemTX1) : null;
+      const tx2 = g.DiemTX2 !== '' ? parseFloat(g.DiemTX2) : null;
+      const mt1 = g.Diem1T1 !== '' ? parseFloat(g.Diem1T1) : null;
+      const mt2 = g.Diem1T2 !== '' ? parseFloat(g.Diem1T2) : null;
+      const gk  = g.DiemGK  !== '' ? parseFloat(g.DiemGK)  : null;
+      const ck  = g.DiemCK  !== '' ? parseFloat(g.DiemCK)  : null;
+
+      // Tính điểm trung bình
+      let tong = 0;
+      tong += (tx1 || 0) * 1;
+      tong += (tx2 || 0) * 1;
+      tong += (mt1 || 0) * 2;
+      tong += (mt2 || 0) * 2;
+      tong += (gk  || 0) * 2;
+      tong += (ck  || 0) * 3;
+
+      const DiemTB = Number((tong / 11).toFixed(1));
+
+      // Tìm bản ghi điểm cũ (nếu đã tồn tại)
+      const diemCu = await DiemSo.findOne({
+        where: {
+          id_HocSinh: hocSinhId,
+          id_MonHoc,
+          HocKy: KyHoc,
+          NamHoc
+        },
+        transaction: t
+      });
+
+      if (diemCu) {
+        // UPDATE
+        await diemCu.update({
+          DiemTX1: tx1,
+          DiemTX2: tx2,
+          Diem1T1: mt1,
+          Diem1T2: mt2,
+          DiemGK: gk,
+          DiemCK: ck,
+          DiemTB
+        }, { transaction: t });
+      } else {
+        // INSERT
+        await DiemSo.create({
+          id_HocSinh: hocSinhId,
+          id_MonHoc,
+          DiemTX1: tx1,
+          DiemTX2: tx2,
+          Diem1T1: mt1,
+          Diem1T2: mt2,
+          DiemGK: gk,
+          DiemCK: ck,
+          DiemTB,
+          HocKy: KyHoc,
+          NamHoc
+        }, { transaction: t });
+      }
+    }
+
+    await t.commit();
+    res.json({ success: true });
+
+  } catch (err) {
+    await t.rollback();
+    console.error('Lỗi lưu bảng điểm:', err);
+    res.json({
+      success: false,
+      message: 'Không thể lưu bảng điểm'
+    });
+  }
 };

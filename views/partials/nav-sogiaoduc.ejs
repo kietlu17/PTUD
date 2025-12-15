@@ -42,6 +42,10 @@
     Chỉ tiêu & Điểm chuẩn
   </a>
 
+  <a href="/sogiaoduc/dongbo/thisinh" class="<%= (currentUrl === '/dongbo' || currentUrl === '/sogiaoduc/chi-tieu') ? 'active' : '' %>">
+    Đồng bộ hồ sơ
+  </a>
+
   <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
   <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
   <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>

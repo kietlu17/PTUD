@@ -6,14 +6,14 @@ exports.hienThiDanhSachLop = async (req, res) => {
         const user = req.session.user;
         if (!user) return res.redirect('/login');
 
-        console.log(">>> Đang đăng nhập với Username:", user.username);
+
 
         // Tìm Giáo viên theo MaGV
         const gvInfo = await GiaoVien.findOne({ where: { MaGV: user.username } });
         
         // Fallback ID=1 nếu đang test và data bị lệch
         const idGiaoVienThat = gvInfo ? gvInfo.id : 1; 
-        console.log(">>> Tìm thấy ID thật:", idGiaoVienThat);
+
 
         const dsPhanCong = await BangPhanCongGiaoVien.findAll({
             where: { id_GiaoVien: idGiaoVienThat },
@@ -25,7 +25,7 @@ exports.hienThiDanhSachLop = async (req, res) => {
             nest: true
         });
 
-        res.render('giaovien/taobaitap/chon_lop', { dsPhanCong });
+        res.render('giaovien/taobaitap/chon_lop', { dsPhanCong,  currentPage:'/giao-bai-tap'});
 
     } catch (error) {
         console.error(error);
@@ -48,7 +48,7 @@ exports.hienThiFormGiaoBai = async (req, res) => {
         if (!phanCong) return res.status(404).send("Không tìm thấy thông tin phân công.");
 
         res.render('giaovien/taobaitap/tao_baitap', { 
-            phanCong, error: null, success: null 
+            phanCong, error: null, success: null, currentPage:'/giao-bai-tap'
         });
 
     } catch (error) {
@@ -78,7 +78,7 @@ exports.luuBaiTap = async (req, res) => {
 
         if (!tieuDe || tieuDe.trim() === "") {
             return res.render('giaovien/taobaitap/tao_baitap', { 
-                phanCong, error: "Vui lòng nhập tiêu đề!", success: null 
+                phanCong, error: "Vui lòng nhập tiêu đề!", success: null , currentPage:'/giao-bai-tap'
             });
         }
 
@@ -95,14 +95,14 @@ exports.luuBaiTap = async (req, res) => {
         });
 
         res.render('giaovien/taobaitap/tao_baitap', { 
-            phanCong, error: null, success: "Giao bài tập thành công!" 
+            phanCong, error: null, success: "Giao bài tập thành công!" , currentPage:'/giao-bai-tap'
         });
 
     } catch (error) {
         console.error("Lỗi lưu:", error);
         const phanCong = await getPhanCong();
         res.render('giaovien/taobaitap/tao_baitap', { 
-            phanCong, error: "Lưu thất bại: " + error.message, success: null 
+            phanCong, error: "Lưu thất bại: " + error.message, success: null , currentPage:'/giao-bai-tap'
         });
     }
 };
@@ -132,7 +132,7 @@ exports.xemDanhSachBaiDaGiao = async (req, res) => {
 
         res.render('giaovien/taobaitap/ds_baitap_dagiao', { 
             phanCong, 
-            dsBaiTap 
+            dsBaiTap, currentPage:'/giao-bai-tap'
         });
 
     } catch (error) {
@@ -158,7 +158,8 @@ exports.hienThiFormSua = async (req, res) => {
         res.render('giaovien/taobaitap/sua_baitap', { 
             baiTap, 
             error: null, 
-            success: null 
+            success: null,
+            currentPage:'/giao-bai-tap'
         });
 
     } catch (error) {
@@ -194,7 +195,7 @@ exports.capNhatBaiTap = async (req, res) => {
         res.render('giaovien/taobaitap/sua_baitap', { 
             baiTap: baiTapMoi, 
             error: null, 
-            success: "Cập nhật thành công!" 
+            success: "Cập nhật thành công!", currentPage:'/giao-bai-tap'
         });
 
     } catch (error) {

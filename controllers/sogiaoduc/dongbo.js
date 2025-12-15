@@ -11,10 +11,11 @@ exports.chayDongBo = async (req, res) => {
 
 exports.viewDongBo = async (req, res) => {
     const soChoDongBo = await DangKyTuyenSinh.count({
-        where: { TrangThai: 'Chờ duyệt' }
+        where: { TrangThai: 'Đã duyệt' }
     });
 
     res.render('sogiaoduc/dongbo_thisinh', {
-        soChoDongBo
+        soChoDongBo, 
+        currentUrl:'dongbo'
     });
 };

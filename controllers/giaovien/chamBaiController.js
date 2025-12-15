@@ -22,7 +22,7 @@ exports.dsBaiTapCanCham = async (req, res) => {
         });
 
         // Đảm bảo bạn đã tạo file view này
-        res.render('giaovien/chambai/ds_baitap', { dsBaiTap });
+        res.render('giaovien/chambai/ds_baitap', { dsBaiTap, currentPage :'/cham-bai' });
     } catch (error) {
         console.error(error);
         res.status(500).send("Lỗi server: " + error.message);
@@ -58,7 +58,8 @@ exports.chiTietBaiCham = async (req, res) => {
             baiTap, 
             dsHocSinh, 
             error: null, 
-            success: null 
+            success: null ,
+            currentPage :'/cham-bai'
         });
     } catch (error) {
         console.error(error);
@@ -100,10 +101,10 @@ exports.luuDiemBaiTap = async (req, res) => {
         }
 
         // Trả về JSON để frontend hiển thị popup
-        return res.json({ success: true, message: "Đã lưu kết quả chấm bài thành công!" });
+        return res.json({ success: true, message: "Đã lưu kết quả chấm bài thành công!", currentPage :'/cham-bai' });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: "Lỗi server: " + error.message });
+        res.status(500).json({ success: false, message: "Lỗi server: " + error.message, currentPage :'/cham-bai' });
     }
 };

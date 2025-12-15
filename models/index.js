@@ -32,7 +32,7 @@ const BaiNop = require('./BaiNop');
 const ThoiKhoaBieu = require('./ThoiKhoaBieu');
 const LichSuDongBoThiSinh = require('./LichSuDongBoThiSinh')
 const CauHinhNamHoc = require('./CauHinhNamHoc')
-// 👉 Khai báo các quan hệ ở đây (sau khi tất cả model được import)
+//  Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò
 TaiKhoan.belongsTo(VaiTro, { foreignKey: 'id_role', as: 'role' });
@@ -47,7 +47,7 @@ Lop.hasMany(HocSinh, { foreignKey: 'id_Lop', as: 'hocsinhs' });
 Truong.hasMany(HocSinh, { foreignKey: 'id_school', as: 'hocsinhs' });
 Truong.hasMany(Lop,{foreignKey: 'id_truong', as: 'lops'})
 
-// ✅ Liên kết (1 thí sinh có 1 điểm thi)
+//  Liên kết (1 thí sinh có 1 điểm thi)
 ThiSinh.hasOne(DiemThi, { foreignKey: 'thisinhid', as: 'diem' });
 DiemThi.belongsTo(ThiSinh, { foreignKey: 'thisinhid', as: 'thisinh' });
 

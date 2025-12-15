@@ -20,7 +20,7 @@ exports.showClasses = async (req, res) => {
             raw: true, nest: true,
         });
 
-        res.status(200).render('./giaovien/diemdanh/diemdanh', { dsLop });
+        res.status(200).render('./giaovien/diemdanh/diemdanh', { dsLop, currentPage: '/diemdanh' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Lỗi server: ' + error.message });
@@ -93,7 +93,7 @@ exports.getHocSinhByLop = async (req, res) => {
         });
 
         res.status(200).render('./giaovien/diemdanh/danhsachlop', {
-            id, monhocId: phanCong.id_MonHoc, lop, dsHocSinh,
+            id, monhocId: phanCong.id_MonHoc, lop, dsHocSinh, currentPage: '/diemdanh'
         });
 
     } catch (error) {
@@ -135,7 +135,7 @@ exports.submitAttendance = async (req, res) => {
             });
         }
 
-        return res.status(200).json({ success: true, message: 'Điểm danh thành công!' });
+        return res.status(200).json({ success: true, message: 'Điểm danh thành công!', currentPage: '/diemdanh' });
         
     } catch (error) {
         console.error(error);
@@ -161,7 +161,7 @@ exports.xemLichSuDiemDanh = async (req, res) => {
         });
 
         res.render('giaovien/diemdanh/lichsu_diemdanh', {
-            lop, lichSu, idGiaoVien: id, idLop: lopId
+            lop, lichSu, idGiaoVien: id, idLop: lopId, currentPage: '/diemdanh'
         });
 
     } catch (error) {
@@ -201,11 +201,11 @@ exports.xemChiTietNgay = async (req, res) => {
         });
 
         res.render('giaovien/diemdanh/chitiet_ngay', {
-            lop, dsHocSinh, ngayHoc, idGiaoVien: id, idLop: lopId
+            lop, dsHocSinh, ngayHoc, idGiaoVien: id, idLop: lopId, currentPage: '/diemdanh'
         });
 
     } catch (error) {
         console.error(error);
-        res.status(500).send("Lỗi server: " + error.message);
+        res.status(500).send("Lỗi server: " + error.message );
     }
 };

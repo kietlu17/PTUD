@@ -43,7 +43,8 @@ exports.viewTKBHocSinh = async (req, res) => {
     res.render('./hocsinh/tkb/create', {
       tkb,
       week: currentWeek,
-      maxWeek: cauHinh.SoTuan
+      maxWeek: cauHinh.SoTuan, 
+      currentPage: '/tkb'
     });
 
   } catch (err) {
@@ -85,7 +86,8 @@ exports.viewTKBGiaoVien = async (req, res) => {
     res.render('./giaovien/tkb/create', {
       tkb,
       week: currentWeek,
-      maxWeek: cauHinh.SoTuan
+      maxWeek: cauHinh.SoTuan, 
+      currentPage: '/tkb'
     });
 
   } catch (err) {

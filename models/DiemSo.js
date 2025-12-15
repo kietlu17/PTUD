@@ -2,11 +2,8 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/sequelize');
 
 const DiemSo = sequelize.define('DiemSo', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
+   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+
   id_HocSinh: {
     type: DataTypes.INTEGER,
     allowNull: true,
@@ -23,33 +20,19 @@ const DiemSo = sequelize.define('DiemSo', {
       key: 'id',
     },
   },
-  HocKy: {
-    type: DataTypes.STRING(10),
-    allowNull: true,
-  },
-  NamHoc: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
-  DiemThuongKy: {
-    type: DataTypes.DECIMAL(4,2),
-    allowNull: true,
-  },
-  DiemGiuaKy: {
-    type: DataTypes.DECIMAL(4,2),
-    allowNull: true,
-  },
-  DiemCuoiKy: {
-    type: DataTypes.DECIMAL(4,2),
-    allowNull: true,
-  },
-  DiemTrungBinh: {
-    type: DataTypes.DECIMAL(4,2),
-    allowNull: true,
-  },
-}, {    
-  tableName: 'DiemSo',
-  timestamps: false,
-});
+
+    DiemTX1: DataTypes.FLOAT,
+    DiemTX2: DataTypes.FLOAT,
+    Diem1T1: DataTypes.FLOAT,
+    Diem1T2: DataTypes.FLOAT,
+    DiemGK: DataTypes.FLOAT,
+    DiemCK: DataTypes.FLOAT,
+    DiemTB: DataTypes.FLOAT,
+
+    HocKy: DataTypes.STRING,
+    NamHoc: DataTypes.STRING
+  }, {
+    tableName: 'DiemSo'
+  });
 
 module.exports = DiemSo;

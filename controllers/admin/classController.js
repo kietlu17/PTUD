@@ -28,8 +28,10 @@ exports.createClasses = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     // 1. Lấy tất cả HS khối 10 đã chọn tổ hợp môn
+    const id_truong = req.session.user.profile
     const students = await HocSinh.findAll({
       where: {
+        id_school: id_truong.id_school,
         NamNhapHoc: year,
         id_tohopmon: { [Op.ne]: null }
       },
@@ -192,10 +194,11 @@ exports.preview = async (req, res) => {
   const { year, numClasses, classPrefix, maxSize } = req.body;
 
   const grade = 10; // luôn là khối 10
-
+  const id_truong = req.session.user.profile
   // --- lấy dữ liệu tương tự createClasses ---
   const students = await HocSinh.findAll({
     where: {
+      id_school: id_truong.id_school,
       NamNhapHoc: year,
       id_tohopmon: { [Op.ne]: null }
     },
