@@ -32,6 +32,20 @@ const BaiNop = require('./BaiNop');
 const ThoiKhoaBieu = require('./ThoiKhoaBieu');
 const LichSuDongBoThiSinh = require('./LichSuDongBoThiSinh')
 const CauHinhNamHoc = require('./CauHinhNamHoc')
+
+
+
+// ThiSinh 1 - N KetQuaTuyenSinh
+ThiSinh.hasMany(KetQuaTuyenSinh, {
+  foreignKey: 'thisinhid',
+  as: 'ketQua',
+});
+
+KetQuaTuyenSinh.belongsTo(ThiSinh, {
+  foreignKey: 'thisinhid',
+  as: 'thiSinh',
+});
+
 //  Khai báo các quan hệ ở đây (sau khi tất cả model được import)
 
 // 1. Tài khoản & Vai trò

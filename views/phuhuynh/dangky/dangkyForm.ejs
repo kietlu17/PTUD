@@ -33,6 +33,11 @@
     <label>Tôn giáo:</label> 
     <input type="text" name="TonGiao" class="form-control"> 
   </div>
+    <div class="mb-3"> 
+    <label>Gmail:</label> 
+    <input type="text" name="Gmail" class="form-control"> 
+  </div>
+  
     <!-- ĐỊA CHỈ -->
     <h3>Địa chỉ cư trú (bắt buộc thuộc TP.HCM)</h3>
 
@@ -186,7 +191,7 @@ document.getElementById("formDangKy").addEventListener("submit", async (e) => {
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
 
-  const res = await fetch("/phuhuynh/dangky", {
+  const res = await fetch("/dangky", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)

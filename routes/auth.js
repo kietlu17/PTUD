@@ -1,12 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../controllers/authController');
-const checkDangKyToHop = require('../middlewares/checkDKTHM')
+const checkDangKyToHop = require('../middlewares/checkDKTHM');
+const tuyenSinhController = require('../controllers/phuhuynh/tuyenSinhController');
+const tuyensinhctr = require('../controllers/tuyensinhCtrl')
+const middlewares = require('../middlewares/checkTuyenSinhLogin')
+const controller = require('../controllers/importdata')
+const { render } = require('ejs');
 // router.get('/register', auth.showRegister);
 router.post('/account/re-password/:id', auth.changePassword);
 router.get('/login', auth.showLogin);
 router.post('/login', auth.login);
 router.post('/logout', auth.logout);
+
+router.get("/import-hoc-sinh", controller.importHocSinh);
+
+// Trang login tuyển sinh
+router.get('/tuyensinh/login', (req, res) => {
+  res.render('./phuhuynh/dangky/login');
+});
+
+// Xử lý login
+router.post('/tuyensinh/login', tuyensinhctr.loginTuyenSinh);
+
+// Hiển thị form đăng ký tuyển sinh
+router.get('/dangky', middlewares,tuyenSinhController.showFormDangKy);
+// Xử lý submit form đăng ký
+router.post('/dangky', tuyenSinhController.submitDangKy);
+
+
+router.get('/doi-mat-khau-lan-dau', (req, res) => {
+  if(!req.session.user){
+    return res.redirect('/login');
+  }
+  res.render('repassword', {user : req.session.user})
+})
 
 router.get('/dashboard-giaovien', (req, res) => {
   if (!req.session.user || req.session.user.role !== 'giáo viên') {

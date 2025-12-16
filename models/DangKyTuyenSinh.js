@@ -32,6 +32,9 @@ const DangKyTuyenSinh = sequelize.define('DangKyTuyenSinh', {
   HanhKiem_Lop7: { type: DataTypes.STRING, allowNull: true },
   HanhKiem_Lop8: { type: DataTypes.STRING, allowNull: true },
   HanhKiem_Lop9: { type: DataTypes.STRING, allowNull: true },
+
+  // Gmail
+  Gmail: { type: DataTypes.STRING, allowNull: true }
 }, {
   tableName: 'DangKyTuyenSinh',
   timestamps: false,

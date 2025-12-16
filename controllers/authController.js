@@ -49,6 +49,9 @@ async function login(req, res) {
               roleId: user.role.id,
               profile: hocSinh.toJSON()
             };
+            if (user.isFirstLogin) {
+              return res.redirect('/doi-mat-khau-lan-dau');
+            }
 
             res.redirect('/dashboard-hocsinh');
       }
@@ -143,6 +146,10 @@ async function login(req, res) {
               roleId: user.role.id,
               profile: phuHuynh.toJSON()
             };
+            if (user.isFirstLogin) {
+              return res.redirect('/doi-mat-khau-lan-dau');
+            }
+
             res.redirect('/dashboard-phuhuynh');
           }
 
@@ -181,9 +188,10 @@ function logout(req, res) {
 // Xử lý đổi mật khẩu
 async function  changePassword  (req, res){
     const newPassword = req.body.password;
-    console.log(newPassword)
     await TaiKhoan.update(
-        { password: bcrypt.hashSync(newPassword, 10) },
+        { password: bcrypt.hashSync(newPassword, 10),
+          isFirstLogin: false
+         },
         { where: { id: req.params.id } }
     );
 

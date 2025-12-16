@@ -10,6 +10,11 @@ const TaiKhoan = sequelize.define('TaiKhoan', {
   password: { type: DataTypes.STRING(255), allowNull: false },
   id_truong: { type: DataTypes.INTEGER },
   id_role: { type: DataTypes.INTEGER, allowNull: false },
+  isFirstLogin: {
+  type: DataTypes.BOOLEAN,
+  defaultValue: true
+}
+
 }, {
   tableName: 'TaiKhoan',
   timestamps: false,

@@ -18,7 +18,8 @@ async function dongBoThiSinh() {
           mahs: taoMaThiSinh(hs.id),
           hoten: hs.HoVaTen,
           ngaysinh: hs.NgaySinh,
-          phongthiid: null
+          phongthiid: null,
+          id_dangky: hs.id
         }, { transaction: t });
 
         await hs.update({ TrangThai: "Đã chuyển" }, { transaction: t });
