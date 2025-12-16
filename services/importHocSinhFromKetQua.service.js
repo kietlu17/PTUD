@@ -112,7 +112,7 @@ const mailQueue = []; // lưu danh sách mail cần gửi
             MaPH: `PH${newId}`,
             HoVaTen: taiKhoanPH.tenPH,
             SDT: taiKhoanPH.sdt,
-            email: taiKhoanPH.email || null,
+            email: dk.email || null,
             NgaySinh: taiKhoanPH.ngaysinh,
             GioiTinh: taiKhoanPH.gioitinh,
             id_HocSinh: hocSinh.id,
