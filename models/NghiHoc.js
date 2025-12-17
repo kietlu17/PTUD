@@ -1,11 +1,9 @@
-const { DataTypes } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
     const NghiHoc = sequelize.define('NghiHoc', {
         application_id: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
+            primaryKey: true, // Xác định là khóa chính
+            autoIncrement: true // Quan trọng: Để DB tự sinh ID tăng dần
         },
         student_id: {
             type: DataTypes.INTEGER,
@@ -16,25 +14,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         LyDo: {
-            type: DataTypes.STRING,
-            allowNull: true
+            type: DataTypes.TEXT,
+            allowNull: false
         },
         TinhTrang: {
             type: DataTypes.STRING,
-            defaultValue: 'Chờ duyệt'
-        },
-        NgayNop: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
-        },
-        approved_by: {
-            type: DataTypes.INTEGER,
-            allowNull: true
+            defaultValue: 'Đã duyệt'
         }
     }, {
         tableName: 'NghiHoc',
         timestamps: false
     });
-
     return NghiHoc;
 };

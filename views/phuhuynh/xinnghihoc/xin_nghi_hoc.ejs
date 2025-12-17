@@ -1,0 +1,131 @@
+<%- include('../../partials/header', { title: 'Xin Nghỉ Học' }) %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../../partials/nav-phuhuynh') %>
+
+                <main class="col-md-10 content p-4">
+                    <h4 class="text-primary fw-bold mb-4">XIN NGHỈ HỌC CHO CON:
+                        <%= con.HoVaTen %>
+                    </h4>
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-primary text-white fw-bold">Gửi Đơn Xin Nghỉ</div>
+                                <div class="card-body">
+                                    <% if (success) { %>
+                                        <div class="alert alert-success">
+                                            <%= success %>
+                                        </div>
+                                        <% } %>
+                                            <% if (error) { %>
+                                                <div class="alert alert-danger">
+                                                    <%= error %>
+                                                </div>
+                                                <% } %>
+
+                                                    <form action="/phuhuynh/xin-nghi-hoc" method="POST">
+                                                        <input type="hidden" name="student_id" value="<%= con.id %>">
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold small">Ngày nghỉ:</label>
+                                                            <input type="date" name="ngay_nghi" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>">
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold small">Lý do nghỉ:</label>
+                                                            <textarea name="ly_do" class="form-control" rows="4" placeholder="Nhập lý do nghỉ học..." required></textarea>
+                                                        </div>
+
+                                                        <button type="submit" class="btn btn-primary w-100 fw-bold">GỬI ĐƠN</button>
+                                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-dark text-white fw-bold">Lịch Sử Xin Nghỉ</div>
+                                <div class="card-body p-0">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light text-center">
+                                            <tr>
+                                                <th style="width: 25%;">Ngày Nghỉ</th>
+                                                <th class="text-center">Lý Do</th>
+                                                <th style="width: 25%;">Trạng Thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (lichSu && lichSu.length > 0) { %>
+                                                <% lichSu.forEach(item => { %>
+                                                    <tr>
+                                                        <td class="text-center fw-bold text-primary">
+                                                            <%= new Date(item.NgayNghi).toLocaleDateString('vi-VN') %>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <%= item.LyDo %>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span class="badge <%= item.TinhTrang === 'Đã duyệt' ? 'bg-success' : 'bg-warning text-dark' %>">
+                                        <%= item.TinhTrang %>
+                                    </span>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="3" class="text-center py-4 text-muted fst-italic">Chưa có lịch sử đơn.</td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+        </main>
+    </div>
+    </div>
+
+    <style>
+        /* Đảm bảo nội dung căn giữa cả theo chiều dọc nếu ô có nhiều dòng */
+        
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy giá trị success từ server truyền xuống
+            // Chú ý dùng thẻ <%- %> để lấy giá trị chuỗi chính xác
+            const successMessage = `<%- success %>`;
+
+            if (successMessage && successMessage !== 'null' && successMessage.trim() !== '') {
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: successMessage,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#7066e0', // Màu tím giống giao diện mẫu của bạn
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Sau khi bấm OK, xóa thông báo trên URL để không hiện lại khi F5
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                });
+            }
+        });
+    </script>
