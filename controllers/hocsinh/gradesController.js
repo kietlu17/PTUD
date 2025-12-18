@@ -72,10 +72,10 @@ exports.showGradesForStudent = async (req, res) => {
         });
 
         // --- 5. Render view ---
-        res.render('./phuhuynh/diem/diem', {
+        res.render('./hocsinh/diem/diem', {
             scores,
             hocSinh,
-            currentUrl: '/diem'
+            currentPage: '/diem'
         });
 
     } catch (err) {

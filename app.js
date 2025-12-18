@@ -11,7 +11,8 @@ const adminRoute = require('./routes/adminRoute');
 const bangiamhieuRoute = require('./routes/bangiamhieuRoute');
 const { init: sequelizeInit } = require('./config/sequelize');
 const phuHuynhRoute = require('./routes/phuHuynhRoute');
-const hocsinhRoute = require("./routes/hocsinhRoute")
+const hocsinhRoute = require("./routes/hocsinhRoute");
+const thongkeRoute = require('./routes/statisticsRoute');
 const app = express();
 
 
@@ -66,6 +67,7 @@ app.use('/admin',requireLogin,adminRoute);
 app.use('/phuhuynh', requireLogin,phuHuynhRoute);
 app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
 app.use('/hocsinh', requireLogin, hocsinhRoute);
+app.use('/thongke', requireLogin,thongkeRoute);
 
 const PORT = process.env.PORT || 3000;
 

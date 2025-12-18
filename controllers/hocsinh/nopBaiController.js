@@ -19,7 +19,7 @@ exports.hienThiDanhSachBaiTap = async(req, res) => {
             ]
         });
 
-        res.render('hocsinh/nopbai/ds_baitap', { dsBaiTap, hocSinh });
+        res.render('hocsinh/nopbai/ds_baitap', { dsBaiTap, hocSinh, currentPage: '/baitap' });
     } catch (error) {
         console.error(error);
         res.status(500).send("Lỗi server: " + error.message);
@@ -60,7 +60,8 @@ exports.hienThiFormNopBai = async(req, res) => {
             quaHan,
             baiNop,
             error: null,
-            success: null
+            success: null,
+            currentPage: '/baitap'
         });
     } catch (error) {
         console.error(error);
@@ -101,7 +102,8 @@ exports.xuLyNopBai = async(req, res) => {
                 baiNop: baiNopCu,
                 quaHan,
                 error: "Bài tập đã được giáo viên chấm điểm (Điểm: " + baiNopCu.Diem + "), không thể cập nhật!",
-                success: null
+                success: null,
+                currentPage: '/baitap'
             });
         }
         // ----------------------------------------------------
@@ -114,7 +116,8 @@ exports.xuLyNopBai = async(req, res) => {
                 baiNop: baiNopCu, // Truyền bài nộp cũ để hiển thị file (nếu có)
                 quaHan: true,
                 error: "Đã hết hạn nộp bài! Hệ thống không nhận bài nữa.",
-                success: null
+                success: null,
+                currentPage: '/baitap'
             });
         }
 
@@ -124,7 +127,8 @@ exports.xuLyNopBai = async(req, res) => {
                 quaHan: false,
                 error: "Vui lòng chọn file!",
                 success: null,
-                baiNop: baiNopCu
+                baiNop: baiNopCu,
+                currentPage: '/baitap'
             });
         }
 
@@ -154,7 +158,8 @@ exports.xuLyNopBai = async(req, res) => {
             quaHan: false,
             error: null,
             success: "Nộp bài thành công!",
-            baiNop: baiNopMoi // Truyền bản ghi mới nhất
+            baiNop: baiNopMoi, // Truyền bản ghi mới nhất,
+            currentPage: '/baitap'
         });
 
     } catch (error) {
@@ -168,7 +173,8 @@ exports.xuLyNopBai = async(req, res) => {
             quaHan: (new Date() > new Date(baiTap.HanNop)),
             error: "Lỗi nộp bài: " + error.message,
             success: null,
-            baiNop: baiNopCu
+            baiNop: baiNopCu,
+            currentPage: '/baitap'
         });
     }
 };

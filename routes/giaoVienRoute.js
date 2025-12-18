@@ -8,6 +8,7 @@ const nhapDiemController = require('../controllers/giaovien/nhapDiemController')
 const gradesController = require('../controllers/giaovien/gradesController');
 const upload = require('../config/uploadConfig');
 const tkbController = require('../controllers/hocsinh/tkb')
+const statisticsController = require('../controllers/statisticsController');
 // Điểm Danh
 // Hiển thị danh sách lớp giáo viên dạy
 router.get('/diemdanh/:id/lop', diemdanhController.showClasses);
@@ -68,4 +69,8 @@ router.get('/xem-diem-bo-mon/:giaovienId', gradesController.xemDiemGVBoMon);
 // GVCN: Xem điểm lớp mình (tất cả môn)
 router.get('/xem-diem-chu-nhiem/:giaovienId', gradesController.xemDiemGVChuNhiem);
 router.get('/thoikhoabieu', tkbController.viewTKBGiaoVien);
+
+
+router.get('/thongke', statisticsController.getStatisticsPage);
+router.post('/thongke/get-data', statisticsController.getStatisticsData);
 module.exports = router;

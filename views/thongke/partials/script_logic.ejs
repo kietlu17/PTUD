@@ -1,0 +1,136 @@
+<script>
+    let gradeChartInstance = null;
+    let passChartInstance = null;
+
+    // --- 1. LOAD DATA ---
+    async function loadData() {
+        const payload = {
+            namHoc: document.getElementById('filterNamHoc')?.value || '',
+            hocKy: document.getElementById('filterHocKy')?.value || '',
+            idLop: document.getElementById('filterLop')?.value || '',
+            idMon: document.getElementById('filterMon')?.value || ''
+        };
+
+        const btn = document.querySelector('button[onclick="loadData()"]');
+        let originalText = '';
+        if (btn) {
+            originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            btn.disabled = true;
+        }
+
+        try {
+            const res = await fetch('/thongke/get-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                updateCharts(result.stats);
+                updateTable(result.data);
+            } else {
+                alert(' ' + result.message);
+            }
+        } catch (e) {
+            console.error(e);
+            alert(' Lỗi kết nối server');
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    }
+
+    // --- 2. BIỂU ĐỒ ---
+    function updateCharts(stats) {
+        // Biểu đồ cột
+        const ctxGrade = document.getElementById('gradeChart');
+        if (ctxGrade) {
+            gradeChartInstance?.destroy();
+            gradeChartInstance = new Chart(ctxGrade, {
+                type: 'bar',
+                data: {
+                    labels: ['Giỏi', 'Khá', 'Trung Bình', 'Yếu'],
+                    datasets: [{
+                        data: [stats.gioi, stats.kha, stats.tb, stats.yeu],
+                        backgroundColor: ['#22c55e', '#3b82f6', '#eab308', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+        }
+
+        // Biểu đồ tròn
+        const ctxPass = document.getElementById('passChart');
+        if (ctxPass) {
+            passChartInstance?.destroy();
+            passChartInstance = new Chart(ctxPass, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Đạt', 'Không đạt'],
+                    datasets: [{
+                        data: [stats.dat, stats.khongDat],
+                        backgroundColor: ['#16a34a', '#dc2626']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+    }
+
+    // --- 3. BẢNG ĐIỂM ---
+    function updateTable(data) {
+        const tbody = document.getElementById('scoreTableBody');
+        const countBadge = document.getElementById('totalCount');
+
+        if (countBadge) countBadge.innerText = `${data.length} bản ghi`;
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        if (!data.length) {
+            tbody.innerHTML =
+                '<tr><td colspan="12" class="text-muted py-4">Không có dữ liệu</td></tr>';
+            return;
+        }
+
+        data.forEach(d => {
+            const dtb = Number(d.DiemTB || 0);
+
+            let xepLoai = '', badge = '';
+            if (dtb >= 8) { xepLoai = 'Giỏi'; badge = 'bg-success'; }
+            else if (dtb >= 6.5) { xepLoai = 'Khá'; badge = 'bg-primary'; }
+            else if (dtb >= 5) { xepLoai = 'TB'; badge = 'bg-warning text-dark'; }
+            else { xepLoai = 'Yếu'; badge = 'bg-danger'; }
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${d.maHS}</td>
+                    <td class="fw-bold text-start">${d.tenHS}</td>
+                    <td>${d.lop}</td>
+                    <td>${d.mon}</td>
+                    <td>${d.DiemTX1 ?? '-'}</td>
+                    <td>${d.DiemTX2 ?? '-'}</td>
+                    <td>${d.Diem1T1 ?? '-'}</td>
+                    <td>${d.Diem1T2 ?? '-'}</td>
+                    <td>${d.DiemGK ?? '-'}</td>
+                    <td>${d.DiemCK ?? '-'}</td>
+                    <td class="fw-bold">${dtb.toFixed(2)}</td>
+                    <td><span class="badge ${badge}">${xepLoai}</span></td>
+                </tr>
+            `;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadData);
+</script>

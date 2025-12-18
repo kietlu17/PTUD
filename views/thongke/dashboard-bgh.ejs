@@ -1,0 +1,56 @@
+<%- include('../partials/header', { title: 'Thống Kê BGH' }) %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../partials/nav-bangiamhieu') %> <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <h3 class="fw-bold text-primary mb-4">📊 THỐNG KÊ TOÀN TRƯỜNG (BGH)</h3>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="fw-bold">Năm Học:</label>
+                        <select id="filterNamHoc" class="form-select">
+                            <option value="<%= defaultNamHoc %>"><%= defaultNamHoc %></option>
+                            </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="fw-bold">Học Kỳ:</label>
+                        <select id="filterHocKy" class="form-select">
+                            <option value="1">Học kỳ 1</option>
+                            <option value="2">Học kỳ 2</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="fw-bold">Lớp:</label>
+                        <select id="filterLop" class="form-select">
+                            <option value="">-- Tất cả lớp --</option>
+                            <% dsLop.forEach(l => { %>
+                                <option value="<%= l.id %>"><%= l.TenLop %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="fw-bold">Môn Học:</label>
+                        <select id="filterMon" class="form-select">
+                            <option value="">-- Tất cả môn --</option>
+                            <% dsMon.forEach(m => { %>
+                                <option value="<%= m.id %>"><%= m.TenMon %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="loadData()"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('./partials/charts_and_table') %>
+
+    </main>
+  </div>
+</div>
+
+<%- include('./partials/script_logic') %>
