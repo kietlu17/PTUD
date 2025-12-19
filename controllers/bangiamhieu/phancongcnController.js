@@ -5,8 +5,13 @@ const { Op } = require('sequelize');
 exports.renderFormGVCN = async (req, res) => {
     try {
         // --- Lấy danh sách lớp ---
+        const bgh = req.session.user.profile;
         const dsLop = await Lop.findAll({
-            attributes: ['id', 'TenLop']
+            where: { 
+                id_GiaoVienChuNhiem: { [Op.is]: null },
+                id_truong: bgh.id_truong
+            },
+            order: [['TenLop', 'ASC']]
         });
 
         // --- Lấy danh sách giáo viên chưa làm GVCN ---
@@ -14,6 +19,7 @@ exports.renderFormGVCN = async (req, res) => {
             attributes: ['id_GiaoVienChuNhiem'],
             where: { id_GiaoVienChuNhiem: { [Op.ne]: null } }
         });
+
         const busyTeacherIds = lopDaCoChuNhiem.map(l => l.id_GiaoVienChuNhiem);
 
         const dsGiaoVienChuNhiemKhaDung = await GiaoVien.findAll({

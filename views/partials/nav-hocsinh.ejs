@@ -7,8 +7,7 @@
       <a href="/hocsinh/thoikhoabieu" class="<% if (activePage === '/tkb') { %>active<% } %>">Thời Khóa Biểu</a>
       <a href="/hocsinh/bai-tap" class="<% if (activePage === '/baitap') { %>active<% } %>">Bài Tập</a>
       <a href="/hocsinh/diem/<%= profile.id %>" class="<% if (activePage === '/diem') { %>active<% } %>">Kết quả học tập</a>
-      <a href="#">Thông Báo</a>
-      <a href="#">Tài Khoản Cá Nhân</a>
+
             <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
       <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
 <button class="logout-btn" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</button>

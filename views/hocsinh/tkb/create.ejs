@@ -128,23 +128,30 @@
                         </tr>
                     </thead>
                    <tbody>
-  <% const periods = [1,2,3,4,5,6,7,8,9,10]; %>
-  <% const days = ['Hai','Ba','Tư','Năm','Sáu','Bảy']; %>
+<% const periods = [1,2,3,4,5,6,7,8,9,10]; %>
+<% const days = ['Hai','Ba','Tư','Năm','Sáu','Bảy']; %>
 
-  <% periods.forEach((tiet) => { %>
-    <tr>
-      <% if (tiet === 1) { %>
-        <td rowspan="5" class="bg-light fw-bold align-middle">SÁNG</td>
-      <% } %>
-      <% if (tiet === 6) { %>
-        <td rowspan="5" class="bg-light fw-bold align-middle">CHIỀU</td>
-      <% } %>
+<% periods.forEach((tiet) => { %>
+  <tr>
+    <% if (tiet === 1) { %>
+      <td rowspan="5" class="bg-light fw-bold align-middle">SÁNG</td>
+    <% } %>
+    <% if (tiet === 6) { %>
+      <td rowspan="5" class="bg-light fw-bold align-middle">CHIỀU</td>
+    <% } %>
 
-      <% days.forEach(thu => { %>
-        <td class="p-1">
-          <% 
-            const item = tkb.find(x => x.Tiet === tiet && x.Thu === thu);
-          %>
+    <% days.forEach(thu => { %>
+      <td class="p-1">
+
+        <% if (thu === 'Hai' && tiet === 1) { %>
+          <div class="cell-fixed">
+            <div class="period-badge">1</div>
+            <div><i class="bi bi-flag-fill me-1"></i> Chào cờ</div>
+          </div>
+
+        <% } else { %>
+
+          <% const item = tkb.find(x => x.Tiet === tiet && x.Thu === thu); %>
 
           <% if (item) { %>
             <div class="tkb-cell filled">
@@ -158,11 +165,15 @@
               <span class="small text-muted">-- Trống --</span>
             </div>
           <% } %>
-        </td>
-      <% }) %>
-    </tr>
-  <% }) %>
+
+        <% } %>
+
+      </td>
+    <% }) %>
+  </tr>
+<% }) %>
 </tbody>
+
 
                 </table>
             </div>
@@ -171,25 +182,6 @@
   </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    savedSchedule.forEach(item => {
-        const tenGV = item.giaoVien?.HoVaTen || 'Unknown';
-        const tenMon = item.monHoc?.TenMon || 'Unknown';
 
-        const thuUI = normalizeDay(item.Thu); // 'Tư' → '4'
-        updateCellUI(
-          thuUI,
-          item.Tiet,
-          tenGV,
-          tenMon,
-          item.id_GiaoVien,
-          item.id_MonHoc,
-          false
-        );
-    });
-});
-
-</script>
 
 

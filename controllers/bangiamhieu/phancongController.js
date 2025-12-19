@@ -10,7 +10,6 @@ async function getCommonDataForView(req, res) {
     const bgh = req.session.user.profile;
     const dsLop = await Lop.findAll({
         where: { 
-            id_GiaoVienChuNhiem: { [Op.is]: null },
             id_truong: bgh.id_truong
         },
         order: [['TenLop', 'ASC']]
@@ -156,7 +155,7 @@ exports.getMonHocTheoLop = async (req, res) => {
 
         // --- 1. Môn bắt buộc (cố định) ---
         const monBatBuoc = await MonHoc.findAll({
-            where: { id: [1, 2, 3, 12, 13, 7] }  // TOÁN, VĂN, ANH... tùy bảng của bạn
+            where: { id: [1, 2, 3, 12, 13, 7, 15, 14] }  // TOÁN, VĂN, ANH... tùy bảng của bạn
         });
 
         // --- 2. Lấy môn tự chọn theo tổ hợp ---

@@ -20,7 +20,7 @@
                     <table class="table table-bordered align-middle text-center shadow-sm bg-white">
                         <thead class="table-secondary">
                             <tr>
-                                <th rowspan="2">ID</th>
+                                <th rowspan="2">STT</th>
                                 <th rowspan="2">Họ và tên</th>
                                 <th rowspan="2">Ngày sinh</th>
                                 <th rowspan="2">Giới tính</th>
@@ -35,9 +35,9 @@
                         </thead>
                         
                         <tbody>
-                            <% dsHocSinh.forEach(hs => { %>
+                            <% dsHocSinh.forEach(hs, index) => { %>
                                 <tr>
-                                    <td><%= hs.id %></td>
+                                    <td><%= index + 1 %></td>   <!-- STT -->
                                     
                                     <td class="text-start ps-3">
                                         <%= hs.HoVaTen %>

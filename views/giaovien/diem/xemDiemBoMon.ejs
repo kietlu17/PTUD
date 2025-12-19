@@ -70,7 +70,7 @@
         <table class="table table-bordered text-center align-middle">
 <thead class="table-secondary">
   <tr>
-    <th rowspan="2">ID</th>
+    <th rowspan="2">STT</th>
     <th rowspan="2">Họ và Tên</th>
 
     <% giaovien.chuyenMon.forEach(mon => { %>
@@ -92,9 +92,9 @@
 </thead>
 
          <tbody>
-  <% lop.hocsinhs.forEach(hs => { %>
+  <% lop.hocsinhs.forEach(hs, index) => { %>
     <tr>
-      <td><%= hs.id %></td>
+      <td><%= index + 1 %></td>   <!-- STT -->
       <td class="text-start"><%= hs.HoVaTen %></td>
 
       <% giaovien.chuyenMon.forEach(mon => { %>

@@ -14,7 +14,7 @@
                 <table class=" table table-bordered text-center align-middle">
         <thead class="table-secondary">
             <tr>
-            <th>ID</th>
+            <th>STT</th>
             <th>Họ và tên</th>
             <th>Ngày sinh</th>
             <th>Giới tính</th>
@@ -22,15 +22,20 @@
             </tr>
         </thead>
         <tbody>
-            <% dsHocSinh.forEach(hs => { %>
+          <% dsHocSinh.forEach((hs, index) => { %>
             <tr>
-                <td><%= hs.id %></td>
-                <td><%= hs.HoVaTen %></td>
-                <td><%= hs.NgaySinh %></td>
-                <td><%= hs.GioiTinh %></td>
-                <td><a href="/admin/quanlylop/hocsinh/<%= hs.id %>/chuyenlop" class="btn btn-sm btn-warning">Chuyển lớp</a></td>
+              <td><%= index + 1 %></td>   <!-- STT -->
+              <td><%= hs.HoVaTen %></td>
+              <td><%= hs.NgaySinh %></td>
+              <td><%= hs.GioiTinh %></td>
+              <td>
+                <a href="/admin/quanlylop/hocsinh/<%= hs.id %>/chuyenlop"
+                  class="btn btn-sm btn-warning">
+                  Chuyển lớp
+                </a>
+              </td>
             </tr>
-            <% }) %>
+          <% }) %>
         </tbody>
         </table>
 

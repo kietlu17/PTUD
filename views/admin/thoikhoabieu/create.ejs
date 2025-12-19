@@ -156,7 +156,7 @@
 
                                 <% ['2', '3', '4', '5', '6', '7'].forEach(thu => { %>
                                     <td class="p-1">
-                                        <% if (thu === '2' && (tiet === 1 || tiet === 2)) { %>
+                                        <% if (thu === '2' && tiet === 1 ) { %>
                                             <div class="cell-fixed" style="background:#fff7ed; border:1px solid #fed7aa; color:#c2410c; height:65px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; font-weight:bold; cursor:default;">
                                                 <div class="period-badge" style="background:#fb923c;"><%= tiet %></div>
                                                 <div class="mt-2 text-uppercase" style="font-size:0.8rem"><i class="bi bi-flag-fill me-1"></i> Chào cờ</div>
@@ -353,7 +353,7 @@
 
             if (isDisabled) {
                 tr.className = busyClass ? 'row-selectable row-busy' : 'row-selectable row-full';
-                tr.addEventListener('click', () => alert(`🚫 Không thể chọn!\n${reason}.`));
+                tr.addEventListener('click', () => alert(` Không thể chọn!\n${reason}.`));
                 tr.innerHTML = `
                     <td class="text-start ps-4 text-muted">${pc.giaoVien.HoVaTen} ${badge}</td>
                     <td class="text-muted fw-bold">${pc.monHoc.TenMon}</td>

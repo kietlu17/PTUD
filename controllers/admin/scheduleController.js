@@ -36,7 +36,7 @@ async function getCommonDataForView(id_Lop, namHoc, hocKy) {
         teacherLoad[s.id_GiaoVien].days[s.Thu]++;
     });
 
-    return { listPhanCong, currentSchedule, busyMap, teacherLoad };
+    return { listPhanCong, currentSchedule, busyMap, teacherLoad,  currentPage : '/thoikhoabieu' };
 }
 
 
@@ -72,7 +72,8 @@ exports.getListClasses = async (req, res) => {
             countMap, 
             fullThreshold: 30, // Giả định 30 tiết/tuần là đầy đủ
             selectedNamHoc,    // Truyền lại để view hiển thị
-            selectedHocKy
+            selectedHocKy,
+             currentPage : '/thoikhoabieu'
         });
     } catch (error) {
         console.error("Lỗi lấy danh sách lớp:",error);
@@ -101,7 +102,8 @@ exports.getCreatePage = async (req, res) => {
             lop,
             ...data,
             selectedNamHoc: useNamHoc,
-            selectedHocKy: useHocKy
+            selectedHocKy: useHocKy,
+           currentPage : '/thoikhoabieu'
         });
     } catch (error) {
         console.error(error);
@@ -142,7 +144,7 @@ exports.saveSchedule = async (req, res) => {
         }
 
         await transaction.commit();
-        res.json({ success: true, message: "Lưu thời khóa biểu thành công!" });
+        res.json({ success: true, message: "Lưu thời khóa biểu thành công!",currentPage : '/thoikhoabieu' });
 
     } catch (error) {
         await transaction.rollback();

@@ -253,3 +253,14 @@
             background-color: #ffe6e6 !important;
         }
     </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.inp-diem').forEach(input => {
+            if (input.value !== "") {
+                input.readOnly = true;
+                input.classList.add('bg-light');
+            }
+        });
+    });
+</script>
