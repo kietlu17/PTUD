@@ -1,0 +1,139 @@
+<%- include('../../partials/header', { title: 'Yêu cầu sửa điểm' }) %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../partials/nav-giaovien') %>
+
+    <main class="col-md-10 p-4">
+      <h4 class="fw-bold text-warning mb-4">
+        YÊU CẦU SỬA ĐIỂM – <%= diemSo.hocSinh.HoVaTen %>
+      </h4>
+
+      <div class="row">
+        <!-- FORM -->
+        <div class="col-md-5">
+          <div class="card shadow-sm">
+            <div class="card-header bg-warning fw-bold">
+              Gửi yêu cầu sửa
+            </div>
+            <div class="card-body">
+
+              <form method="POST">
+
+                <!-- CHỌN LOẠI ĐIỂM -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Loại điểm</label>
+                  <select
+                    name="loaiDiem"
+                    class="form-select"
+                    required
+                    onchange="capNhatDiemCu(this)"
+                  >
+                    <option value="">-- Chọn loại điểm --</option>
+                    <option value="DiemTX1" data-value="<%= diemSo.DiemTX1 %>">TX lần 1</option>
+                    <option value="DiemTX2" data-value="<%= diemSo.DiemTX2 %>">TX lần 2</option>
+                    <option value="Diem1T1" data-value="<%= diemSo.Diem1T1 %>">1 Tiết lần 1</option>
+                    <option value="Diem1T2" data-value="<%= diemSo.Diem1T2 %>">1 Tiết lần 2</option>
+                    <option value="DiemGK" data-value="<%= diemSo.DiemGK %>">Giữa kỳ</option>
+                    <option value="DiemCK" data-value="<%= diemSo.DiemCK %>">Cuối kỳ</option>
+                  </select>
+                </div>
+
+                <!-- ĐIỂM CŨ -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Điểm hiện tại</label>
+                  <input
+                    id="diemCu"
+                    class="form-control"
+                    readonly
+                  >
+                </div>
+
+                <!-- ĐIỂM MỚI -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Điểm đề nghị sửa</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    name="diemMoi"
+                    class="form-control"
+                    required
+                  >
+                </div>
+
+                <!-- LÝ DO -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Lý do sửa</label>
+                  <textarea
+                    name="lyDo"
+                    class="form-control"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+
+                <button class="btn btn-warning w-100 fw-bold">
+                  GỬI YÊU CẦU
+                </button>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- LỊCH SỬ -->
+        <div class="col-md-7">
+          <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">
+              Lịch sử sửa điểm
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Thời gian</th>
+                    <th>Loại</th>
+                    <th>Cũ</th>
+                    <th>Mới</th>
+                    <th>Lý do</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (lichSu.length > 0) { %>
+                    <% lichSu.forEach(ls => { %>
+                      <tr>
+                        <td><%= ls.ThoiGian.toLocaleString('vi-VN') %></td>
+                        <td><%= ls.LoaiDiem %></td>
+                        <td><%= ls.DiemCu %></td>
+                        <td><%= ls.DiemMoi %></td>
+                        <td><%= ls.LyDo %></td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="5" class="text-center text-muted">
+                        Chưa có lịch sử
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  function capNhatDiemCu(select) {
+    const val = select.options[select.selectedIndex].dataset.value;
+    document.getElementById('diemCu').value =
+      val !== undefined ? val : '';
+  }
+</script>

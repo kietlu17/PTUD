@@ -9,6 +9,7 @@ const gradesController = require('../controllers/giaovien/gradesController');
 const upload = require('../config/uploadConfig');
 const tkbController = require('../controllers/hocsinh/tkb')
 const statisticsController = require('../controllers/statisticsController');
+const diemcontroller = require('../controllers/giaovien/yeuCauSuaDiemController');
 // Điểm Danh
 // Hiển thị danh sách lớp giáo viên dạy
 router.get('/diemdanh/:id/lop', diemdanhController.showClasses);
@@ -73,4 +74,17 @@ router.get('/thoikhoabieu', tkbController.viewTKBGiaoVien);
 
 router.get('/thongke', statisticsController.getStatisticsPage);
 router.post('/thongke/get-data', statisticsController.getStatisticsData);
+
+// routes/giaovien.js
+router.get(
+  '/sua-diem/:hocSinhId/:monHocId',
+  diemcontroller.formSuaDiem
+);
+
+
+router.post(
+  '/sua-diem/:hocSinhId/:monHocId',
+  diemcontroller.guiYeuCau
+);
+
 module.exports = router;

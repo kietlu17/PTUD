@@ -77,7 +77,7 @@ const mailQueue = []; // lưu danh sách mail cần gửi
             username: usernameHS,
             password: '123456',   // mật khẩu mặc định (sẽ được hash)
             id_role: 1,           // 
-            id_truong: null,
+            id_truong: kq.truongtrungtuyen,
             isFirstLogin: true,
             },
             { transaction }
@@ -136,7 +136,7 @@ const mailQueue = []; // lưu danh sách mail cần gửi
                 username: usernamePH,
                 password: '123456',   // mật khẩu mặc định
                 id_role: 2,           
-                id_truong: null,
+                id_truong: kq.truongtrungtuyen,
                 isFirstLogin: true,
                 },
                 { transaction }

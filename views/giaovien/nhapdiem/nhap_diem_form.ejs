@@ -39,6 +39,7 @@
                                                 <th style="width: 70px;" class="bg-warning bg-opacity-25 text-dark">Lần 1</th>
                                                 <th style="width: 70px;" class="bg-warning bg-opacity-25 text-dark">Lần 2</th>
                                             </tr>
+                                            <th style="width:120px;">Sửa điểm</th>
                                         </thead>
                                         <tbody>
                                             <% dsHocSinh.forEach((hs, index) => { 
@@ -69,8 +70,14 @@
                                                     <td class="fw-bold bg-light text-center diem-tb">
                                                         <%= diem.DiemTB || '-' %>
                                                     </td>
+                                                    <td>
+                                                     <a href="/giaovien/sua-diem/<%= hs.id %>/<%= phanCong.id_MonHoc %>" class="btn btn-outline-warning btn-sm fw-bold">
+                                                      <i class="fas fa-pen me-1"></i> Yêu cầu sửa
+                                                      </a>
+                                                    </td>
                                                 </tr>
                                                 <% }) %>
+             
                                         </tbody>
                                     </table>
                                 </div>

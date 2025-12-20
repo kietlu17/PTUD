@@ -9,7 +9,6 @@ exports.getListRole = async (req, res)=> {
 exports.getUsersByRole = async (req, res) => {
   try {
     const admin = req.session.user.profile;  // admin đang đăng nhập
-    console.log(admin)
     const roleId = req.params.roleID;   // role được chọn
     if (!roleId) return res.json({ data: [] });
 

@@ -32,7 +32,8 @@ const BaiNop = require('./BaiNop');
 const ThoiKhoaBieu = require('./ThoiKhoaBieu');
 const LichSuDongBoThiSinh = require('./LichSuDongBoThiSinh')
 const CauHinhNamHoc = require('./CauHinhNamHoc')
-
+const lichSuDiem = require('./LichSuDiem');
+const LichSuDiem = require('./LichSuDiem');
 
 
 // ThiSinh 1 - N KetQuaTuyenSinh
@@ -200,7 +201,24 @@ ThiSinh.belongsTo(DangKyTuyenSinh, {
   as: 'dangky'
 });
 
+// ===== Associations =====
+
+DiemSo.hasMany(LichSuDiem, {
+  foreignKey: 'id_DiemSo',
+  as: 'lichSuSua'
+});
+
+LichSuDiem.belongsTo(DiemSo, {
+  foreignKey: 'id_DiemSo',
+  as: 'diemSo'
+});
+
+LichSuDiem.belongsTo(GiaoVien, {
+  foreignKey: 'NguoiSua',
+  as: 'giaoVien'
+});
+
 // Export tất cả model
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
     ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
-DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh, CauHinhNamHoc };
+DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh, CauHinhNamHoc, LichSuDiem };
