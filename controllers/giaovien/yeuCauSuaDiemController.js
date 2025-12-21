@@ -1,5 +1,5 @@
 // controllers/yeuCauSuaDiem.controller.js
-const { LichSuDiem, DiemSo, HocSinh } = require('../../models');
+const { BangPhanCongGiaoVien, DiemSo, HocSinh, YeuCauSuaDiem } = require('../../models');
 
 /**
  * GET: Hiển thị form yêu cầu sửa điểm
@@ -9,14 +9,32 @@ const { LichSuDiem, DiemSo, HocSinh } = require('../../models');
 exports.formSuaDiem = async (req, res) => {
   try {
     const { hocSinhId, monHocId } = req.params;
+    const giaoVienId = req.session.user.profile.id;
 
-    // Lấy học kỳ – năm học hiện tại (ví dụ
+    // 1. Lấy phân công để biết HỌC KỲ + NĂM HỌC
+    const phanCong = await BangPhanCongGiaoVien.findOne({
+      where: {
+        id_GiaoVien: giaoVienId,
+        id_MonHoc: monHocId
+      }
+    });
 
-    //  Tìm điểm số
+    if (!phanCong) {
+      return res.json({
+        message: 'Không tìm thấy phân công giảng dạy'
+      });
+    }
+
+    const hocKy = phanCong.KyHoc;   // ví dụ: HK1, HK2
+    const namHoc = phanCong.NamHoc; // ví dụ: 2024-2025
+
+    // 2. Lấy điểm số theo học kỳ + năm học
     const diemSo = await DiemSo.findOne({
       where: {
         id_HocSinh: hocSinhId,
         id_MonHoc: monHocId,
+        HocKy: hocKy,
+        NamHoc: namHoc
       },
       include: [{
         model: HocSinh,
@@ -26,22 +44,22 @@ exports.formSuaDiem = async (req, res) => {
 
     if (!diemSo) {
       return res.render('error', {
-        message: 'Học sinh này chưa có điểm cho môn học này'
+        message: 'Học sinh chưa có điểm ở học kỳ này'
       });
     }
 
-    // 2 Lịch sử sửa điểm
-    const lichSu = await LichSuDiem.findAll({
+    // 3. Lịch sử / yêu cầu sửa điểm
+    const lichSu = await YeuCauSuaDiem.findAll({
       where: { id_DiemSo: diemSo.id },
-      order: [['ThoiGian', 'DESC']]
+      order: [['NgayGui', 'DESC']]
     });
 
-    //  Render form
+    // 4. Render view
     res.render('giaovien/suadiem/suadiem', {
       diemSo,
+      hocKy,
+      namHoc,
       lichSu,
-      hocKy: diemSo.HocKy,
-      namHoc: diemSo.NamHoc,
       success: null,
       error: null,
       currentPage: '/nhapdiem'
@@ -64,55 +82,49 @@ exports.guiYeuCau = async (req, res) => {
   try {
     const { hocSinhId, monHocId } = req.params;
     const { loaiDiem, diemMoi, lyDo } = req.body;
+    const giaoVienId = req.session.user.profile.id;
 
-    // 1. Lấy điểm hiện tại
-    const diemSo = await DiemSo.findOne({
+    // Lấy phân công
+    const phanCong = await BangPhanCongGiaoVien.findOne({
       where: {
-        id_HocSinh: hocSinhId,
+        id_GiaoVien: giaoVienId,
         id_MonHoc: monHocId
       }
     });
 
+    const diemSo = await DiemSo.findOne({
+      where: {
+        id_HocSinh: hocSinhId,
+        id_MonHoc: monHocId,
+        HocKy: phanCong.KyHoc,
+        NamHoc: phanCong.NamHoc
+      }
+    });
+
     if (!diemSo) {
-      return res.json({
-        message: 'Không tìm thấy bảng điểm của học sinh'
-      });
+      return res.redirect(req.get('Referrer') || '/giaovien/nhap-diem');
+
     }
 
-    // 2. Kiểm tra loại điểm hợp lệ
-    const cacLoaiDiemHopLe = [
-      'DiemTX1',
-      'DiemTX2',
-      'Diem1T1',
-      'Diem1T2',
-      'DiemGK',
-      'DiemCK'
-    ];
-
-    if (!cacLoaiDiemHopLe.includes(loaiDiem)) {
-      return res.json({
-        message: 'Loại điểm không hợp lệ'
-      });
-    }
-
-    // 3. Lưu lịch sử sửa điểm
-    await LichSuDiem.create({
+    await YeuCauSuaDiem.create({
       id_DiemSo: diemSo.id,
+      id_GiaoVien: giaoVienId,
+      NgayGui: new Date(),
       LoaiDiem: loaiDiem,
       DiemCu: diemSo[loaiDiem],
       DiemMoi: diemMoi,
-      NguoiSua: req.session.user.id, // giáo viên
       LyDo: lyDo,
-      ThoiGian: new Date()
+      HocKy: phanCong.KyHoc,
+      NamHoc: phanCong.NamHoc,
+      TrangThai: 'Chờ duyệt'
     });
 
-    // 4. Không sửa trực tiếp điểm – chỉ gửi yêu cầu
-    res.redirect('back');
+
+
 
   } catch (err) {
-    console.error(err);
-    res.json({
-      message: 'Lỗi khi gửi yêu cầu sửa điểm'
-    });
+    console.error('Lỗi guiYeuCau:', err);
+    res.redirect(req.get('Referrer') || '/giaovien/nhap-diem');
+
   }
 };

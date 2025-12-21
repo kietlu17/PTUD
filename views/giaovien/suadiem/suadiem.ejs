@@ -17,6 +17,19 @@
               Gửi yêu cầu sửa
             </div>
             <div class="card-body">
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="fw-bold">Học kỳ</label>
+    <input type="text" class="form-control" value="<%= hocKy %>" readonly>
+  </div>
+
+  <div class="col-md-4">
+    <label class="fw-bold">Năm học</label>
+    <input type="text" class="form-control" value="<%= namHoc %>" readonly>
+  </div>
+</div>
+
+
 
               <form method="POST">
 
@@ -84,46 +97,67 @@
           </div>
         </div>
 
-        <!-- LỊCH SỬ -->
-        <div class="col-md-7">
-          <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white fw-bold">
-              Lịch sử sửa điểm
-            </div>
-            <div class="card-body p-0">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Thời gian</th>
-                    <th>Loại</th>
-                    <th>Cũ</th>
-                    <th>Mới</th>
-                    <th>Lý do</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (lichSu.length > 0) { %>
-                    <% lichSu.forEach(ls => { %>
-                      <tr>
-                        <td><%= ls.ThoiGian.toLocaleString('vi-VN') %></td>
-                        <td><%= ls.LoaiDiem %></td>
-                        <td><%= ls.DiemCu %></td>
-                        <td><%= ls.DiemMoi %></td>
-                        <td><%= ls.LyDo %></td>
-                      </tr>
-                    <% }) %>
+<!-- LỊCH SỬ -->
+<div class="col-md-7">
+  <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white fw-bold">
+      Lịch sử yêu cầu sửa điểm
+    </div>
+
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light text-center">
+          <tr>
+            <th>Thời gian</th>
+            <th>Loại điểm</th>
+            <th>Điểm cũ</th>
+            <th>Điểm mới</th>
+            <th>Lý do</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% if (lichSu && lichSu.length > 0) { %>
+            <% lichSu.forEach(ls => { %>
+              <tr class="text-center">
+                <td>
+                  <%= ls.NgayGui 
+                        ? new Date(ls.NgayGui).toLocaleString('vi-VN') 
+                        : '-' %>
+                </td>
+
+                <td class="fw-bold"><%= ls.LoaiDiem %></td>
+
+                <td><%= ls.DiemCu ?? '-' %></td>
+                <td class="fw-bold text-primary"><%= ls.DiemMoi ?? '-' %></td>
+
+                <td class="text-start"><%= ls.LyDo %></td>
+
+                <td>
+                  <% if (ls.TrangThai === 'Đã duyệt') { %>
+                    <span class="badge bg-success">Đã duyệt</span>
+                  <% } else if (ls.TrangThai === 'Từ chối') { %>
+                    <span class="badge bg-danger">Từ chối</span>
                   <% } else { %>
-                    <tr>
-                      <td colspan="5" class="text-center text-muted">
-                        Chưa có lịch sử
-                      </td>
-                    </tr>
+                    <span class="badge bg-warning text-dark">Chờ duyệt</span>
                   <% } %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4 fst-italic">
+                Chưa có yêu cầu sửa điểm
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 
       </div>
     </main>

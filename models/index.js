@@ -32,8 +32,9 @@ const BaiNop = require('./BaiNop');
 const ThoiKhoaBieu = require('./ThoiKhoaBieu');
 const LichSuDongBoThiSinh = require('./LichSuDongBoThiSinh')
 const CauHinhNamHoc = require('./CauHinhNamHoc')
-const lichSuDiem = require('./LichSuDiem');
+
 const LichSuDiem = require('./LichSuDiem');
+const YeuCauSuaDiem = require('./YeuCauSuaDiem')
 
 
 // ThiSinh 1 - N KetQuaTuyenSinh
@@ -218,7 +219,30 @@ LichSuDiem.belongsTo(GiaoVien, {
   as: 'giaoVien'
 });
 
+// DiemSo
+DiemSo.hasMany(YeuCauSuaDiem, {
+  foreignKey: 'id_DiemSo',
+  as: 'yeuCauSua'
+});
+
+YeuCauSuaDiem.belongsTo(DiemSo, {
+  foreignKey: 'id_DiemSo',
+  as: 'diemSo'
+});
+
+// GiaoVien (nếu có model)
+GiaoVien.hasMany(YeuCauSuaDiem, {
+  foreignKey: 'id_GiaoVien',
+  as: 'yeuCauSua'
+});
+
+YeuCauSuaDiem.belongsTo(GiaoVien, {
+  foreignKey: 'id_GiaoVien',
+  as: 'giaoVien'
+});
+
 // Export tất cả model
 module.exports = { sequelize, TaiKhoan, VaiTro, HocSinh, Lop, Truong, PhongThi,ThiSinh ,DiemThi, NhanVienSo, QuanTriTruong, GiaoVien, MonHoc, ToHopMon, 
     ChiTiet_ToHopMon, BangPhanCongGiaoVien, DiemDanh, ThanhToanHocPhi, PhuHuynh, HanhKiem, DiemSo, BangPhanCongChuNhiem, BanGiamHieu, NghiHoc, BaiTap,
-DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh, CauHinhNamHoc, LichSuDiem };
+DangKyTuyenSinh, CauHinhNhapHoc, HoSoTuyenSinh, ChiTieu, KetQuaTuyenSinh, BaiNop, ThoiKhoaBieu, LichSuDongBoThiSinh, CauHinhNamHoc, LichSuDiem,
+YeuCauSuaDiem };

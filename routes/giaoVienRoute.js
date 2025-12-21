@@ -81,7 +81,6 @@ router.get(
   diemcontroller.formSuaDiem
 );
 
-
 router.post(
   '/sua-diem/:hocSinhId/:monHocId',
   diemcontroller.guiYeuCau
