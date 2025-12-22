@@ -15,7 +15,7 @@
         <table class="table table-bordered text-center align-middle">
           <thead class="table-secondary">
             <tr>
-              <th>Mã Lớp</th>
+              <th>STT</th>
               <th>Tên Lớp</th>
               <th>Giáo Viên Chủ Nhiệm</th>
               <th>Số Lượng Học Sinh</th>
@@ -24,9 +24,9 @@
           </thead>
           <tbody>
             <% if (dsLop && dsLop.length > 0) { %>
-              <% dsLop.forEach(item => { %>
+              <% dsLop.forEach((item, index) => { %>
                 <tr>
-                  <td><%= item.lop.id %></td>
+                  <td><%= index + 1 %></td>
                   <td><%= item.lop.TenLop %></td>
                   <td><%= item.lop.gvcn ? item.lop.gvcn.HoVaTen : 'Chưa phân công' %></td>
                   <td><%= item.lop.SoLuongHocSinh || 0 %></td>

@@ -129,74 +129,14 @@ exports.xemDiemGVBoMon = async(req, res) => {
         });
 
 
-        const diemHocSinhMap = {};
-        
-        diemData.forEach(d => {
-            const key = `${d.id_HocSinh}-${d.id_MonHoc}`;
-            const diemTB = d.DiemTrungBinh != null ? Number(d.DiemTrungBinh) : null;
-            
-            if (diemTB != null && !Number.isNaN(diemTB)) {
-                if (!diemHocSinhMap[key]) {
-                    diemHocSinhMap[key] = {
-                        id_HocSinh: d.id_HocSinh,
-                        id_MonHoc: d.id_MonHoc,
-                        diems: [],
-                        hocSinh: d.hocSinh,
-                        monHoc: d.monHoc
-                    };
-                }
-                diemHocSinhMap[key].diems.push(diemTB);
-            }
-        });
-
-        // Tính điểm TB cả năm
-        const diemCaNam = Object.keys(diemHocSinhMap).map(key => {
-            const item = diemHocSinhMap[key];
-            const tbCaNam = item.diems.reduce((a, b) => a + b, 0) / item.diems.length;
-            
-            return {
-                id_HocSinh: item.id_HocSinh,
-                id_MonHoc: item.id_MonHoc,
-                DiemTrungBinh: tbCaNam,
-                hocSinh: item.hocSinh,
-                monHoc: item.monHoc
-            };
-        });
-
-        // 7. Tính TB lớp cho mỗi môn + HK
-        const groupByMonHoc = {};
-        diemData.forEach(d => {
-            const key = `${d.id_MonHoc}-${hocKy || 'all'}`; 
-            
-            const diem = d.DiemTrungBinh != null ? Number(d.DiemTrungBinh) : null;
-            if (diem == null || Number.isNaN(diem) || diem <= 0) return;
-
-            if (!groupByMonHoc[key]) {
-                groupByMonHoc[key] = {
-                    monHoc: d.monHoc.TenMon,
-                    hocKyDisplay: hocKy ? `Học kỳ ${hocKy}` : 'Cả năm', 
-                    diems: [],
-                };
-            }
-            groupByMonHoc[key].diems.push(diem);
-        });
-
-        const classAverages = {};
-        Object.keys(groupByMonHoc).forEach(key => {
-            const diems = groupByMonHoc[key].diems;
-            const tbLop = diems.length > 0 
-                ? (diems.reduce((a, b) => a + b, 0) / diems.length).toFixed(2) 
-                : '-';
-            classAverages[key] = tbLop;
-        });
+       
 
         // 8. Render
         res.render('./giaovien/diem/xemDiemBoMon', {
             lop,
             dsLop,
             selectedLopId,
-            diemData: hocKy ? diemData : diemCaNam, 
-            classAverages,
+            diemData,
             giaovien: { ...giaovien.toJSON(), chuyenMon: chuyenMonArray },
             profile: req.session.user.profile,
             currentPage: '/xem-diem-bo-mon',
@@ -270,47 +210,6 @@ exports.xemDiemGVChuNhiem = async(req, res) => {
             raw: false
         });
 
-        // 5. Tính TB HK1, HK2, TB Năm
-        const allGradesForTB = await DiemSo.findAll({
-            where: { 
-                id_HocSinh: allHsIds,
-                NamHoc: NamHocQuery 
-            },
-        });
-        
-        const map = {};
-        lop.hocsinhs.forEach(hs => {
-            map[hs.id] = { 
-                id: hs.id, 
-                HoVaTen: hs.HoVaTen, 
-                tbHK1: null, 
-                tbHK2: null, 
-                tbNam: null, 
-                _hk1: [], 
-                _hk2: [] 
-            };
-        });
-
-        allGradesForTB.forEach(d => {
-            const hsId = d.id_HocSinh;
-            if (!map[hsId]) return;
-            const val = d.DiemTrungBinh != null ? Number(d.DiemTrungBinh) :
-                (d.Diem != null ? Number(d.Diem) : null);
-            if (val == null || Number.isNaN(val)) return;
-            
-            if (d.HocKy === '1') map[hsId]._hk1.push(val);
-            else if (d.HocKy === '2') map[hsId]._hk2.push(val);
-        });
-
-        // 6. Hoàn tất tính TB
-        Object.values(map).forEach(item => {
-            if (item._hk1.length) item.tbHK1 = Number((item._hk1.reduce((a, b) => a + b, 0) / item._hk1.length).toFixed(2));
-            if (item._hk2.length) item.tbHK2 = Number((item._hk2.reduce((a, b) => a + b, 0) / item._hk2.length).toFixed(2));
-            const all = [...item._hk1, ...item._hk2];
-            if (all.length) item.tbNam = Number((all.reduce((a, b) => a + b, 0) / all.length).toFixed(2));
-            delete item._hk1;
-            delete item._hk2;
-        });
 
         const gv = await GiaoVien.findByPk(giaoVienId, { attributes: ['id', 'HoVaTen'] });
 
@@ -318,7 +217,6 @@ exports.xemDiemGVChuNhiem = async(req, res) => {
         res.render('./giaovien/diem/xemDiemChuNhiem', {
             lop,
             gv,
-            resultList: Object.values(map),
             details,
             NamHoc: NamHocQuery,
             selectedHsId: hsId, 

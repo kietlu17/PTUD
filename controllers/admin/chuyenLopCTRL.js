@@ -28,6 +28,7 @@ exports.getAllLop = async (req, res) => {
         },
       ],
       group: ['Lop.id', 'gvcn.id'], //group theo lớp & giáo viên
+      order: [['TenLop', 'ASC']],
       subQuery: false, // tránh Sequelize sinh subquery làm mất count
       raw: true,       // ép trả dữ liệu "phẳng" dễ truy cập
       nest: true,      // nếu muốn giữ cấu trúc lồng (lop.gvcn)
@@ -109,7 +110,7 @@ exports.handleChuyenLop = async (req, res) => {
 
     await hocSinh.update({ id_Lop: id_lop_moi });
 
-    res.redirect(`/admin/quanlylop/${id_lop_moi}/hocsinh`, {currentPage: '/quanlylop'});
+    res.redirect(`/admin/quanlylop/${id_lop_moi}/hocsinh`);
   } catch (error) {
     console.error('Lỗi khi chuyển lớp:', error);
     res.status(500).send('Lỗi máy chủ');

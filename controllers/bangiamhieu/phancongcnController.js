@@ -23,7 +23,7 @@ exports.renderFormGVCN = async (req, res) => {
         const busyTeacherIds = lopDaCoChuNhiem.map(l => l.id_GiaoVienChuNhiem);
 
         const dsGiaoVienChuNhiemKhaDung = await GiaoVien.findAll({
-            where: { id: { [Op.notIn]: busyTeacherIds } }
+            where: { id: { [Op.notIn]: busyTeacherIds }, id_truong: bgh.id_truong }
         });
 
         res.render('bangiamhieu/phancongGV/phancongcn', {

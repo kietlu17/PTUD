@@ -1,5 +1,5 @@
 const { sequelize } = require("../config/sequelize");
-
+const { Op } = require("sequelize");
 const {
   KetQuaTuyenSinh,
   DangKyTuyenSinh,
@@ -46,17 +46,40 @@ const mailQueue = []; // lưu danh sách mail cần gửi
       // ===============================
       // 2. Tạo HỌC SINH
       // ===============================
-            const namNhapHoc = new Date().getFullYear(); // lấy năm hiện tại
+            const namNhapHoc = new Date().getFullYear(); // 2025
+            const nam2So = namNhapHoc.toString().slice(-2); // "25"
 
+            const id_truong = kq.truongtrungtuyen;
+            const truong2So = id_truong.toString().padStart(2, "0"); // "01"
+
+            const prefix = `HS${nam2So}${truong2So}`;
+
+            // Lấy MaHS lớn nhất theo năm + trường
+            const lastHS = await HocSinh.findOne({
+                where: {
+                    MaHS: {
+                        [Op.like]: `${prefix}%`
+                    }
+                },
+                order: [["MaHS", "DESC"]],
+            });
+
+            let soThuTu = 1; //  luôn bắt đầu từ 1
+
+            if (lastHS) {
+                soThuTu = parseInt(lastHS.MaHS.slice(-4), 10) + 1;
+            }
+
+            const soThuTu4So = soThuTu.toString().padStart(4, "0");
             const hocSinh = await HocSinh.create(
             {
-                MaHS: `HS${Date.now()}`,          // hoặc theo rule riêng
+                MaHS: `${prefix}${soThuTu4So}`,    
                 HoVaTen: dk.HoVaTen,
                 NgaySinh: dk.NgaySinh,
                 GioiTinh: dk.GioiTinh,
 
-                id_school: kq.truongtrungtuyen,  // ⭐ TRƯỜNG TRÚNG TUYỂN
-                NamNhapHoc: namNhapHoc,           // ⭐ NĂM NHẬP HỌC
+                id_school: kq.truongtrungtuyen,  //  TRƯỜNG TRÚNG TUYỂN
+                NamNhapHoc: namNhapHoc,           //  NĂM NHẬP HỌC
             },
             { transaction }
             );
@@ -112,7 +135,7 @@ const mailQueue = []; // lưu danh sách mail cần gửi
             MaPH: `PH${newId}`,
             HoVaTen: taiKhoanPH.tenPH,
             SDT: taiKhoanPH.sdt,
-            email: dk.email || null,
+            email: dk.Gmail || null,
             NgaySinh: taiKhoanPH.ngaysinh,
             GioiTinh: taiKhoanPH.gioitinh,
             id_HocSinh: hocSinh.id,

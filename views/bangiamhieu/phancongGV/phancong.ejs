@@ -153,13 +153,7 @@
 
 
 <script>
-    window.addEventListener("load", function() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const next = year + 1;
 
-    document.getElementById("namHoc").value = `${year}-${next}`;
-});
 
 document.querySelector('select[name="id_Lop"]').addEventListener('change', async function() {
     const idLop = this.value;
@@ -195,7 +189,7 @@ document.querySelector('select[name="id_Lop"]').addEventListener('change', async
                         </span>
                     </td>
                     <td>
-                        <select name="assignments[${mon.id}]" class="form-select" required>
+                        <select name="assignments[m_${mon.id}][idGV]" class="form-select" required>
                             ${options}
                         </select>
                     </td>
@@ -220,6 +214,9 @@ document.querySelector('select[name="id_Lop"]').addEventListener('change', async
 
    // 1. Logic hiển thị Modal Thành công
     document.addEventListener("DOMContentLoaded", function() {
+            const now = new Date();
+    const year = now.getFullYear();
+    document.getElementById("namHoc").value = `${year}-${year + 1}`;
         // Kiểm tra xem có element successModal không
         var successModalEl = document.getElementById('successModal');
         if (successModalEl) {
@@ -229,25 +226,22 @@ document.querySelector('select[name="id_Lop"]').addEventListener('change', async
     });
 
     // 2. Logic Validation & Confirm Modal
-    function confirmSubmit() {
-        var form = document.getElementById('formPhanCong');
-        
-        // Kiểm tra tính hợp lệ của form (HTML5 validation)
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-            form.classList.add('was-validated'); // Hiển thị lỗi đỏ
-            
-            // Scroll lên đầu để người dùng thấy lỗi
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return; // Dừng lại, không hiện modal xác nhận
-        }
-        
-        // Nếu form hợp lệ -> Hiện modal xác nhận
+function confirmSubmit(event) {
+    var form = document.getElementById('formPhanCong');
+
+    if (form.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
         form.classList.add('was-validated');
-        var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-        confirmModal.show();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
     }
+
+    form.classList.add('was-validated');
+    var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    confirmModal.show();
+}
+
 
     function submitForm() {
         // Người dùng đã nhấn "Đồng ý" trong modal

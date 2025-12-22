@@ -92,7 +92,7 @@
 </thead>
 
          <tbody>
-  <% lop.hocsinhs.forEach(hs, index) => { %>
+  <% lop.hocsinhs.forEach((hs, index) => { %>
     <tr>
       <td><%= index + 1 %></td>   <!-- STT -->
       <td class="text-start"><%= hs.HoVaTen %></td>
@@ -119,20 +119,7 @@
   <% }) %>
 </tbody>
 
-          <tfoot class="table-secondary fw-bold">
-            <tr>
-              <td colspan="2">TB Lớp</td>
-              <% giaovien.chuyenMon.forEach(mon => { %>
-                <td>
-                  <% 
-                    const key = `${mon.id}-${hocKy || 'all'}`;
-                    const tbLop = classAverages[key];
-                  %>
-                  <%= tbLop %>
-                </td>
-              <% }) %>
-            </tr>
-          </tfoot>
+
         </table>
       </div>
     </main>

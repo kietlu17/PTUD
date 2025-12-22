@@ -1,4 +1,4 @@
-const { Lop, GiaoVien, MonHoc, BangPhanCongGiaoVien, BangPhanCongChuNhiem, ChiTiet_ToHopMon,sequelize } = require('../../models');
+const { Lop, GiaoVien, MonHoc, BangPhanCongGiaoVien, ChiTiet_ToHopMon,sequelize } = require('../../models');
 const { Op } = require('sequelize'); 
 
 /**
@@ -33,7 +33,7 @@ async function getCommonDataForView(req, res) {
 async function createAssignmentPromise(idLop, idMon, idGV, nam, ky, trans, resultArr) {
     // Kiểm tra dữ liệu hợp lệ trước khi tạo
     if (!idMon || !idGV || isNaN(idMon) || isNaN(idGV)) return null;
-
+    console.log(idGV)
     return BangPhanCongGiaoVien.create({
         id_Lop: idLop, 
         id_MonHoc: idMon, 
@@ -76,31 +76,36 @@ exports.getPhanCongPage = async (req, res) => {
 exports.savePhanCong = async (req, res) => {
 const transaction = await sequelize.transaction();
 let chiTietPhanCong = [];
-
+console.log(req.body);
+console.log('assignments:', req.body.assignments);
+console.log('isArray:', Array.isArray(req.body.assignments));
 try {
-    const { id_Lop, NamHoc, KyHoc, assignments, id_GVCN } = req.body;
-
-    // --- 1. Phân công giáo viên chủ nhiệm ---
-    let tenGVCN = null;
-    if (id_GVCN) {
-        const gv = await GiaoVien.findByPk(id_GVCN);
-        tenGVCN = gv ? gv.HoVaTen : null;
-
-        await Lop.update({ id_GiaoVienChuNhiem: id_GVCN }, {
-            where: { id: id_Lop },
-            transaction
-        });
-    }
+    const { id_Lop, NamHoc, KyHoc, assignments } = req.body;
 
     // --- 2. Phân công giáo viên bộ môn ---
     chiTietPhanCong = [];
-    if (assignments && Object.keys(assignments).length > 0) {
-        const listPromises = Object.entries(assignments)
-            .map(([idMon, idGV]) => createAssignmentPromise(
-                id_Lop, parseInt(idMon), parseInt(idGV), NamHoc, KyHoc, transaction, chiTietPhanCong
-            ));
-        await Promise.all(listPromises);
-    }
+if (assignments && Object.keys(assignments).length > 0) {
+    const listPromises = Object.entries(assignments).map(
+        ([key, obj]) => {
+            const idMon = parseInt(key.replace('m_', ''));
+            const idGV = parseInt(obj.idGV);
+
+            if (!idMon || !idGV) return null;
+
+            return createAssignmentPromise(
+                id_Lop,
+                idMon,
+                idGV,
+                NamHoc,
+                KyHoc,
+                transaction,
+                chiTietPhanCong
+            );
+        }
+    );
+
+    await Promise.all(listPromises.filter(Boolean));
+}
 
     // --- 3. Commit transaction ---
     await transaction.commit();
@@ -119,7 +124,6 @@ try {
             TenLop: lop ? lop.TenLop : id_Lop,
             NamHoc,
             KyHoc,
-            TenGVCN: tenGVCN,
             ChiTiet: chiTietPhanCong
         },
         currentUrl: '/phancong',

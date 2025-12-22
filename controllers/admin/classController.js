@@ -29,6 +29,7 @@ exports.createClasses = async (req, res) => {
   try {
     // 1. Lấy tất cả HS khối 10 đã chọn tổ hợp môn
     const id_truong = req.session.user.profile
+
     const students = await HocSinh.findAll({
       where: {
         id_school: id_truong.id_school,
@@ -104,7 +105,8 @@ exports.createClasses = async (req, res) => {
         const newLop = await Lop.create({
           TenLop: className,
           id_ToHopMon: g.id_tohopmon,
-          nam_nhap_hoc: year
+          nam_nhap_hoc: year,
+          id_truong: id_truong.id_school
         }, { transaction: t });
 
         const assigned = list.slice(offset, offset + size);
@@ -153,7 +155,8 @@ exports.createClasses = async (req, res) => {
         TenLop: className,
         khoi: grade,
         id_tohopmon: null,
-        nam_nhap_hoc: year
+        nam_nhap_hoc: year,
+        id_truong: id_truong.id_school
       }, { transaction: t });
 
         createdClasses.push({
