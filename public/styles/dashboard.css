@@ -14,22 +14,39 @@ body {
 .sidebar {
   background-color: #1a202c;
   min-height: 100vh;
-  padding: 20px;
+  padding-top: 20px; /* match nhapdiemthi layout */
+  padding-left: 20px;
+  padding-right: 20px;
   color: #fff;
+  box-sizing: border-box;
 }
+/* Sidebar info (avatar + name) */
+.sidebar-info { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.sidebar-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; display:block }
+.fallback-avatar { width:36px; height:36px; border-radius:50%; background-color:#cbd5e0 }
+.nhanvien-ten { font-size:0.95rem; transform: translateY(2px); }
+
+/* If you want more vertical centering control, uncomment below to center the text block */
+/* .sidebar-info > div:last-child { display:flex; flex-direction:column; justify-content:center; } */
+
 .sidebar a {
   display: block;
   color: #cbd5e0;
-  padding: 10px;
+  padding: 10px 15px;
   margin-bottom: 8px;
   text-decoration: none;
   border-radius: 6px;
 }
+
 .sidebar a:hover,
 .sidebar a.active {
   background-color: #2b6cb0;
   color: #fff;
 }
+
+/* Ensure links in main content don't show underline */
+.content a, .sidebar a, nav a { text-decoration: none !important; }
+
 .logout-btn {
   margin-top: 15px;
   width: 100%;
@@ -77,8 +94,16 @@ body {
   font-weight: 600;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
+  color: #000 !important; /* Force black text for feature labels */
+  text-decoration: none !important; /* avoid underline */
 }
+.feature-card a { color: inherit !important; text-decoration: none !important; }
+.feature-card a:hover { color: inherit !important; text-decoration: none !important; }
 .feature-card:hover {
   transform: translateY(-5px);
   background-color: #edf2f7;
+  color: #000 !important; /* keep text black on hover */
 }
+.feature-card:focus { outline: none; }
+.feature-card.btn-like { display:block; }
+

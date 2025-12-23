@@ -87,7 +87,8 @@ async function renderGVCN(req, res, gvId, lopInfo, canSwitchToGVBM) {
         dsMon,
         siSo,
         defaultNamHoc,
-        canSwitchToGVBM // <-- Biến mới để hiện nút chuyển
+        canSwitchToGVBM, // <-- Biến mới để hiện nút chuyển
+        currentPage: '/thongke'
     });
 }
 
@@ -117,7 +118,8 @@ async function renderGVBM(req, res, gvId, canSwitchToGVCN) {
         dsLop: uniqueLops,
         monHoc: gv ? gv.chuyenMon : null,
         defaultNamHoc,
-        canSwitchToGVCN // <-- Biến mới để hiện nút chuyển
+        canSwitchToGVCN, // <-- Biến mới để hiện nút chuyển
+        currentPage: '/thongke'
     });
 }
 
@@ -125,6 +127,11 @@ async function renderGVBM(req, res, gvId, canSwitchToGVCN) {
 exports.getStatisticsData = async (req, res) => {
     try {
         const { namHoc, hocKy, idLop, idMon } = req.body;
+
+        // Validate required filters: năm học, học kỳ, lớp
+        if (!namHoc || !hocKy || !idLop) {
+            return res.json({ success: false, message: 'Vui lòng chọn Năm học, Học kỳ và Lớp để xem thống kê' });
+        }
 
         // --- Điều kiện điểm ---
         const whereClause = {
@@ -176,26 +183,44 @@ exports.getStatisticsData = async (req, res) => {
                 DiemTB,
             } = d;
 
-            // --- Tính DTB nếu DB chưa có ---
+            // --- Tính DTB nếu DB chưa có (weighted average) ---
             let dtb = DiemTB;
             if (dtb == null) {
-                const diemArr = [
-                    DiemTX1,
-                    DiemTX2,
-                    Diem1T1,
-                    Diem1T2,
-                    DiemGK,
-                    DiemCK,
-                ].filter((x) => typeof x === "number");
+                const weights = {
+                    DiemTX1: 1,
+                    DiemTX2: 1,
+                    Diem1T1: 2,
+                    Diem1T2: 2,
+                    DiemGK: 2,
+                    DiemCK: 3,
+                };
 
-                dtb =
-                    diemArr.length > 0
-                        ? diemArr.reduce((a, b) => a + b, 0) /
-                          diemArr.length
-                        : 0;
+                let numerator = 0;
+                let denom = 0;
+                for (const key of Object.keys(weights)) {
+                    const v = d[key];
+                    const w = weights[key];
+                    if (typeof v === 'number' && !isNaN(v)) {
+                        numerator += v * w;
+                        denom += w;
+                    }
+                }
+
+                dtb = denom > 0 ? numerator / denom : 0;
             }
 
-            dtb = Number(dtb.toFixed(2));
+// Apply custom rounding rule to dtb
+                function customRoundDtb(v) {
+                    if (v === null || v === undefined || isNaN(v)) return 0;
+                    const intPart = Math.floor(v);
+                    const firstDecimal = Math.floor((v * 10) % 10);
+                    if (firstDecimal === 0) return Number(v.toFixed(2));
+                    if (firstDecimal >= 1 && firstDecimal <= 4) return Number((intPart).toFixed(2));
+                    if (firstDecimal === 5) return Number((intPart + 0.5).toFixed(2));
+                    return Number((intPart + 1).toFixed(2));
+                }
+
+                dtb = customRoundDtb(dtb);
 
             // --- Xếp loại ---
             if (dtb >= 8) stats.gioi++;

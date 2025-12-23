@@ -21,6 +21,8 @@ router.post('/quanlylop/hocsinh/:id/chuyenlop', lopController.handleChuyenLop);
 // Quản lý tài khoản
 router.get('/users',userController.getListRole )
 
+// Search endpoint must be placed before the param route to avoid being captured as roleID
+router.get('/users/search', userController.searchUsers )
 router.get('/users/:roleID',userController.getUsersByRole )
 // router.post('/users/:id/password', userController.changePassword);
 router.post('/users/reset-password/:id', userController.resetDefaultPassword);

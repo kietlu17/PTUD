@@ -96,37 +96,39 @@ exports.xemDiemGVBoMon = async(req, res) => {
                 currentUser: req.session.user,
                 hocKy: hocKy || '',
                 namHoc: namHoc || new Date().getFullYear(),
+                danhSachNamHoc,
             });
         }
 
-        const whereCondition = {
-            id_HocSinh: hocSinhIds, // ← FIX: Dùng DANH SÁCH ID HỌC SINH
-            id_MonHoc: monHocIds,
-        };
+        // If Hoc Ky or Nam Hoc not selected, do not fetch scores — require user to select filters and click Lọc
+        let diemData = [];
+        let needFilter = false;
+        if (!hocKy || !namHoc) {
+            needFilter = true;
+        } else {
+            const whereCondition = {
+                id_HocSinh: hocSinhIds, // ← FIX: Dùng DANH SÁCH ID HỌC SINH
+                id_MonHoc: monHocIds,
+                HocKy: hocKy,
+                NamHoc: String(namHoc),
+            };
 
-        if (hocKy) {
-            whereCondition.HocKy = hocKy;
+            diemData = await DiemSo.findAll({
+                where: whereCondition,
+                include: [
+                    {
+                        model: HocSinh,
+                        as: 'hocSinh',
+                        attributes: ['id', 'HoVaTen'],
+                    },
+                    {
+                        model: MonHoc,
+                        as: 'monHoc',
+                        attributes: ['id', 'TenMon'],
+                    },
+                ],
+            });
         }
-
-        if (namHoc) {
-            whereCondition.NamHoc = String(namHoc);
-        }
-
-        const diemData = await DiemSo.findAll({
-            where: whereCondition,
-            include: [
-                {
-                    model: HocSinh,
-                    as: 'hocSinh',
-                    attributes: ['id', 'HoVaTen'],
-                },
-                {
-                    model: MonHoc,
-                    as: 'monHoc',
-                    attributes: ['id', 'TenMon'],
-                },
-            ],
-        });
 
 
        
@@ -142,8 +144,9 @@ exports.xemDiemGVBoMon = async(req, res) => {
             currentPage: '/xem-diem-bo-mon',
             currentUser: req.session.user,
             hocKy: hocKy || '',
-            namHoc: namHoc || new Date().getFullYear(),
+            namHoc: namHoc || '',
             danhSachNamHoc, // ← Thêm danh sách năm học
+            needFilter,
         });
     } catch (error) {
         console.error('Lỗi xem điểm GV bộ môn:', error);
@@ -186,9 +189,38 @@ exports.xemDiemGVChuNhiem = async(req, res) => {
         const allHsIds = lop.hocsinhs.map(h => h.id);
 
         // 3. Xây dựng điều kiện lọc cho Chi tiết điểm
-        const detailsWhereCondition = { 
+        // Support filtering by student internal id OR by MaHS OR by partial name
+        let hsFilterIds = allHsIds;
+        if (hsId) {
+            const keyword = String(hsId).trim();
+            // Search within the class for matching students
+            const foundStudents = await HocSinh.findAll({
+                where: {
+                    id_Lop: lop.id,
+                    [Op.or]: [
+                        // id match (exact integer)
+                        isNaN(parseInt(keyword)) ? null : { id: parseInt(keyword) },
+                        // MaHS exact
+                        { MaHS: keyword },
+                        // Name partial match
+                        { HoVaTen: { [Op.iLike]: `%${keyword}%` } }
+                    ].filter(Boolean)
+                },
+                attributes: ['id'],
+                raw: true
+            });
+
+            if (foundStudents && foundStudents.length > 0) {
+                hsFilterIds = foundStudents.map(s => s.id);
+            } else {
+                // No matching students — set impossible id so query yields no rows
+                hsFilterIds = [-1];
+            }
+        }
+
+        const detailsWhereCondition = {
             NamHoc: NamHocQuery,
-            id_HocSinh: hsId ? parseInt(hsId) : allHsIds, 
+            id_HocSinh: hsFilterIds,
         };
 
         if (hocKy) {

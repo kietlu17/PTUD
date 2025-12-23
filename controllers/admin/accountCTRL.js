@@ -1,6 +1,7 @@
 const { render } = require('ejs');
 const { TaiKhoan } = require('../../models');
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 
 exports.getListRole = async (req, res)=> {
     res.render('./admin/quanlytaikhoan/quanlytaikhoan', {currentPage: '/quanlyacc'})
@@ -59,4 +60,30 @@ exports.resetDefaultPassword = async (req, res) => {
   );
 
     res.status(200).json('thanh cong');
+};
+
+// Tìm kiếm username (dùng cho fallback khi client không có dữ liệu cục bộ)
+exports.searchUsers = async (req, res) => {
+  try {
+    const admin = req.session.user.profile;
+    const q = req.query.q || '';
+    const role = req.query.role || null;
+
+    const where = {
+      id_truong: admin.id_school
+    };
+    if (role) where.id_role = role;
+    if (q) where.username = { [Op.iLike]: `%${q}%` };
+
+    const users = await TaiKhoan.findAll({
+      where,
+      attributes: { exclude: ['password'] },
+      order: [['username', 'ASC']]
+    });
+
+    res.json({ data: users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
 };

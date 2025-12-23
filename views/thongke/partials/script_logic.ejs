@@ -132,5 +132,67 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', loadData);
+    function showNoData() {
+        // Clear charts
+        gradeChartInstance?.destroy(); gradeChartInstance = null;
+        passChartInstance?.destroy(); passChartInstance = null;
+
+        // Update table to show no data
+        const tbody = document.getElementById('scoreTableBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="12" class="text-muted py-4">Không có dữ liệu</td></tr>';
+        const countBadge = document.getElementById('totalCount');
+        if (countBadge) countBadge.innerText = '0 bản ghi';
+    }
+
+    // Only load when user clicks "Xem Thống Kê" and required filters are present
+    async function loadData() {
+        const payload = {
+            namHoc: document.getElementById('filterNamHoc')?.value || '',
+            hocKy: document.getElementById('filterHocKy')?.value || '',
+            idLop: document.getElementById('filterLop')?.value || '',
+            idMon: document.getElementById('filterMon')?.value || ''
+        };
+
+        // Require NamHoc, HocKy, and Lop for teacher subject statistics
+        if (!payload.namHoc || !payload.hocKy || !payload.idLop) {
+            showNoData();
+            return;
+        }
+
+        const btn = document.querySelector('button[onclick="loadData()"]');
+        let originalText = '';
+        if (btn) {
+            originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            btn.disabled = true;
+        }
+
+        try {
+            const res = await fetch('/thongke/get-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                updateCharts(result.stats);
+                updateTable(result.data);
+            } else {
+                // For missing filters or no data just show the 'Không có dữ liệu' state
+                showNoData();
+                if (result.message) console.info(result.message);
+            }
+        } catch (e) {
+            console.error(e);
+            alert(' Lỗi kết nối server');
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', showNoData);
 </script>

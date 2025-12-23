@@ -10,6 +10,18 @@
       </h4>
 
       <div class="row">
+        <!-- Messages -->
+        <% if (success) { %>
+          <div class="col-12 mb-3">
+            <div class="alert alert-success"><%= success %></div>
+          </div>
+        <% } %>
+        <% if (error) { %>
+          <div class="col-12 mb-3">
+            <div class="alert alert-danger"><%= error %></div>
+          </div>
+        <% } %>
+
         <!-- FORM -->
         <div class="col-md-5">
           <div class="card shadow-sm">

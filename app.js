@@ -69,13 +69,13 @@ app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
 app.use('/hocsinh', requireLogin, hocsinhRoute);
 app.use('/thongke', requireLogin,thongkeRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 
 
 
 sequelizeInit().then(() => {
-  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/login`));
 }).catch(err => {
   console.error('Database initialization failed:', err);
   process.exit(1);

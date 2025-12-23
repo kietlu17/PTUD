@@ -65,61 +65,67 @@
         </div>
       </div>
 
-      <!-- Bảng điểm -->
+      <!-- Bảng điểm (luôn hiển thị header) -->
       <div class="table-responsive shadow-sm">
         <table class="table table-bordered text-center align-middle">
-<thead class="table-secondary">
-  <tr>
-    <th rowspan="2">STT</th>
-    <th rowspan="2">Họ và Tên</th>
-
-    <% giaovien.chuyenMon.forEach(mon => { %>
-      <th colspan="7"><%= mon.TenMon %></th>
-    <% }) %>
-  </tr>
-
-  <tr>
-    <% giaovien.chuyenMon.forEach(mon => { %>
-      <th>TX1</th>
-      <th>TX2</th>
-      <th>1T1</th>
-      <th>1T2</th>
-      <th>GK</th>
-      <th>CK</th>
-      <th>TB</th>
-      
-    <% }) %>
-  </tr>
-</thead>
-
-         <tbody>
-  <% lop.hocsinhs.forEach((hs, index) => { %>
+  <thead class="table-secondary">
     <tr>
-      <td><%= index + 1 %></td>   <!-- STT -->
-      <td class="text-start"><%= hs.HoVaTen %></td>
+      <th rowspan="2">STT</th>
+      <th rowspan="2">Họ và Tên</th>
 
       <% giaovien.chuyenMon.forEach(mon => { %>
-        <% 
-          const diem = diemData.find(d =>
-            d.id_HocSinh === hs.id &&
-            d.id_MonHoc === mon.id
-          );
-        %>
-
-        <td><%= diem?.DiemTX1 ?? '-' %></td>
-        <td><%= diem?.DiemTX2 ?? '-' %></td>
-        <td><%= diem?.Diem1T1 ?? '-' %></td>
-        <td><%= diem?.Diem1T2 ?? '-' %></td>
-        <td><%= diem?.DiemGK ?? '-' %></td>
-        <td><%= diem?.DiemCK ?? '-' %></td>
-        <td class="fw-bold">
-          <%= diem?.DiemTB != null ? Number(diem.DiemTB).toFixed(2) : '-' %>
-        </td>
+        <th colspan="7"><%= mon.TenMon %></th>
       <% }) %>
     </tr>
-  <% }) %>
-</tbody>
 
+    <tr>
+      <% giaovien.chuyenMon.forEach(mon => { %>
+        <th>TX1</th>
+        <th>TX2</th>
+        <th>1T1</th>
+        <th>1T2</th>
+        <th>GK</th>
+        <th>CK</th>
+        <th>TB</th>
+      <% }) %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% if (typeof needFilter !== 'undefined' && needFilter) { %>
+      <tr>
+        <td colspan="<%= 2 + (giaovien.chuyenMon.length * 7) %>" class="text-muted py-5">Không có dữ liệu</td>
+      </tr>
+    <% } else if (!diemData || !diemData.length) { %>
+      <tr>
+        <td colspan="<%= 2 + (giaovien.chuyenMon.length * 7) %>" class="text-muted py-4">Không có dữ liệu</td>
+      </tr>
+    <% } else { %>
+      <% lop.hocsinhs.forEach((hs, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>   <!-- STT -->
+          <td class="text-start"><%= hs.HoVaTen %></td>
+
+          <% giaovien.chuyenMon.forEach(mon => { %>
+            <% 
+              const diem = diemData.find(d =>
+                d.id_HocSinh === hs.id &&
+                d.id_MonHoc === mon.id
+              );
+            %>
+
+            <td><%= diem?.DiemTX1 ?? '-' %></td>
+            <td><%= diem?.DiemTX2 ?? '-' %></td>
+            <td><%= diem?.Diem1T1 ?? '-' %></td>
+            <td><%= diem?.Diem1T2 ?? '-' %></td>
+            <td><%= diem?.DiemGK ?? '-' %></td>
+            <td><%= diem?.DiemCK ?? '-' %></td>
+            <td class="fw-bold"><%= diem?.DiemTB != null ? Number(diem.DiemTB).toFixed(2) : '-' %></td>
+          <% }) %>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
 
         </table>
       </div>

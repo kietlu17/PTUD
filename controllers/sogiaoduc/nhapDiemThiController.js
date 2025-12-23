@@ -1,5 +1,16 @@
 const { Truong, PhongThi, ThiSinh, DiemThi, HoSoTuyenSinh, DangKyTuyenSinh } = require('../../models');
 
+
+// Kiểm tra giá trị điểm hợp lệ: >0 và <10, phần thập phân chỉ được 0, .25, .50, .75
+function isValidScoreValue(val) {
+  const v = parseFloat(val);
+  if (!isFinite(v)) return false;
+  if (v <= 0 || v >= 10) return false;
+  // Tránh lỗi float, lấy phần thập phân theo cent
+  const cents = Math.round((v * 100) % 100);
+  return [0, 25, 50, 75].includes(cents);
+}
+
 // Hiển thị trang nhập điểm
 exports.showNhapDiem = async (req, res) => {
   try {
@@ -51,25 +62,42 @@ exports.getThiSinh = async (req, res) => {
 exports.saveAllScores = async (req, res) => {
   try {
     const dsDiem = req.body.dsDiem;
+    if (!Array.isArray(dsDiem)) return res.status(400).json({ success: false, error: 'Dữ liệu dsDiem không hợp lệ' });
 
     for (const d of dsDiem) {
-      const tong = (+d.toan) + (+d.nguvan) + (+d.tienganh);
+      const { thisinhid } = d;
+      const toan = parseFloat(d.toan);
+      const nguvan = parseFloat(d.nguvan);
+      const tienganh = parseFloat(d.tienganh);
+
+      // Validate each score
+      if (!isValidScoreValue(toan)) {
+        return res.status(400).json({ success: false, error: `Điểm Toán không hợp lệ cho thí sinh id=${thisinhid}. Phải là số >0 và <10, phần thập phân chỉ .25, .5, .75 hoặc nguyên.` });
+      }
+      if (!isValidScoreValue(nguvan)) {
+        return res.status(400).json({ success: false, error: `Điểm Ngữ Văn không hợp lệ cho thí sinh id=${thisinhid}. Phải là số >0 và <10, phần thập phân chỉ .25, .5, .75 hoặc nguyên.` });
+      }
+      if (!isValidScoreValue(tienganh)) {
+        return res.status(400).json({ success: false, error: `Điểm Tiếng Anh không hợp lệ cho thí sinh id=${thisinhid}. Phải là số >0 và <10, phần thập phân chỉ .25, .5, .75 hoặc nguyên.` });
+      }
+
+      const tong = toan + nguvan + tienganh;
 
       const [diem, created] = await DiemThi.findOrCreate({
-        where: { thisinhid: d.thisinhid },
+        where: { thisinhid },
         defaults: {
-          toan: d.toan,
-          nguvan: d.nguvan,
-          tienganh: d.tienganh,
+          toan,
+          nguvan,
+          tienganh,
           tong
         }
       });
 
       if (!created) {
         await diem.update({
-          toan: d.toan,
-          nguvan: d.nguvan,
-          tienganh: d.tienganh,
+          toan,
+          nguvan,
+          tienganh,
           tong
         });
       }

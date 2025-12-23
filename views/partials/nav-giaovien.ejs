@@ -1,6 +1,19 @@
     <nav class="col-md-2 sidebar">
-      <div class="text-center fw-semibold mb-3"><%= profile.HoVaTen %></div>
-            <% 
+      <div class="sidebar-info mb-3 d-flex align-items-center">
+        <% const avatar = profile?.avatarUrl || null; %>
+        <div class="me-2">
+          <% if (avatar) { %>
+            <img src="<%= avatar %>" class="sidebar-avatar" />
+          <% } else { %>
+            <div class="sidebar-avatar fallback-avatar"></div>
+          <% } %>
+        </div>
+        <div>
+          <div class="nhanvien-ten fw-semibold"><%= profile.HoVaTen %></div>
+          <div class="text-muted small"><%= profile?.ChucVu || '' %></div>
+        </div>
+      </div>
+      <% 
     const activePage = typeof currentPage !== 'undefined' ? currentPage : '/dashboard-giaovien';
   %>
       <a href="/dashboard-giaovien" class="<% if (activePage === '/dashboard-giaovien') { %>active<% } %>">Trang Dashboard</a>
@@ -19,7 +32,7 @@
          class="<% if (activePage === '/xem-diem-chu-nhiem') { %>active<% } %>">
         Xem Điểm Lớp Chủ Nhiệm
       </a>
-            <a href="/giaovien/thongke">Thống kê</a>
+            <a href="/giaovien/thongke" class="<% if (activePage === '/thongke') { %>active<% } %>">Thống kê</a>
 
       <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
       <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>

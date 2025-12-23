@@ -134,13 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${ts.hoten}</td>
                 <td>${ts.ngaysinh ? new Date(ts.ngaysinh).toLocaleDateString() : ''}</td>
 
-                <td><input id="toan-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0" max="10"
+                <td><input id="toan-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0.25" max="9.75" step="0.25" title="Chỉ cho các phần .25, .5, .75 hoặc số nguyên" 
                     class="form-control form-control-sm" value="${d.toan ?? ''}" oninput="updateTong(${ts.id})"></td>
 
-                <td><input id="nguvan-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0" max="10"
+                <td><input id="nguvan-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0.25" max="9.75" step="0.25" title="Chỉ cho các phần .25, .5, .75 hoặc số nguyên" 
                     class="form-control form-control-sm" value="${d.nguvan ?? ''}" oninput="updateTong(${ts.id})"></td>
 
-                <td><input id="tienganh-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0" max="10"
+                <td><input id="tienganh-${ts.id}" ${isLocked ? 'disabled' : ''} type="number" min="0.25" max="9.75" step="0.25" title="Chỉ cho các phần .25, .5, .75 hoặc số nguyên" 
                     class="form-control form-control-sm" value="${d.tienganh ?? ''}" oninput="updateTong(${ts.id})"></td>
 
                 <td id="tong-${ts.id}">${d.tong ?? '-'}</td>
@@ -182,6 +182,82 @@ window.updateTong = (id) => {
     document.getElementById(`tong-${id}`).innerText = (toan + nv + ta).toFixed(2);
 };
 
+// Kiểm tra đúng định dạng điểm: >0 <10 và phần thập phân chỉ 0, .25, .50, .75
+function isValidScore(val) {
+    if (val === null || val === undefined || val === '') return false;
+    const v = parseFloat(val);
+    if (!isFinite(v)) return false;
+    if (v <= 0 || v >= 10) return false;
+    const cents = Math.round((v * 100) % 100);
+    return [0,25,50,75].includes(cents);
+}
+
+// Lưu tất cả
+window.saveAllScores = async () => {
+    const rows = document.querySelectorAll('#thisinhTable tbody tr');
+    const dsDiem = [];
+
+    // Kiểm tra thiếu điểm và định dạng
+    for (let row of rows) {
+        const id = row.querySelector("input").id.split("-")[1];
+
+        const toan = document.getElementById(`toan-${id}`).value;
+        const nv = document.getElementById(`nguvan-${id}`).value;
+        const ta = document.getElementById(`tienganh-${id}`).value;
+
+        if (toan === "" || nv === "" || ta === "") {
+            // Tắt popup xác nhận
+            document.getElementById('confirmAllPopup').style.display = 'none';
+
+            showErrorPopup("Có học sinh chưa được nhập điểm!");
+            return;
+        }
+
+        if (!isValidScore(toan)) {
+            document.getElementById('confirmAllPopup').style.display = 'none';
+            showErrorPopup(`Điểm Toán không hợp lệ cho thí sinh ${row.querySelector('td:nth-child(2)').innerText}. Phải là số >0 và <10, phần thập phân chỉ .25, .5, .75 hoặc nguyên.`);
+            return;
+        }
+        if (!isValidScore(nv)) {
+            document.getElementById('confirmAllPopup').style.display = 'none';
+            showErrorPopup(`Điểm Ngữ Văn không hợp lệ cho thí sinh ${row.querySelector('td:nth-child(2)').innerText}. Phải là số >0 và <10, phần thập phân chỉ .25, .5, .75 hoặc nguyên.`);
+            return;
+        }
+        if (!isValidScore(ta)) {
+            document.getElementById('confirmAllPopup').style.display = 'none';
+            showErrorPopup(`Điểm Tiếng Anh không hợp lệ cho thí sinh ${row.querySelector('td:nth-child(2)').innerText}. Phải là số >0 và <10, phần thập phân chỉ .25, .5, .75 hoặc nguyên.`);
+            return;
+        }
+
+        dsDiem.push({ thisinhid: id, toan: parseFloat(toan), nguvan: parseFloat(nv), tienganh: parseFloat(ta) });
+    }
+
+    // Gửi API
+    const response = await fetch('/sogiaoduc/diemthi/luu-tatca', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dsDiem })
+    });
+    const result = await response.json();
+    if (!result.success) {
+        document.getElementById('confirmAllPopup').style.display = 'none';
+        showErrorPopup(result.error || 'Lỗi lưu điểm');
+        return;
+    }
+
+    // Tắt popup xác nhận
+    document.getElementById('confirmAllPopup').style.display = 'none';
+
+    // Khóa input
+    rows.forEach(row => {
+        row.querySelectorAll("input").forEach(input => input.disabled = true);
+    });
+
+    document.getElementById("saveAllContainer").style.display = "none";
+
+    // Mở popup thành công
+    document.getElementById('successModal').style.display = 'flex';
+};
 function closePreview() {
     document.getElementById('previewAssignPopup').style.display = 'none';
 }
@@ -213,50 +289,7 @@ window.cancelConfirmAll = () => {
     document.getElementById('confirmAllPopup').style.display = 'none';
 };
 
-// Lưu tất cả
-window.saveAllScores = async () => {
-    const rows = document.querySelectorAll('#thisinhTable tbody tr');
-    const dsDiem = [];
 
-    // Kiểm tra thiếu điểm
-    for (let row of rows) {
-        const id = row.querySelector("input").id.split("-")[1];
-
-        const toan = document.getElementById(`toan-${id}`).value;
-        const nv = document.getElementById(`nguvan-${id}`).value;
-        const ta = document.getElementById(`tienganh-${id}`).value;
-
-        if (toan === "" || nv === "" || ta === "") {
-            // Tắt popup xác nhận
-            document.getElementById('confirmAllPopup').style.display = 'none';
-
-            showErrorPopup("Có học sinh chưa được nhập điểm!");
-            return;
-        }
-
-        dsDiem.push({ thisinhid: id, toan, nguvan: nv, tienganh: ta });
-    }
-
-    // Gửi API
-    await fetch('/sogiaoduc/diemthi/luu-tatca', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dsDiem })
-    });
-
-    // Tắt popup xác nhận
-    document.getElementById('confirmAllPopup').style.display = 'none';
-
-    // Khóa input
-    rows.forEach(row => {
-        row.querySelectorAll("input").forEach(input => input.disabled = true);
-    });
-
-    document.getElementById("saveAllContainer").style.display = "none";
-
-    // Mở popup thành công
-    document.getElementById('successModal').style.display = 'flex';
-};
 
 // Popup lỗi
 function showErrorPopup(message) {
