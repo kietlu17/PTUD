@@ -69,7 +69,7 @@ app.use('/bangiamhieu', requireLogin,bangiamhieuRoute);
 app.use('/hocsinh', requireLogin, hocsinhRoute);
 app.use('/thongke', requireLogin,thongkeRoute);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 
 

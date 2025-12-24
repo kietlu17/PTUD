@@ -20,7 +20,7 @@
       <a href="/admin/quanlylop" class="<% if (activePage === '/quanlylop') { %>active<% } %>">Chuyển Lớp</a>
       <a href="/admin/classes/create" class="<% if (activePage === '/taolop') { %>active<% } %>">Tạo Lớp</a>
       <a href="/admin/thoikhoabieu" class="<% if (activePage === '/thoikhoabieu') { %>active<% } %>">Tạo Thời Khóa Biểu</a>
-      <a href="/admin/users" class="<% if (activePage === '/quanlyacc') { %>active<% } %>">Quản Lý Tài Khoản</a>
+      <a href="/admin/users" class="<% if (activePage === '/quanlyacc') { %>active<% } %>">Đặt lại mật khẩu</a>
 
       <button class="logout-btn" onclick="changePassword('<%= currentUser.id %>')">Đổi mật khẩu</button>
       <form id="logoutForm" action="/logout" method="POST" style="display:none;"></form>
