@@ -35,28 +35,54 @@
           <th>Nhận xét</th>
         </tr>
       </thead>
-      <tbody>
-        <% lop.hocsinhs.forEach((hs, index) => { %>
-          <tr>
-            <td><%= index + 1 %></td>
-            <td><%= hs.HoVaTen %></td>
-            <td><%= hs.NgaySinh ? new Date(hs.NgaySinh).toLocaleDateString() : '' %></td>
-            <td><%= hs.GioiTinh %></td>
-            <td>
-              <select name="hanhKiem[<%= hs.id %>]">
-                <option value="Tốt" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Tốt' ? 'selected' : '' %>>Tốt</option>
-                <option value="Khá" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Khá' ? 'selected' : '' %>>Khá</option>
-                <option value="Trung Bình" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Trung Bình' ? 'selected' : '' %>>Trung Bình</option>
-                <option value="Yếu" <%= hs.hanhKiem && hs.hanhKiem.LoaiHanhKiem === 'Yếu' ? 'selected' : '' %>>Yếu</option>
-              </select>
-            </td>
-            <td>
-              <input type="text" name="nhanXet[<%= hs.id %>]" class="form-control"
-                     value="<%= hs.hanhKiem ? hs.hanhKiem.NhanXet : '' %>">
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
+ <tbody>
+  <% lop.hocsinhs.forEach((hs, index) => { 
+      const hk = (hs.hanhKiem && hs.hanhKiem.length > 0)
+        ? hs.hanhKiem[0]   // hoặc sort DESC bên controller
+        : null;
+      const daDanhGia = !!hk;
+  %>
+    <tr>
+      <td><%= index + 1 %></td>
+      <td><%= hs.HoVaTen %></td>
+      <td><%= hs.NgaySinh ? new Date(hs.NgaySinh).toLocaleDateString('vi-VN') : '' %></td>
+      <td><%= hs.GioiTinh %></td>
+
+      <!-- Hạnh kiểm -->
+      <td>
+        <select
+          name="hanhKiem[<%= hs.id %>]"
+          class="form-select"
+          <%= daDanhGia ? 'disabled' : '' %>>
+          
+          <option value="Tốt" <%= hk?.LoaiHanhKiem === 'Tốt' ? 'selected' : '' %>>Tốt</option>
+          <option value="Khá" <%= hk?.LoaiHanhKiem === 'Khá' ? 'selected' : '' %>>Khá</option>
+          <option value="Trung Bình" <%= hk?.LoaiHanhKiem === 'Trung Bình' ? 'selected' : '' %>>Trung Bình</option>
+          <option value="Yếu" <%= hk?.LoaiHanhKiem === 'Yếu' ? 'selected' : '' %>>Yếu</option>
+        </select>
+
+        <% if (daDanhGia) { %>
+          <input
+            type="hidden"
+            name="hanhKiem[<%= hs.id %>]"
+            value="<%= hk.LoaiHanhKiem %>">
+        <% } %>
+      </td>
+
+      <!-- Nhận xét -->
+      <td>
+        <input
+          type="text"
+          name="nhanXet[<%= hs.id %>]"
+          class="form-control"
+          value="<%= hk ? hk.NhanXet : '' %>"
+          <%= daDanhGia ? 'readonly' : '' %>>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
+
+
     </table>
     <button type="submit" class="btn btn-primary mb-4">Lưu Hạnh Kiểm</button>
   </form>

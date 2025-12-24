@@ -42,6 +42,7 @@ exports.showClasses = async(req, res) => {
             attributes: ['id', 'HoVaTen', 'NgaySinh', 'GioiTinh', 'id_Lop'],
         });
 
+
         // 3️ Gán học sinh về từng lớp
         dsLop.forEach(lop => {
             lop.hocsinhs = hocsinhByLop.filter(hs => hs.id_Lop === lop.id);
