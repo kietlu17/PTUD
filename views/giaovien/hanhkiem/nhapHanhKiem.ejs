@@ -15,10 +15,10 @@
               </div>
               <div class="col-md-4">
                   <label class="form-label fw-bold">Học Kỳ <span class="text-danger">*</span>:</label>
-                  <select name="KyHoc" class="form-select" required>
-                      <option value="1">Học kỳ 1</option>
-                      <option value="2">Học kỳ 2</option>
-                  </select>
+            <select name="KyHoc" id="kyHoc" class="form-select" required>
+              <option value="1" <%= KyHoc == 1 ? 'selected' : '' %>>Học kỳ 1</option>
+              <option value="2" <%= KyHoc == 2 ? 'selected' : '' %>>Học kỳ 2</option>
+            </select>
               </div>
 <% dsLop.forEach(lop => { %>
   <h2>Lớp: <%= lop.TenLop %> (Số học sinh: <%= lop.hocsinhs.length %>)</h2>
@@ -106,6 +106,14 @@
 
     document.getElementById("namHoc").value = `${year}-${next}`;
 });
+  document.getElementById('kyHoc').addEventListener('change', function () {
+    const kyHoc = this.value;
+    const params = new URLSearchParams(window.location.search);
+
+    params.set('KyHoc', kyHoc);
+
+    window.location.search = params.toString(); // reload + giữ query
+  });
   const allowEdit = JSON.parse('<%- JSON.stringify(allowEdit) %>');
 
   if (!allowEdit) {

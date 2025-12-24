@@ -6,7 +6,7 @@ exports.showClasses = async(req, res) => {
     try {
         const ALLOWED_END_MONTHS = [11, 12]; 
         const nowMonth = new Date().getMonth() + 1;
-
+        const KyHoc = req.query.KyHoc || '1';
         let allowEdit = ALLOWED_END_MONTHS.includes(nowMonth);
         const giaovienId = req.params.giaovienId;
 
@@ -35,11 +35,16 @@ exports.showClasses = async(req, res) => {
         // 2️ Lấy học sinh từng lớp
         const lopIds = dsLop.map(l => l.id);
         const hocsinhByLop = await HocSinh.findAll({
-            where: { id_Lop: lopIds },
-            include: [
-                { model: HanhKiem, as: 'hanhKiem', required: false } // lấy hạnh kiểm nếu đã có
-            ],
-            attributes: ['id', 'HoVaTen', 'NgaySinh', 'GioiTinh', 'id_Lop'],
+          where: { id_Lop: lopIds },
+          include: [{
+            model: HanhKiem,
+            as: 'hanhKiem',
+            required: false,
+            where: {
+              HocKy: KyHoc
+            }
+          }],
+          attributes: ['id', 'HoVaTen', 'NgaySinh', 'GioiTinh', 'id_Lop'],
         });
 
 
@@ -48,7 +53,7 @@ exports.showClasses = async(req, res) => {
             lop.hocsinhs = hocsinhByLop.filter(hs => hs.id_Lop === lop.id);
         });
 
-        res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop, giaovienId, currentPage: '/hanhkiem', allowEdit });
+        res.render('./giaovien/hanhkiem/nhaphanhkiem', { dsLop,KyHoc, giaovienId, currentPage: '/hanhkiem', allowEdit });
 
     } catch (error) {
         console.error('Lỗi khi lấy danh sách lớp của giáo viên:', error);
